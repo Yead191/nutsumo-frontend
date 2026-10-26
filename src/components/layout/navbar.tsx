@@ -2,93 +2,156 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Bell } from "lucide-react";
-import { useState } from "react";
-import { AccountMenu } from "@/components/layout/account-menu";
-import { NotificationMenu } from "@/components/layout/notification-menu";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ArrowRight,
+  User as UserIcon,
+} from "lucide-react";
+import Cookies from "js-cookie";
 import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/cn";
-import { useAppSelector } from "@/redux/hooks";
 
-const homeownerLinks = [
+const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/browse-pros", label: "Find Pros" },
-  { href: "/services", label: "Services" },
-  { href: "/about", label: "About Us" },
+  { href: "/about", label: "About" },
+  { href: "/browse-jobs", label: "Job Seekerss", hasDropdown: true },
   { href: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const user = useAppSelector((state) => state.auth.user);
-  const isPro = user?.role === "pro";
-  const isDashboard = pathname.startsWith("/pro") || pathname.startsWith("/account");
-  const navLinks = isPro || isDashboard ? [] : homeownerLinks;
-
+  const isHome = pathname === "/";
   const [open, setOpen] = useState(false);
-  const notifHref = isPro ? "/pro/notifications" : "/account/notifications";
-  const unreadCount = useAppSelector((state) =>
-    user ? state.features.notifications.filter((n) => !n.read && (n.role === user.role || n.role === "all")).length : 0,
-  );
+  const [isOverHero, setIsOverHero] = useState(isHome);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = Cookies.get("accessToken");
+    setIsAuthenticated(Boolean(token));
+
+    const handleScroll = () => {
+      if (!isHome) {
+        setIsOverHero(false);
+        return;
+      }
+      const heroElement = document.getElementById("hero");
+      if (heroElement) {
+        const rect = heroElement.getBoundingClientRect();
+        // Glass effect active when hero tag reaches top (-0 to 10px range) and is visible in viewport
+        const inHeroRange = rect.top <= 10 && rect.bottom > 80;
+        setIsOverHero(inHeroRange || window.scrollY < 80);
+      } else {
+        setIsOverHero(window.scrollY < 80);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname, isHome]);
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-line/70 shadow-[0_4px_20px_color-mix(in_srgb,var(--ink)_4%,transparent)]">
-      <div className="container-site flex h-[74px] items-center justify-between gap-6">
-        <Logo />
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300",
+        isOverHero ? "bg-transparent py-4 sm:py-8" : "navbar-header-glass py-3",
+      )}
+      style={
+        !isOverHero
+          ? {
+              backdropFilter: "blur(20px) saturate(180%)",
+              WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            }
+          : undefined
+      }
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12 flex items-center justify-between gap-4">
+        {/* Brand Logo */}
+        <Logo size="lg" />
 
-        {navLinks.length > 0 && (
-          <nav className="hidden items-center gap-7 lg:flex">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "font-sans text-[15px] font-medium tracking-normal text-[#555] transition-colors hover:text-title",
-                  pathname === link.href && "text-primary font-semibold",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        )}
+        {/* Center Floating Nav Pill with Frosted Glass & Blur Effect */}
+        <nav className="hidden md:flex items-center">
+          <div
+            className={cn(
+              "flex items-center gap-1.5 rounded-full p-1.5 transition-all duration-300",
+              isOverHero ? "nav-glass-blur" : "nav-glass-scrolled",
+            )}
+            style={{
+              backdropFilter: isOverHero
+                ? "blur(20px) saturate(180%)"
+                : "blur(16px)",
+              WebkitBackdropFilter: isOverHero
+                ? "blur(20px) saturate(180%)"
+                : "blur(16px)",
+            }}
+          >
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href);
 
-        <div className="hidden items-center gap-3.5 lg:flex">
-          {user ? (
-            <>
-              {isPro && (
+              return (
                 <Link
-                  href="/pro/jobs"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-display text-xs font-semibold text-primary hover:bg-primary/10 transition"
-                  title="View live homeowner job requests"
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-5 py-2 text-sm font-semibold rounded-full transition-all duration-200",
+                    isActive
+                      ? "bg-[#FE375D] text-white shadow-sm"
+                      : "text-slate-800 hover:text-[#FE375D] hover:bg-white/40",
+                  )}
                 >
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Pro Contractor</span>
+                  <span>{link.label}</span>
+                  {link.hasDropdown && (
+                    <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                  )}
                 </Link>
-              )}
-              {/* Notification Popover Dropdown */}
-              <NotificationMenu user={user} />
-              <AccountMenu user={user} />
-            </>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Right CTA / Auth Controls */}
+        <div className="hidden md:flex items-center gap-5">
+          {isAuthenticated ? (
+            <Link
+              href="/account"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:border-[#FE375D] hover:text-[#FE375D] transition-all"
+            >
+              <UserIcon className="h-4 w-4 text-[#FE375D]" />
+              <span>Dashboard</span>
+            </Link>
           ) : (
-            <Button href="/login" size="sm" className="font-medium">
-              Get Started ↗
-            </Button>
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-bold text-[#FE375D] hover:opacity-85 transition-opacity"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2.5 text-sm font-semibold shadow-md transition-all group"
+              >
+                <span>Sign Up</span>
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
+                  <ArrowRight className="h-3 w-3 stroke-[2.5]" />
+                </span>
+              </Link>
+            </>
           )}
         </div>
 
-        <div className="flex items-center gap-3 lg:hidden">
-          {user ? (
-            <>
-              <NotificationMenu user={user} />
-              <AccountMenu user={user} />
-            </>
-          ) : null}
+        {/* Mobile Hamburger */}
+        <div className="flex md:hidden items-center gap-2">
           <button
             type="button"
-            className="grid h-10 w-10 place-items-center rounded-xl border border-line text-title"
-            onClick={() => setOpen((value) => !value)}
+            onClick={() => setOpen(!open)}
+            className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white/90 text-slate-800 shadow-sm"
             aria-label="Toggle menu"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -96,48 +159,59 @@ export function Navbar() {
         </div>
       </div>
 
-      {open ? (
-        <div className="border-t border-line bg-white px-5 py-5 lg:hidden animate-in fade-in duration-200">
-          <div className="flex flex-col gap-3">
+      {/* Mobile Drawer */}
+      {open && (
+        <div className="md:hidden mt-3 mx-4 rounded-2xl bg-white border border-slate-200 p-5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="font-display text-base font-medium text-title py-1"
+                className={cn(
+                  "px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors",
+                  pathname === link.href
+                    ? "bg-[#FE375D] text-white"
+                    : "text-slate-700 hover:bg-slate-50",
+                )}
               >
                 {link.label}
               </Link>
             ))}
-              {user ? (
+            <div className="h-px bg-slate-100 my-2" />
+            {isAuthenticated ? (
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-100"
+              >
+                <UserIcon className="h-4 w-4 text-[#FE375D]" />
+                <span>My Account</span>
+              </Link>
+            ) : (
+              <div className="flex flex-col gap-2 pt-1">
                 <Link
-                  href={notifHref}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-between rounded-[12px] bg-smoke px-4 py-2.5 font-display text-sm font-semibold text-title hover:bg-smoke/80 transition-colors"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <Bell className="h-4 w-4 text-primary" />
-                    <span>Notifications</span>
-                  </span>
-                  {unreadCount > 0 && (
-                    <span className="rounded-full bg-error px-2 py-0.5 font-display text-[11px] font-bold text-white">
-                      {unreadCount} unread
-                    </span>
-                  )}
-                </Link>
-              ) : (
-                <Button
                   href="/login"
-                  size="sm"
                   onClick={() => setOpen(false)}
-                  className="w-full justify-center"
+                  className="text-center py-2.5 text-sm font-bold text-[#FE375D] hover:bg-slate-50 rounded-xl"
                 >
-                  Get Started ↗
-                </Button>
-              )}
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-full bg-[#FE375D] text-white py-3 text-sm font-semibold shadow-md"
+                >
+                  <span>Sign Up</span>
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D]">
+                    <ArrowRight className="h-3 w-3 stroke-[2.5]" />
+                  </span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
-      ) : null}
+      )}
     </header>
   );
 }

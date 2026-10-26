@@ -39,8 +39,8 @@ export const nextFetch = async <T = any>(
     token,
     headers = {},
     cache = "default",
-    next = {}
-  }: FetchOptions = {}
+    next = {},
+  }: FetchOptions = {},
 ): Promise<FetchResponse<T>> => {
   const accessToken = await getAccessToken();
   const isFormData = body instanceof FormData;
@@ -73,7 +73,11 @@ export const nextFetch = async <T = any>(
       const isAuthError = res.status === 401 || res.status === 403;
       const isBlocked =
         res.status === 403 ||
-        Boolean(json?.message && typeof json.message === "string" && json.message.toLowerCase().includes("blocked"));
+        Boolean(
+          json?.message &&
+          typeof json.message === "string" &&
+          json.message.toLowerCase().includes("blocked"),
+        );
 
       if (isAuthError) {
         try {
@@ -103,7 +107,7 @@ export const nextFetch = async <T = any>(
       message: json?.message,
       data: json?.data,
       error: null,
-      pagination: json?.pagination
+      pagination: json?.pagination,
     };
   } catch (err) {
     return {

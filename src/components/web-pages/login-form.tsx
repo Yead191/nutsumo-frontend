@@ -1,169 +1,230 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Field, TextField } from "@/components/ui/field";
-import { PasswordField } from "@/components/ui/password-field";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
+import { useGoogleLogin } from "@react-oauth/google";
+import { nextFetch } from "@/helpers/next-fetch/core/NextFetch";
+import { loginWithGoogle } from "@/helpers/next-fetch/apiActions/authActions";
 import { GoogleIcon } from "@/components/ui/google-icon";
-import { AuthLinks } from "@/components/web-pages/auth-links";
-import { cn } from "@/lib/cn";
-import { loginAs } from "@/redux/slices/authSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 export function LoginForm() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
   const router = useRouter();
-  const search = useSearchParams();
-  const nextPath = search.get("next");
-  const roleParam = search.get("role");
-  const isPostJob = Boolean(nextPath?.includes("post-job"));
-  const signupHrefWithNext = nextPath ? `/signup?next=${encodeURIComponent(nextPath)}` : "/signup";
-  const [role, setRole] = useState<"homeowner" | "pro">(roleParam === "pro" ? "pro" : "homeowner");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const rawRedirect =
+    searchParams.get("redirect") || searchParams.get("next") || "/";
+  const redirectTo = rawRedirect.startsWith("/")
+    ? rawRedirect
+    : "/" + rawRedirect;
 
-  useEffect(() => {
-    if (user) {
-      if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-        router.replace(nextPath);
-      } else {
-        router.replace(user.role === "pro" ? "/pro" : "/account");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const response = await nextFetch("/auth/login", {
+        method: "POST",
+        body: { email, password },
+      });
+      if (!response?.success && response?.message?.includes("not verified")) {
+        toast.info("Please verify your email address to continue.");
+        router.push(
+          "/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify",
+        );
+        return;
       }
-    }
-  }, [user, nextPath, router]);
 
-  const [prevRoleParam, setPrevRoleParam] = useState(roleParam);
-  if (roleParam && (roleParam === "pro" || roleParam === "homeowner") && roleParam !== prevRoleParam) {
-    setPrevRoleParam(roleParam);
-    setRole(roleParam);
-  }
+      if (response?.success) {
+        if (response?.data?.createToken) {
+          Cookies.set("accessToken", response.data.createToken, {
+            expires: 7,
+            path: "/",
+          });
+        }
+        if (response?.data?.role) {
+          Cookies.set("role", response?.data?.role, { expires: 7, path: "/" });
+        }
+        toast.success(response?.message || "Welcome back to Nutsumo!");
+        router.replace(redirectTo);
+        router.refresh();
+        return;
+      }
 
-  function submit(event: React.FormEvent) {
-    event.preventDefault();
-    setError("");
-    dispatch(loginAs(role));
-    if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-      router.push(nextPath);
-      return;
+      setError(response?.message || "Invalid email or password.");
+      toast.error(response?.message || "Login failed");
+    } catch (err: any) {
+      setError(err?.message || "Something went wrong. Please try again.");
+      toast.error("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-    router.push(role === "pro" ? "/pro" : "/account");
-  }
+  };
 
-  function handleGoogleSignIn() {
-    setError("");
-    dispatch(loginAs(role));
-    if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-      router.push(nextPath);
-      return;
-    }
-    router.push(role === "pro" ? "/pro" : "/account");
-  }
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        setIsGoogleLoading(true);
+        const res = await loginWithGoogle(tokenResponse.access_token || "");
+        if (res?.success) {
+          if (res?.data?.createToken) {
+            Cookies.set("accessToken", res.data.createToken, {
+              expires: 7,
+              path: "/",
+            });
+          }
+          if (res?.data?.role) {
+            Cookies.set("role", res?.data?.role, { expires: 7, path: "/" });
+          }
+          toast.success("Signed in with Google successfully!");
+          router.replace(redirectTo);
+          router.refresh();
+        } else {
+          toast.error(res?.message || "Google sign in failed");
+        }
+      } catch (err: any) {
+        toast.error("Google sign in failed. Please try again.");
+      } finally {
+        setIsGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google sign in was cancelled or failed");
+    },
+  });
 
   return (
-    <div>
-      <h1 className="font-display text-[22px] sm:text-[26px] font-semibold leading-snug tracking-tight text-title">
-        {isPostJob ? "Sign in to post your request" : "Sign in to LocalHomeFix"}
-      </h1>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-[#757575]">
-        {isPostJob ? (
-          <>
-            Please sign in to continue posting your request. Don&apos;t have an account yet?{" "}
-            <Link href={signupHrefWithNext} className="font-semibold text-primary hover:underline">
-              Create an account
-            </Link>
-          </>
-        ) : (
-          "Sign in to your account or get started with quotes and requests."
-        )}
-      </p>
-
-      <div
-        role="tablist"
-        aria-label="Account type"
-        className="mt-6 grid grid-cols-2 rounded-full border border-line bg-smoke p-1"
-      >
-        {(
-          [
-            ["homeowner", "Homeowner"],
-            ["pro", "Professional"],
-          ] as const
-        ).map(([value, label]) => {
-          const active = role === value;
-          return (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setRole(value)}
-              className={cn(
-                "min-h-[44px] rounded-full font-display text-sm font-bold transition-colors",
-                active
-                  ? "bg-primary text-white shadow-sm"
-                  : "bg-transparent text-title hover:text-primary",
-              )}
-            >
-              {label}
-            </button>
-          );
-        })}
+    <div className="w-full max-w-md mx-auto">
+      <div className="text-center mb-8">
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+          Welcome to Nutsumo
+        </h1>
+        <p className="mt-2 text-sm text-slate-500">
+          Sign in to access your jobs, quotes, and artisan services.
+        </p>
       </div>
 
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="rounded-xl bg-red-50 border border-red-200 p-3.5 text-xs text-red-600 font-medium">
+            {error}
+          </div>
+        )}
 
-      <form className="mt-5 space-y-4" onSubmit={submit}>
-        <Field label="Email">
-          <TextField
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+            Email Address
+          </label>
+          <input
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder={role === "pro" ? "marcus@ortegaplumbing.com" : "maya.chen@gmail.com"}
-            autoComplete="email"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            required
+            className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:border-[#FE375D] focus:ring-1 focus:ring-[#FE375D] focus:outline-none transition-colors"
           />
-        </Field>
-        <Field label="Password">
-          <PasswordField
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="••••••••••••"
-            autoComplete="current-password"
-          />
-        </Field>
-        <div className="flex justify-end">
-          <Link href="/forgot-password" className="font-display text-sm font-bold text-primary">
-            Forgot password
-          </Link>
         </div>
-        {error ? <p className="text-sm text-error">{error}</p> : null}
-        <Button type="submit" className="w-full">
-          Sign in ↗
-        </Button>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
+              Password
+            </label>
+            <Link
+              href="/forgot-password"
+              className="text-xs font-semibold text-[#FE375D] hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full rounded-xl border border-slate-200 px-4 py-2.5 pr-10 text-sm text-slate-900 placeholder-slate-400 focus:border-[#FE375D] focus:ring-1 focus:ring-[#FE375D] focus:outline-none transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-3 text-sm font-semibold shadow-md transition-all disabled:opacity-60 cursor-pointer"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Signing in...</span>
+            </>
+          ) : (
+            <span>Sign In</span>
+          )}
+        </button>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-3 text-slate-400 font-semibold tracking-wider">
+              Or continue with
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => googleLogin()}
+          disabled={isGoogleLoading}
+          className="w-full flex items-center justify-center gap-2.5 rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors disabled:opacity-60 cursor-pointer"
+        >
+          {isGoogleLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-slate-500" />
+          ) : (
+            <GoogleIcon className="h-4 w-4" />
+          )}
+          <span>Continue with Google</span>
+        </button>
       </form>
 
-      {/* Or Divider */}
-      <div className="relative my-5 flex items-center justify-center">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-line/80" />
-        </div>
-        <span className="relative bg-white px-3 font-display text-xs font-medium uppercase tracking-wider text-muted">
-          Or
-        </span>
-      </div>
-
-      {/* Google Sign In Button */}
-      <button
-        type="button"
-        onClick={handleGoogleSignIn}
-        className="flex w-full items-center justify-center gap-2.5 rounded-full border border-line bg-white px-5 py-3 font-display text-sm font-semibold text-title shadow-2xs transition-all duration-200 hover:bg-smoke/70 hover:border-line hover:shadow-xs active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary cursor-pointer"
-      >
-        <GoogleIcon className="h-4.5 w-4.5" />
-        <span>Continue with Google ↗</span>
-      </button>
-
-      <AuthLinks prompt="Don't have an account?" href={signupHrefWithNext} label="Sign up free ↗" />
+      <p className="mt-8 text-center text-xs text-slate-500">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/signup"
+          className="font-semibold text-[#FE375D] hover:underline"
+        >
+          Create an account
+        </Link>
+      </p>
     </div>
   );
 }

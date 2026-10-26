@@ -9,43 +9,6 @@ export interface LogoProps {
   href?: string;
 }
 
-/**
- * Modern icon mark cropped from brand logo.
- */
-export function LogoIcon({
-  size = "md",
-  className,
-}: {
-  size?: "sm" | "md" | "lg";
-  className?: string;
-}) {
-  const dimensions = {
-    sm: "h-6 w-6",
-    md: "h-8 w-8",
-    lg: "h-10 w-10",
-  }[size];
-
-  return (
-    <span
-      className={cn(
-        "relative inline-grid place-items-center overflow-hidden rounded-[10px] shrink-0",
-        dimensions,
-        className,
-      )}
-      aria-hidden="true"
-    >
-      <Image
-        src="/logo.png"
-        alt="Logo Icon"
-        width={100}
-        height={100}
-        priority
-        className="h-full w-auto max-w-none object-cover object-left"
-      />
-    </span>
-  );
-}
-
 export function Logo({
   variant = "light",
   size = "md",
@@ -54,24 +17,21 @@ export function Logo({
 }: LogoProps) {
   const heightClasses = {
     sm: "h-7 sm:h-8",
-    md: "h-[32px] sm:h-[36px]",
-    lg: "h-[42px] sm:h-[46px]",
+    md: "h-[32px] sm:h-[38px]",
+    lg: "h-[42px] sm:h-[40px]",
   }[size];
 
-  const logoSrc = variant === "dark" ? "/logo-dark.png" : "/logo.png";
-
   const content = (
-    <div className={cn("inline-flex items-center group select-none", className)}>
+    <div
+      className={cn("inline-flex items-center group select-none", className)}
+    >
       <Image
-        src={logoSrc}
-        alt="LocalFix"
-        width={320}
-        height={82}
+        src="/logo.png"
+        alt="Nutsumo"
+        width={180}
+        height={60}
         priority
-        className={cn(
-          "w-auto object-contain transition-transform duration-200 group-hover:scale-102",
-          heightClasses,
-        )}
+        className={cn("w-40 h-fit object-cover", heightClasses)}
       />
     </div>
   );

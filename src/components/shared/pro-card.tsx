@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  Heart,
-  MapPin,
-  ShieldCheck,
-  Star,
-} from "lucide-react";
+import { ArrowRight, Heart, MapPin, ShieldCheck, Star } from "lucide-react";
 import { photos } from "@/lib/media";
 import { loginHref } from "@/lib/role-access";
 import { toggleFavorite } from "@/redux/slices/featuresSlice";
@@ -26,13 +20,17 @@ export function ProCard({
   className?: string;
   distance?: number;
 }) {
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const { access } = useRoleAccess();
   const user = useAppSelector((state) => state.auth.user);
-  const isOwner = user?.role === "pro" && (pro.id === "pro-1" || pro.name.toLowerCase() === (user.name || "").toLowerCase());
-  const saved = useAppSelector((state) => state.features.favorites.includes(pro.id));
+  const isOwner =
+    user?.role === "ARTISAN" &&
+    (pro.id === "pro-1" ||
+      pro.name.toLowerCase() === (user.name || "").toLowerCase());
+  const saved = useAppSelector((state) =>
+    state.features.favorites.includes(pro.id),
+  );
   const image = photos.services[pro.categorySlug] || photos.banner;
   const href = `/browse-pros/${pro.id}`;
 
@@ -44,7 +42,6 @@ export function ProCard({
       return;
     }
     if (!access.canSavePro) return;
-    dispatch(toggleFavorite(pro.id));
   }
 
   return (
@@ -85,12 +82,19 @@ export function ProCard({
           disabled={access.audience === "pro"}
           className={cn(
             "absolute right-3.5 top-3.5 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/95 backdrop-blur-md shadow-xs border border-white/60 transition-transform hover:scale-105 active:scale-95",
-            saved && access.canSavePro ? "text-error" : "text-muted hover:text-title",
+            saved && access.canSavePro
+              ? "text-error"
+              : "text-muted hover:text-title",
             access.audience === "pro" && "opacity-50",
           )}
           onClick={onSave}
         >
-          <Heart className={cn("h-4 w-4", saved && access.canSavePro && "fill-current")} />
+          <Heart
+            className={cn(
+              "h-4 w-4",
+              saved && access.canSavePro && "fill-current",
+            )}
+          />
         </button>
       </div>
 
@@ -106,7 +110,10 @@ export function ProCard({
         {/* Pro Name as Main Title with Verified Shield */}
         <h3 className="mt-2.5 font-display text-[17px] font-semibold text-title tracking-tight leading-snug transition-colors group-hover:text-primary flex items-center gap-1.5">
           <span className="truncate">{pro.name}</span>
-          <span title="Screened & Verified Professional" className="inline-flex shrink-0">
+          <span
+            title="Screened & Verified Professional"
+            className="inline-flex shrink-0"
+          >
             <ShieldCheck
               className="h-4 w-4 text-primary fill-primary/15"
               aria-label="Verified Pro"
@@ -117,11 +124,15 @@ export function ProCard({
         {/* Location Row (No Company Name) */}
         <p className="mt-1 flex items-center gap-1.5 font-sans text-xs text-muted truncate">
           <MapPin className="h-3 w-3 shrink-0 text-muted" />
-          <span>{pro.city}, {pro.state}</span>
+          <span>
+            {pro.city}, {pro.state}
+          </span>
           {distance != null && (
             <>
               <span className="text-muted/40">·</span>
-              <span className="font-medium text-title">{distance < 1 ? "<1" : distance} mi away</span>
+              <span className="font-medium text-title">
+                {distance < 1 ? "<1" : distance} mi away
+              </span>
             </>
           )}
         </p>
@@ -134,7 +145,9 @@ export function ProCard({
           </div>
           <span className="text-muted">({pro.reviewCount})</span>
           <span className="h-1 w-1 rounded-full bg-muted/40" />
-          <span className="font-medium text-copy">{pro.jobsCompleted} jobs</span>
+          <span className="font-medium text-copy">
+            {pro.jobsCompleted} jobs
+          </span>
         </div>
       </div>
 

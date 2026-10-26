@@ -4,7 +4,12 @@ import type { User, UserRole } from "@/types";
 export type AccessAudience = "guest" | "homeowner" | "pro" | "admin";
 
 export type ProGate = {
-  applicationStatus: "draft" | "submitted" | "needs_info" | "rejected" | "cleared";
+  applicationStatus:
+    | "draft"
+    | "submitted"
+    | "needs_info"
+    | "rejected"
+    | "cleared";
   membershipActive: boolean;
   membershipPaused: boolean;
   membershipCancelled: boolean;
@@ -39,7 +44,7 @@ export type RoleAccess = {
 
 export function audienceFromUser(user: User | null): AccessAudience {
   if (!user) return "guest";
-  if (user.role === "pro") return "pro";
+  if (user.role === "ARTISAN") return "pro";
   return "homeowner";
 }
 
@@ -58,11 +63,14 @@ export function signupHref(next?: string) {
 
 export function postJobHref(user: User | null) {
   if (!user) return loginHref({ next: "/account/post-job" });
-  if (user.role === "pro") return "/pro/jobs";
+  if (user.role === "ARTISAN") return "/pro/jobs";
   return "/account/post-job";
 }
 
-export function resolveRoleAccess(user: User | null, pro?: Partial<ProGate>): RoleAccess {
+export function resolveRoleAccess(
+  user: User | null,
+  pro?: Partial<ProGate>,
+): RoleAccess {
   const audience = audienceFromUser(user);
 
   if (audience === "guest") {
@@ -96,7 +104,8 @@ export function resolveRoleAccess(user: User | null, pro?: Partial<ProGate>): Ro
       canSeeContact: false,
       canProMessage: false,
       canManageMembership: false,
-      notice: "Homeowner plan is free. No LocalHomeFix project fee or membership.",
+      notice:
+        "Homeowner plan is free. No LocalHomeFix project fee or membership.",
       blockedReason: null,
     };
   }
@@ -104,11 +113,14 @@ export function resolveRoleAccess(user: User | null, pro?: Partial<ProGate>): Ro
   const status = pro?.applicationStatus ?? "submitted";
   const cleared = status === "cleared";
   const membershipOk =
-    Boolean(pro?.membershipActive) && !pro?.membershipPaused && !pro?.membershipCancelled;
+    Boolean(pro?.membershipActive) &&
+    !pro?.membershipPaused &&
+    !pro?.membershipCancelled;
   const contactOk = cleared && membershipOk && Boolean(pro?.contactUnlocked);
 
   let blockedReason: string | null = null;
-  let notice: string | null = "One pro membership: $19.99/mo after 3 free months. No repair packages.";
+  let notice: string | null =
+    "One pro membership: $19.99/mo after 3 free months. No repair packages.";
 
   if (!cleared) {
     blockedReason =
@@ -127,10 +139,12 @@ export function resolveRoleAccess(user: User | null, pro?: Partial<ProGate>): Ro
     blockedReason = "Membership paused — resume to quote and unlock contact.";
     notice = blockedReason;
   } else if (pro.membershipCancelled) {
-    blockedReason = "Membership cancelled — restart to quote and unlock contact.";
+    blockedReason =
+      "Membership cancelled — restart to quote and unlock contact.";
     notice = blockedReason;
   } else if (!contactOk) {
-    notice = "Membership active. Contact unlocks after clearance (demo may still gate).";
+    notice =
+      "Membership active. Contact unlocks after clearance (demo may still gate).";
   }
 
   return {

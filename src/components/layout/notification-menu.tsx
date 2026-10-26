@@ -23,7 +23,7 @@ export function NotificationMenu({ user }: { user: User }) {
   const notifications = useMemo(
     () =>
       allNotifications.filter(
-        (n) => n.role === user.role || n.role === "all",
+        (n) => n.role === user.role as any || n.role === "all",
       ),
     [allNotifications, user.role],
   );
@@ -62,7 +62,7 @@ export function NotificationMenu({ user }: { user: User }) {
 
   function handleMarkAllRead(e: React.MouseEvent) {
     e.stopPropagation();
-    dispatch(markAllNotificationsRead(user.role));
+    dispatch(markAllNotificationsRead(user.role as any));
   }
 
   return (

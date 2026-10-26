@@ -1,4 +1,4 @@
-export type UserRole = "homeowner" | "pro" | "admin";
+export type UserRole = "USER" | "ARTISAN" | "SUPER_ADMIN" | "ADMIN" | "homeowner" | "pro" | "admin";
 
 /** Job lifecycle — separate from per-offer status */
 export type JobStatus =
@@ -24,7 +24,11 @@ export type OfferStatus =
   | "withdrawn"
   | "expired";
 
-export type QuotePriceType = "fixed" | "estimate" | "hourly" | "time_and_materials";
+export type QuotePriceType =
+  | "fixed"
+  | "estimate"
+  | "hourly"
+  | "time_and_materials";
 
 export type Urgency = "asap" | "this_week" | "two_weeks" | "flexible";
 
@@ -40,7 +44,10 @@ export type ClearanceStatus = "cleared" | "pending" | "rejected" | "suspended";
 
 export type ChangeRequestStatus = "pending" | "approved" | "rejected";
 
-export type BookingStatus = "pending_schedule" | "confirmed" | "reschedule_requested";
+export type BookingStatus =
+  | "pending_schedule"
+  | "confirmed"
+  | "reschedule_requested";
 
 /** How the homeowner will pay the pro — never collected by HomeFix */
 export type DirectPaymentMethod =
@@ -255,3 +262,15 @@ export interface IntakeDraft {
   followUps: string[];
   answers?: Record<string, string>;
 }
+
+// Compatibility types for next-fetch actions
+export type CartData = any;
+export type AddToCartPayload = any;
+export type IFAQ = any;
+export type FAQListParams = any;
+export type ForumCategory = any;
+export type IOrder = any;
+export type Partner = any;
+export type PartnerLogo = any;
+export type PartnerListParams = any;
+export type TrialEligibility = any;

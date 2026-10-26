@@ -14,15 +14,14 @@ export default function HomePage() {
   return (
     <>
       <HomeHero />
-      <HomeMarquee />
       <HomeAbout />
-      <HomeServices />
-      <HomeProcess />
+      {/* <HomeServices /> */}
+      {/* <HomeProcess />
       <HomeWhyChoose />
       <HomePros />
       <PricingPlans />
       <FaqSection />
-      <HomeCta />
+      <HomeCta /> */}
     </>
   );
 }

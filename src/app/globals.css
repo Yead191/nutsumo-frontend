@@ -35,10 +35,10 @@
 }
 
 :root {
-  --primary: #0d56d6;
-  --primary-hover: #00a1de;
+  --primary: #FE375D;
+  --primary-hover: #e0284e;
   --primary-foreground: #ffffff;
-  --secondary: #00a1de;
+  --secondary: #FE375D;
   --secondary-foreground: #ffffff;
   --accent: #fa951f;
   --accent-foreground: #00151d;
@@ -57,7 +57,7 @@
   --ink: #01133c;
   --radius: 10px;
   --radius-lg: 14px;
-  --container: 1280px;
+  --container: 80rem;
   --section: 120px;
   --section-sm: 80px;
 }
@@ -82,8 +82,8 @@
   --color-success: var(--success);
   --color-error: var(--error);
   --color-warning: var(--warning);
-  --font-sans: var(--font-inter), "Inter Display", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-display: var(--font-geist), "Geist", "Geist Placeholder", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: var(--font-bricolage), "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-bricolage), "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-geist: var(--font-geist), "Geist", "Geist Placeholder", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-inter-display: var(--font-inter), "Inter Display", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --radius-md: var(--radius);
@@ -284,8 +284,20 @@ button.border-white:not(.bg-white) {
 }
 
 .container-site {
-  width: min(calc(100% - 40px), var(--container));
+  width: 100%;
+  max-width: 80rem; /* max-w-7xl */
   margin-inline: auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .container-site {
+    padding-inline: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container-site {
+    padding-inline: 2rem;
+  }
 }
 
 .bg-dots {
@@ -417,4 +429,46 @@ button.border-white:not(.bg-white) {
     font-size: 14px;
     line-height: 24px;
   }
+}
+/* Nutsumo Floating Glass Navbar */
+.glass-nav-hero {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.glass-nav-scrolled {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+}
+
+
+/* Nutsumo Floating Glass Navbar & Nav Items with Blur Effect */
+.nav-glass-blur {
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08), inset 0 1px 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.nav-glass-scrolled {
+  background: rgba(248, 250, 252, 0.8) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border: 1px solid rgba(226, 232, 240, 0.85) !important;
+  box-shadow: 0 4px 16px 0 rgba(15, 23, 42, 0.04) !important;
+}
+
+.navbar-header-glass {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.05) !important;
 }

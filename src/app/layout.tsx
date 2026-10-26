@@ -1,27 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Inter } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import { Providers } from "@/app/providers";
 import "./globals.css";
 
-const geist = Geist({
-  variable: "--font-geist",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const inter = Inter({
-  variable: "--font-inter",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "LocalHomeFix — Find reviewed local home service pros",
-    template: "%s · LocalHomeFix",
+    default: "Nutsumo — The Trusted Marketplace for Artisans",
+    template: "%s · Nutsumo",
   },
   description:
-    "Browse reviewed local pros free, post a home repair request, compare quotes in one place, and pay the professional directly.",
+    "Find verified local artisans and job opportunities. Earned trust through good work with zero fake reviews and protected payments.",
 };
 
 export default function RootLayout({
@@ -30,11 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${geist.variable} ${inter.variable} h-full`}>
-      <body className="min-h-full bg-background font-sans antialiased">
+    <html lang="en" data-scroll-behavior="smooth" className={`${bricolage.variable} h-full`}>
+      <body className="min-h-full bg-background font-sans antialiased text-slate-800">
         <Providers>{children}</Providers>
       </body>
     </html>
   );
 }
-

@@ -85,7 +85,7 @@ const socials = [
 export function Footer() {
   return (
     <footer className="bg-title text-white">
-      <div className="container-site grid gap-10 border-b border-white/10 py-16 md:grid-cols-2 lg:grid-cols-[1.2fr_repeat(4,0.7fr)]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-10 border-b border-white/10 py-16 md:grid-cols-2 lg:grid-cols-[1.2fr_repeat(4,0.7fr)]">
         <div>
           <Logo variant="dark" size="lg" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-white/75">
@@ -121,8 +121,8 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="container-site py-5 text-center text-xs text-white/50">
-        <p>© {new Date().getFullYear()} LocalHomeFix Inc.</p>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 text-center text-xs text-white/50">
+        <p>© {new Date().getFullYear()} Nutsumo Inc.</p>
       </div>
     </footer>
   );

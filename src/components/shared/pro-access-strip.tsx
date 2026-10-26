@@ -28,7 +28,7 @@ export function ProAccessStrip() {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Badge>{appLabels[applicationStatus]}</Badge>
+      <Badge>{(appLabels as any)[applicationStatus] || applicationStatus}</Badge>
       <Badge>{membershipLabel}</Badge>
       <Badge>{contactUnlocked && access.canSeeContact ? "Contact on" : "Contact locked"}</Badge>
       {access.blockedReason ? (

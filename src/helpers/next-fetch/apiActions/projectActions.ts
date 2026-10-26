@@ -102,7 +102,7 @@ export async function getProjects(params?: {
   }
 
   // Fallback to demo projects if backend has no records yet
-  let fallbackData: Project[] = FEATURED_PROJECTS.map((p) => ({
+  let fallbackData: Project[] = FEATURED_PROJECTS.map((p: any) => ({
     _id: p.id,
     id: p.id,
     slug: p.slug,
@@ -125,12 +125,12 @@ export async function getProjects(params?: {
   }));
 
   if (params?.category && params.category !== "All") {
-    fallbackData = fallbackData.filter((p) => p.category === params.category);
+    fallbackData = fallbackData.filter((p: any) => p.category === params.category);
   }
   if (params?.searchTerm) {
     const term = params.searchTerm.toLowerCase();
     fallbackData = fallbackData.filter(
-      (p) =>
+      (p: any) =>
         p.name.toLowerCase().includes(term) ||
         p.description.toLowerCase().includes(term) ||
         p.location.toLowerCase().includes(term),
@@ -170,7 +170,7 @@ export async function getProjectById(
     const listRes = await getProjects({ limit: 100 });
     if (listRes.success && Array.isArray(listRes.data)) {
       const match = listRes.data.find(
-        (p) =>
+        (p: any) =>
           p._id === idOrSlug ||
           p.id === idOrSlug ||
           p.slug === idOrSlug ||
@@ -184,7 +184,7 @@ export async function getProjectById(
 
   // Check demo data directly
   const demoMatch = FEATURED_PROJECTS.find(
-    (p) => p.slug === idOrSlug || p.id === idOrSlug,
+    (p: any) => p.slug === idOrSlug || p.id === idOrSlug,
   );
   if (demoMatch) {
     return {
