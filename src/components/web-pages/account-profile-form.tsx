@@ -93,6 +93,9 @@ export function AccountProfileForm() {
         avatar: avatar || current.avatar,
       }),
     );
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth-changed"));
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3500);
   }

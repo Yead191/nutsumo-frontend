@@ -1,6 +1,9 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { nextFetch, FetchResponse } from "../core/NextFetch";
+import { revalidateTags } from "../core/revalidateTags";
 
 export interface GoogleLoginResponseData {
   createToken: string;
@@ -19,4 +22,26 @@ export async function loginWithGoogle(
     method: "POST",
     body: { idToken },
   });
+}
+
+/**
+ * Clears authentication cookies on the server and revalidates layout and user profile tags.
+ */
+export async function logoutUser(): Promise<{ success: boolean }> {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("accessToken");
+    cookieStore.delete("role");
+  } catch {
+    // Ignore if called in read-only phase
+  }
+
+  try {
+    revalidateTags(["user-profile"]);
+    revalidatePath("/", "layout");
+  } catch {
+    // Ignore in case of environment limitation
+  }
+
+  return { success: true };
 }

@@ -153,8 +153,12 @@ export function SignupForm() {
       if (res?.success) {
         const token = (res.data as any)?.createToken || (res.data as any)?.accessToken || (res.data as any)?.token;
         const userRole = res.data?.role || "USER";
-        if (token) Cookies.set("accessToken", token, { expires: 7 });
-        if (userRole) Cookies.set("role", userRole, { expires: 7 });
+        if (token) Cookies.set("accessToken", token, { expires: 7, path: "/" });
+        if (userRole) Cookies.set("role", userRole, { expires: 7, path: "/" });
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("auth-changed"));
+        }
 
         toast.success("Signed up with Google successfully!");
         router.push("/");

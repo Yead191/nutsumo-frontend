@@ -141,6 +141,9 @@ export function ProProfileForm() {
         zip: formData.zip,
       })
     );
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth-changed"));
+    }
     showToast("Listing updated.");
   }
 

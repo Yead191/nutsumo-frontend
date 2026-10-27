@@ -29,9 +29,10 @@ function getInitials(name?: string) {
 
 interface ProfileMenuProps {
   user: any;
+  onLogout?: () => void | Promise<void>;
 }
 
-export function ProfileMenu({ user }: ProfileMenuProps) {
+export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const menuRef = React.useRef<HTMLDivElement>(null);
@@ -47,11 +48,33 @@ export function ProfileMenu({ user }: ProfileMenuProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsOpen(false);
+    if (onLogout) {
+      await onLogout();
+      return;
+    }
+
+    Cookies.remove("accessToken", { path: "/" });
+    Cookies.remove("role", { path: "/" });
     Cookies.remove("accessToken");
     Cookies.remove("role");
+
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("lhf-auth-role");
+    } catch {}
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth-changed"));
+    }
+
+    try {
+      const { logoutUser } = await import("@/helpers/next-fetch/apiActions/authActions");
+      await logoutUser();
+    } catch {}
+
     toast.success("Logged out successfully");
-    setIsOpen(false);
     router.push("/");
     router.refresh();
   };

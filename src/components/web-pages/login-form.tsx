@@ -33,7 +33,7 @@ export function LoginForm() {
       setError("Please enter both email and password.");
       return;
     }
-
+    console.log("yoyoy");
     try {
       setIsLoading(true);
       setError("");
@@ -42,7 +42,7 @@ export function LoginForm() {
         method: "POST",
         body: { email, password },
       });
-
+      console.log(response, "auth");
       // Handle unverified account
       if (
         !response?.success &&
@@ -51,7 +51,7 @@ export function LoginForm() {
       ) {
         toast.info("Please verify your email to activate your account.");
         router.push(
-          "/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify"
+          "/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify",
         );
         return;
       }
@@ -65,9 +65,9 @@ export function LoginForm() {
 
       // Successful login
       const accessToken =
-        response.data?.accessToken ||
+        response.data?.createToken ||
         response.data?.token ||
-        response.data?.data?.accessToken;
+        response.data?.data?.createToken;
       const role =
         response.data?.role ||
         response.data?.user?.role ||
@@ -75,10 +75,14 @@ export function LoginForm() {
         "USER";
 
       if (accessToken) {
-        Cookies.set("accessToken", accessToken, { expires: 7 });
+        Cookies.set("accessToken", accessToken, { expires: 7, path: "/" });
       }
       if (role) {
-        Cookies.set("role", role, { expires: 7 });
+        Cookies.set("role", role, { expires: 7, path: "/" });
+      }
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth-changed"));
       }
 
       toast.success(response.message || "Welcome back to Nutsumo!");
@@ -99,10 +103,17 @@ export function LoginForm() {
       setIsGoogleLoading(true);
       const res = await loginWithGoogle(tokenResponse.access_token);
       if (res?.success) {
-        const token = (res.data as any)?.createToken || (res.data as any)?.accessToken || (res.data as any)?.token;
+        const token =
+          (res.data as any)?.createToken ||
+          (res.data as any)?.accessToken ||
+          (res.data as any)?.token;
         const role = res.data?.role || "USER";
-        if (token) Cookies.set("accessToken", token, { expires: 7 });
-        if (role) Cookies.set("role", role, { expires: 7 });
+        if (token) Cookies.set("accessToken", token, { expires: 7, path: "/" });
+        if (role) Cookies.set("role", role, { expires: 7, path: "/" });
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("auth-changed"));
+        }
 
         toast.success(res.message || "Logged in with Google successfully!");
         router.push(redirectTo);
@@ -126,7 +137,9 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Brand title */}
-      <p className="text-sm font-bold text-slate-900 tracking-tight mb-2">Nutsumo</p>
+      <p className="text-sm font-bold text-slate-900 tracking-tight mb-2">
+        Nutsumo
+      </p>
 
       {/* Red Eyebrow */}
       <span className="block text-xs font-bold uppercase tracking-wider text-[#FE375D] mb-1.5">

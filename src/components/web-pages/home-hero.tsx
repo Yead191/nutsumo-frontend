@@ -37,7 +37,7 @@ export function HomeHero() {
           }}
         />
 
-        <div className="relative z-2 flex min-h-[640px] sm:min-h-[720px] lg:min-h-[780px] max-w-7xl mx-auto flex-col justify-center px-6 pt-28 pb-16 sm:px-12 sm:pt-36 sm:pb-20 lg:px-16">
+        <div className="relative z-2 flex min-h-[640px] sm:min-h-[720px] lg:min-h-[780px] max-w-7xl mx-auto flex-col justify-center px-6 pt-28 pb-16 sm:px-8 sm:pt-36 sm:pb-20 ">
           <div className="max-w-2xl">
             <h1 className="font-display text-[44px] sm:text-[60px] lg:text-[72px] font-bold text-white leading-[1.05] tracking-tight">
               Trust is earned

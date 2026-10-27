@@ -1,14 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Menu, X, ChevronDown, ArrowRight, Plus, Briefcase, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ArrowRight,
+  Plus,
+  Briefcase,
+  LogOut,
+} from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { Logo } from "@/components/ui/logo";
 import { ProfileMenu } from "@/components/layout/profile-menu";
 import { cn } from "@/lib/cn";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -22,6 +31,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ user: initialUser }: NavbarProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [open, setOpen] = useState(false);
@@ -29,26 +39,85 @@ export function Navbar({ user: initialUser }: NavbarProps) {
   const [user, setUser] = useState(initialUser);
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(initialUser));
 
-  // Sync client-side cookies & profile if initialUser wasn't populated
+  // Centralized logout handler that clears client & server session immediately
+  const handleLogout = useCallback(async () => {
+    // 1. Immediately update UI state so Navbar revalidates instantly with zero delay
+    setUser(null);
+    setIsAuthenticated(false);
+    setOpen(false);
+
+    // 2. Remove auth cookies across all paths
+    Cookies.remove("accessToken", { path: "/" });
+    Cookies.remove("role", { path: "/" });
+    Cookies.remove("accessToken");
+    Cookies.remove("role");
+
+    // 3. Clear cached local session
+    try {
+      localStorage.removeItem("user");
+      localStorage.removeItem("lhf-auth-role");
+    } catch {}
+
+    // 4. Notify all components listening to auth state
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth-changed"));
+    }
+
+    // 5. Server-side session deletion & cache invalidation
+    try {
+      const { logoutUser } = await import("@/helpers/next-fetch/apiActions/authActions");
+      await logoutUser();
+    } catch {}
+
+    toast.success("Logged out successfully");
+
+    // 6. Navigate to home and revalidate server components
+    router.push("/");
+    router.refresh();
+  }, [router]);
+
+  // Sync state whenever initialUser prop from server component updates
   useEffect(() => {
+    setUser(initialUser ?? null);
+    const token = Cookies.get("accessToken");
+    setIsAuthenticated(Boolean(initialUser || token));
+  }, [initialUser]);
+
+  // Synchronize client-side cookies & profile reactively
+  const syncUser = useCallback(() => {
     const token = Cookies.get("accessToken");
     const hasToken = Boolean(token);
     setIsAuthenticated(hasToken);
 
-    if (hasToken && !user) {
-      import("@/helpers/next-fetch/apiActions/profileActions")
-        .then(({ getMyProfile }) => getMyProfile())
-        .then((res) => {
-          if (res?.success && res.data) {
-            setUser(res.data);
-          }
-        })
-        .catch(() => {});
-    }
     if (!hasToken) {
       setUser(null);
+      return;
     }
-  }, [pathname, user]);
+
+    import("@/helpers/next-fetch/apiActions/profileActions")
+      .then(({ getMyProfile }) => getMyProfile())
+      .then((res) => {
+        if (res?.success && res.data) {
+          setUser(res.data);
+        } else if (res?.isBlocked) {
+          handleLogout();
+        }
+      })
+      .catch(() => {});
+  }, [handleLogout]);
+
+  useEffect(() => {
+    syncUser();
+
+    const onAuthEvent = () => syncUser();
+    window.addEventListener("auth-changed", onAuthEvent);
+    window.addEventListener("storage", onAuthEvent);
+
+    return () => {
+      window.removeEventListener("auth-changed", onAuthEvent);
+      window.removeEventListener("storage", onAuthEvent);
+    };
+  }, [pathname, syncUser]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,15 +140,6 @@ export function Navbar({ user: initialUser }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname, isHome]);
 
-  const handleMobileLogout = () => {
-    Cookies.remove("accessToken");
-    Cookies.remove("role");
-    setUser(null);
-    setIsAuthenticated(false);
-    setOpen(false);
-    toast.success("Logged out successfully");
-  };
-
   const isArtisan = user?.role === "ARTISAN";
   const myJobsHref = isArtisan ? "/pro/jobs" : "/account/bookings";
   const postJobHref = "/account/post-job";
@@ -88,7 +148,9 @@ export function Navbar({ user: initialUser }: NavbarProps) {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300",
-        isOverHero ? "bg-transparent py-4 sm:py-5" : "navbar-header-glass py-3"
+        isOverHero
+          ? "bg-transparent py-4 sm:py-5 px-4 md:px-6"
+          : "navbar-header-glass py-3",
       )}
       style={
         !isOverHero
@@ -101,14 +163,22 @@ export function Navbar({ user: initialUser }: NavbarProps) {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <Logo size="md" />
+        <Image
+          src="/logo.png"
+          alt="Nutsumo"
+          width={180}
+          height={60}
+          priority
+          draggable={false}
+          className={"w-40 h-fit object-contain"}
+        />
 
         {/* Center Floating Nav Pill with Frosted Glass & Blur Effect */}
         <nav className="hidden md:flex items-center">
           <div
             className={cn(
               "flex items-center gap-1.5 rounded-full p-1.5 transition-all duration-300",
-              isOverHero ? "nav-glass-blur" : "nav-glass-scrolled"
+              isOverHero ? "nav-glass-blur" : "nav-glass-scrolled",
             )}
             style={{
               backdropFilter: isOverHero
@@ -133,7 +203,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
                     "inline-flex items-center gap-1 px-5 py-2 text-sm font-semibold rounded-full transition-all duration-200",
                     isActive
                       ? "bg-[#FE375D] text-white shadow-sm"
-                      : "text-slate-800 hover:text-[#FE375D] hover:bg-white/40"
+                      : "text-slate-800 hover:text-[#FE375D] hover:bg-white/40",
                   )}
                 >
                   <span>{link.label}</span>
@@ -171,7 +241,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
               </Link>
 
               {/* Profile Avatar & Menu */}
-              <ProfileMenu user={user} />
+              <ProfileMenu user={user} onLogout={handleLogout} />
             </>
           ) : (
             <>
@@ -220,7 +290,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
                   "px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors",
                   pathname === link.href
                     ? "bg-[#FE375D] text-white"
-                    : "text-slate-700 hover:bg-slate-50"
+                    : "text-slate-700 hover:bg-slate-50",
                 )}
               >
                 {link.label}
@@ -265,7 +335,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
 
                 <button
                   type="button"
-                  onClick={handleMobileLogout}
+                  onClick={handleLogout}
                   className="text-center py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl cursor-pointer"
                 >
                   Sign out
