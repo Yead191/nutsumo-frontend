@@ -3,10 +3,6 @@
 import { X, Star, ShieldCheck, Clock, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { getPro } from "@/Mockdata";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { selectQuotesForJob } from "@/lib/marketplace";
-import { hireQuote } from "@/redux/slices/marketplaceSlice";
-import { addNotification, setJobStatus } from "@/redux/slices/featuresSlice";
 import type { Quote } from "@/types";
 
 const priceLabel = { fixed: "Fixed", estimate: "Estimate", hourly: "Hourly", time_and_materials: "T&M" } as const;
@@ -21,7 +17,7 @@ function ExpiryChip({ expiresAt }: { expiresAt?: string }) {
 }
 
 function ProRatingRow({ rating, reviewCount }: { rating?: number; reviewCount?: number }) {
-  // ponytail: collapses to nothing when 0 reviews � no "0 reviews" shown publicly
+  // ponytail: collapses to nothing when 0 reviews  no "0 reviews" shown publicly
   if (!reviewCount) return null;
   return (
     <span className="flex items-center gap-1 text-sm font-semibold text-title">
@@ -41,39 +37,7 @@ export function QuoteComparePanel({
   jobId: string;
   onClose: () => void;
 }) {
-  const dispatch = useAppDispatch();
-  const siblingIds = useAppSelector((state) => selectQuotesForJob(state, jobId).map((item) => item.id));
-  const homeownerName = useAppSelector((state) => state.auth.user?.name);
-
   function accept(quote: Quote) {
-    const pro = getPro(quote.proId);
-    dispatch(
-      hireQuote({
-        jobId,
-        quoteId: quote.id,
-        proId: quote.proId,
-        agreedPrice: quote.amount,
-        scopeSnapshot: quote.scope,
-        homeownerName,
-        paymentTerms: quote.paymentTerms,
-        siblingQuoteIds: siblingIds,
-      }),
-    );
-    dispatch(setJobStatus({ jobId, status: "hired" }));
-    dispatch(addNotification({
-      title: "Quotation accepted",
-      body: `You selected ${pro?.name ?? "the professional"}. Confirm schedule and payment method on the job.`,
-      href: `/account/jobs/${jobId}`,
-      createdAt: "Just now",
-      role: "homeowner",
-    }));
-    dispatch(addNotification({
-      title: "You were hired",
-      body: `A homeowner accepted your $${quote.amount} quotation.`,
-      href: `/pro/jobs/${jobId}`,
-      createdAt: "Just now",
-      role: "pro",
-    }));
     onClose();
   }
 

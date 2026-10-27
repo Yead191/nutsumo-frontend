@@ -2,8 +2,6 @@
 import { UserRole } from "@/types";
 
 import { resolveRoleAccess } from "@/lib/role-access";
-import { useAppSelector } from "@/redux/hooks";
-
 export function useRoleAccess() {
   const user = {
     name: "yead",
@@ -12,21 +10,11 @@ export function useRoleAccess() {
     email: "yead191@gmail.com",
   };
   const applicationStatus = "submitted";
-  const membershipActive = useAppSelector(
-    (state) => state.marketplace.membershipActive,
-  );
-  const membershipPaused = useAppSelector(
-    (state) => state.features.membershipPaused,
-  );
-  const membershipCancelled = useAppSelector(
-    (state) => state.features.membershipCancelled,
-  );
-  const subscriptionPlan = useAppSelector(
-    (state) => state.features.subscriptionPlan,
-  );
-  const contactUnlocked = useAppSelector(
-    (state) => state.features.contactUnlocked,
-  );
+  const membershipActive = true;
+  const membershipPaused = false;
+  const membershipCancelled = false;
+  const subscriptionPlan: string = "monthly";
+  const contactUnlocked = true;
 
   const isEffectivelyActive =
     membershipActive || (subscriptionPlan === "trial" && !membershipCancelled);

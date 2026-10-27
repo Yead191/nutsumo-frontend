@@ -9,9 +9,6 @@ import { Field, NativeSelect, TextArea, TextField } from "@/components/ui/field"
 import { AuthLinks } from "@/components/web-pages/auth-links";
 import { PasswordField } from "@/components/ui/password-field";
 import { categories } from "@/Mockdata";
-import { loginAs } from "@/redux/slices/authSlice";
-import { saveApplicationDraft, submitApplication } from "@/redux/slices/featuresSlice";
-import { useAppDispatch } from "@/redux/hooks";
 
 const steps = ["Account", "Business", "Service area", "Background check"];
 type CheckStatus = "idle" | "running" | "clear";
@@ -46,7 +43,6 @@ export default function ProRegisterPage() {
   const [error, setError] = useState("");
   const [consent, setConsent] = useState(false);
   const [checkStatus, setCheckStatus] = useState<CheckStatus>("idle");
-  const dispatch = useAppDispatch();
   const router = useRouter();
 
   function patch(partial: Partial<FormState>) {
@@ -73,29 +69,6 @@ export default function ProRegisterPage() {
       setError("Run the background check to finish applying.");
       return;
     }
-    dispatch(
-      saveApplicationDraft({
-        ...Object.fromEntries(
-          Object.entries(form).map(([key, value]) => [key, String(value)]),
-        ),
-        savedAt: new Date().toISOString(),
-        backgroundCheck: "clear",
-      }),
-    );
-    dispatch(submitApplication());
-    dispatch(
-      loginAs({
-        role: "pro",
-        profile: {
-          name: form.name.trim() || "Luis Ortega",
-          email: form.email.trim() || "pro@localfix.com",
-          phone: form.phone.trim() || "(512) 555-0144",
-          zip: form.serviceZip.trim() || "78701",
-          city: "Austin",
-          state: "TX",
-        },
-      }),
-    );
     router.push("/pro/application?applied=1");
   }
 

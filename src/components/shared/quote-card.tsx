@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Calendar, ChevronRight, Clock, ShieldCheck, Star } from "lucide-react";
 import { getPro, offerStatusLabels } from "@/Mockdata";
-import { useAppSelector } from "@/redux/hooks";
 import type { Quote } from "@/types";
 import { cn } from "@/lib/cn";
 
@@ -19,9 +18,8 @@ export function QuoteCard({
   quote: Quote;
   href: string;
 }) {
-  const hiredId = useAppSelector((state) => state.marketplace.hiredByJob[quote.jobId]);
   const pro = getPro(quote.proId);
-  const hired = hiredId === quote.id;
+  const hired = quote.status === "accepted";
   const closed = quote.status === "rejected" || quote.status === "withdrawn" || quote.status === "expired";
   const status = hired
     ? "Hired"

@@ -16,14 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, TextField } from "@/components/ui/field";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { updateUser } from "@/redux/slices/authSlice";
-import {
-  addAddress,
-  removeAddress,
-  updateAddress,
-  type SavedAddress,
-} from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { demoHomeowner, seedAddresses } from "@/Mockdata";
+import type { SavedAddress } from "@/types";
 
 type AddressDraft = Omit<SavedAddress, "id"> & { id?: string; isPrimary?: boolean };
 
@@ -39,10 +33,9 @@ const emptyDraft = (): AddressDraft => ({
 const QUICK_LABELS = ["Home", "Rental Property", "Office", "Condo"];
 
 export function AccountProfileForm() {
-  const user = useAppSelector((state) => state.auth.user);
-  const dispatch = useAppDispatch();
+  const [user, setUser] = useState(demoHomeowner);
   const fileInput = useRef<HTMLInputElement>(null);
-  const addresses = useAppSelector((state) => state.features.addresses);
+  const [addresses, setAddresses] = useState<SavedAddress[]>(seedAddresses);
   const [customAvatar, setCustomAvatar] = useState<string | null>(null);
   const avatar = customAvatar ?? user?.avatar ?? "";
   const [saved, setSaved] = useState(false);
@@ -51,7 +44,6 @@ export function AccountProfileForm() {
   const [draft, setDraft] = useState<AddressDraft>(emptyDraft());
   const [addrError, setAddrError] = useState("");
 
-  if (!user) return null;
   const current = user;
 
   function isAddressPrimary(addr: SavedAddress, index: number) {
@@ -86,16 +78,12 @@ export function AccountProfileForm() {
   function submitProfile(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    dispatch(
-      updateUser({
-        name: String(data.get("name") ?? current.name).trim(),
-        phone: String(data.get("phone") ?? "").trim(),
-        avatar: avatar || current.avatar,
-      }),
-    );
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("auth-changed"));
-    }
+    setUser((prev) => ({
+      ...prev,
+      name: String(data.get("name") ?? current.name).trim(),
+      phone: String(data.get("phone") ?? "").trim(),
+      avatar: avatar || current.avatar,
+    }));
     setSaved(true);
     setTimeout(() => setSaved(false), 3500);
   }
@@ -126,14 +114,13 @@ export function AccountProfileForm() {
   }
 
   function makePrimary(addr: SavedAddress) {
-    dispatch(
-      updateUser({
-        street: addr.street,
-        city: addr.city,
-        state: addr.state,
-        zip: addr.zip,
-      }),
-    );
+    setUser((prev) => ({
+      ...prev,
+      street: addr.street,
+      city: addr.city,
+      state: addr.state,
+      zip: addr.zip,
+    }));
   }
 
   function handleDeleteAddress(id: string) {
@@ -143,21 +130,20 @@ export function AccountProfileForm() {
       current.street &&
       target.street.trim().toLowerCase() === current.street.trim().toLowerCase();
 
-    dispatch(removeAddress(id));
+    const remaining = addresses.filter((a) => a.id !== id);
+    setAddresses(remaining);
 
     if (wasPrimary) {
-      const remaining = addresses.filter((a) => a.id !== id);
       if (remaining.length > 0) {
-        dispatch(
-          updateUser({
-            street: remaining[0].street,
-            city: remaining[0].city,
-            state: remaining[0].state,
-            zip: remaining[0].zip,
-          }),
-        );
+        setUser((prev) => ({
+          ...prev,
+          street: remaining[0].street,
+          city: remaining[0].city,
+          state: remaining[0].state,
+          zip: remaining[0].zip,
+        }));
       } else {
-        dispatch(updateUser({ street: "", city: "", state: "", zip: "" }));
+        setUser((prev) => ({ ...prev, street: "", city: "", state: "", zip: "" }));
       }
     }
   }
@@ -193,14 +179,20 @@ export function AccountProfileForm() {
     setAddrError("");
 
     if (editingId && editingId !== "new") {
-      dispatch(updateAddress({ id: editingId, label, street, city, state, zip }));
+      setAddresses((prev) =>
+        prev.map((a) =>
+          a.id === editingId ? { ...a, label, street, city, state, zip } : a,
+        ),
+      );
     } else {
-      dispatch(addAddress({ label, street, city, state, zip }));
+      setAddresses((prev) => [
+        ...prev,
+        { id: `addr-${Date.now()}`, label, street, city, state, zip },
+      ]);
     }
 
-    // Sync primary address with user profile if marked or if it's the only address
     if (draft.isPrimary || addresses.length === 0) {
-      dispatch(updateUser({ street, city, state, zip }));
+      setUser((prev) => ({ ...prev, street, city, state, zip }));
     }
 
     cancelEdit();

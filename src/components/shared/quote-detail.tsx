@@ -22,16 +22,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, NativeSelect, TextField } from "@/components/ui/field";
-import { getPro, offerStatusLabels } from "@/Mockdata";
+import { getPro, offerStatusLabels, demoHomeowner } from "@/Mockdata";
 import { paymentMethodLabels, selectJob, selectQuotesForJob } from "@/lib/marketplace";
-import {
-  confirmBooking,
-  hireQuote,
-  setOfferStatus,
-  setPaymentArrangement,
-} from "@/redux/slices/marketplaceSlice";
-import { addNotification, setJobStatus } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import type { DirectPaymentMethod } from "@/types";
 
 const priceLabels: Record<string, string> = {
@@ -70,13 +62,12 @@ export function QuoteDetail({
   quoteId: string;
   canHire?: boolean;
 }) {
-  const dispatch = useAppDispatch();
-  const job = useAppSelector((state) => selectJob(state, jobId));
-  const quotes = useAppSelector((state) => selectQuotesForJob(state, jobId));
+  const job = selectJob(undefined, jobId);
+  const quotes = selectQuotesForJob(undefined, jobId);
   const quote = quotes.find((item) => item.id === quoteId);
-  const hiredId = useAppSelector((state) => state.marketplace.hiredByJob[jobId]);
-  const booking = useAppSelector((state) => state.marketplace.bookings[jobId]);
-  const homeownerName = useAppSelector((state) => state.auth.user?.name);
+  const [hiredId, setHiredId] = useState<string | null>(quote?.status === "accepted" ? quoteId : null);
+  const [booking, setBooking] = useState<any>(null);
+  const homeownerName = demoHomeowner.name;
   const [bookDate, setBookDate] = useState("");
   const [arrivalWindow, setArrivalWindow] = useState("10:00 AM – 12:00 PM (Late Morning)");
   const [payMethod, setPayMethod] = useState<DirectPaymentMethod>("cash");
@@ -104,43 +95,12 @@ export function QuoteDetail({
 
   function accept() {
     if (!quote) return;
-    dispatch(
-      hireQuote({
-        jobId,
-        quoteId: quote.id,
-        proId: quote.proId,
-        agreedPrice: quote.amount,
-        scopeSnapshot: quote.scope,
-        homeownerName,
-        paymentTerms: quote.paymentTerms,
-        siblingQuoteIds: quotes.map((item) => item.id),
-      }),
-    );
-    dispatch(setJobStatus({ jobId, status: "hired" }));
-    dispatch(
-      addNotification({
-        title: "Quotation accepted",
-        body: `${pro?.name ?? "The professional"} was selected. Confirm schedule and how you will pay them directly.`,
-        href: `/account/jobs/${jobId}`,
-        createdAt: "Just now",
-        role: "homeowner",
-      }),
-    );
-    dispatch(
-      addNotification({
-        title: "You were hired",
-        body: `A homeowner accepted your $${quote.amount} quotation. Confirm the schedule on the job.`,
-        href: `/pro/jobs/${jobId}`,
-        createdAt: "Just now",
-        role: "pro",
-      }),
-    );
+    setHiredId(quote.id);
     setMsg("Quotation accepted. Agree a schedule and payment method to confirm the booking.");
   }
 
   function decline() {
     if (!quote) return;
-    dispatch(setOfferStatus({ quoteId: quote.id, status: "rejected" }));
     setMsg("Quote declined.");
   }
 
@@ -150,40 +110,18 @@ export function QuoteDetail({
       setMsg("Please choose an appointment date.");
       return;
     }
-    dispatch(
-      confirmBooking({
-        jobId,
-        quoteId: quote.id,
-        proId: quote.proId,
-        agreedPrice: quote.amount,
-        scheduledDate: bookDate,
-        scheduledTime: arrivalWindow,
-        arrivalWindow,
-        scopeSnapshot: quote.scope,
-        paymentArrangement: payMethod,
-        paymentTerms: quote.paymentTerms,
-      }),
-    );
-    dispatch(setPaymentArrangement({ jobId, paymentArrangement: payMethod }));
-    dispatch(setJobStatus({ jobId, status: "scheduled" }));
-    dispatch(
-      addNotification({
-        title: "Booking confirmed",
-        body: `${bookDate} · $${quote.amount}. Pay the professional directly — HomeFix does not collect this.`,
-        href: `/account/jobs/${jobId}`,
-        createdAt: "Just now",
-        role: "homeowner",
-      }),
-    );
-    dispatch(
-      addNotification({
-        title: "Booking confirmed",
-        body: `Schedule locked for ${bookDate}. Payment is arranged off-platform.`,
-        href: `/pro/jobs/${jobId}`,
-        createdAt: "Just now",
-        role: "pro",
-      }),
-    );
+    setBooking({
+      jobId,
+      quoteId: quote.id,
+      proId: quote.proId,
+      agreedPrice: quote.amount,
+      scheduledDate: bookDate,
+      scheduledTime: arrivalWindow,
+      arrivalWindow,
+      scopeSnapshot: quote.scope,
+      paymentArrangement: payMethod,
+      paymentTerms: quote.paymentTerms,
+    });
     setMsg("Booking confirmed. Pay the professional directly using the agreed method.");
   }
 

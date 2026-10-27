@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { useAppSelector } from "@/redux/hooks";
+import { seedInvoices } from "@/Mockdata";
 
 function labelFor(description?: string) {
   const text = (description ?? "").toLowerCase();
@@ -12,7 +12,7 @@ function labelFor(description?: string) {
 }
 
 export default function TransactionsPage() {
-  const items = useAppSelector((state) => state.features.invoices);
+  const items = seedInvoices;
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">

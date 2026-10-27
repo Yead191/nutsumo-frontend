@@ -5,7 +5,14 @@ import type {
   Professional,
   Quote,
   User,
+  SavedAddress,
+  AppNotification,
+  ReviewItem,
+  InvoiceItem,
+  ProProfileData,
 } from "@/types";
+import { defaultWeeklyHours } from "@/lib/business-hours";
+import { defaultInsuranceDoc, defaultLicenseDoc } from "@/lib/credential-file";
 
 export const categories: Category[] = [
   {
@@ -1308,3 +1315,216 @@ export function quotesForJob(jobId: string) {
 export function threadsForJob(jobId: string) {
   return threads.filter((item) => item.jobId === jobId);
 }
+
+
+export const seedAddresses: SavedAddress[] = [
+  {
+    id: "addr-1",
+    label: "Home",
+    street: "418 West 5th Street",
+    city: "Austin",
+    state: "TX",
+    zip: "78701",
+  },
+];
+
+export const seedNotifications: AppNotification[] = [
+  {
+    id: "n1",
+    title: "New quote",
+    body: "Ortega Plumbing sent a quote on your kitchen sink request.",
+    href: "/account/jobs/job-1",
+    createdAt: "Oct 14 · 2:20 PM",
+    read: false,
+    role: "homeowner",
+  },
+  {
+    id: "n2",
+    title: "Message reply",
+    body: "Shah Electric Co. replied on the hallway outlets job.",
+    href: "/account/messages",
+    createdAt: "Oct 13 · 6:42 PM",
+    read: false,
+    role: "homeowner",
+  },
+  {
+    id: "n3",
+    title: "New open request",
+    body: "A plumbing job near 78701 matches your trade.",
+    href: "/pro/jobs/job-1",
+    createdAt: "Oct 14 · 9:00 AM",
+    read: false,
+    role: "pro",
+  },
+  {
+    id: "n4",
+    title: "Membership reminder",
+    body: "Your free trial has days left. Review membership terms anytime.",
+    href: "/pro/pricing",
+    createdAt: "Oct 12 · 10:00 AM",
+    read: true,
+    role: "pro",
+  },
+];
+
+export const seedReviews: ReviewItem[] = [
+  {
+    id: "rev-job-10",
+    jobId: "job-10",
+    proId: "pro-1",
+    author: "Maya Chen",
+    rating: 5,
+    body: "Marcus replaced our failed pressure regulator within 2 hours. Main pressure dropped back to a safe 55 PSI immediately. Zero water left on floor.",
+    createdAt: "Oct 18, 2026",
+    reply: "Thank you Maya! Glad we caught that before your water heater expansion tank took damage.",
+  },
+  {
+    id: "rev-1",
+    jobId: "job-past-1",
+    proId: "pro-1",
+    author: "Maya Chen",
+    rating: 5,
+    body: "Fixed the leak the same afternoon. Clean work and clear price.",
+    createdAt: "Sep 2026",
+    reply: "Thanks Maya — glad the cabinet dried out cleanly.",
+  },
+  {
+    id: "rev-2",
+    jobId: "job-past-2",
+    proId: "pro-1",
+    author: "Jordan Hale",
+    rating: 4,
+    body: "Showed up on time and explained the fittings before replacing them.",
+    createdAt: "Aug 2026",
+  },
+  {
+    id: "rev-3",
+    jobId: "job-past-3",
+    proId: "pro-2",
+    author: "Elena Ruiz",
+    rating: 5,
+    body: "Diagnosed the dead outlets quickly and left the hallway tidy.",
+    createdAt: "Sep 2026",
+  },
+];
+
+export const seedInvoices: InvoiceItem[] = [
+  {
+    id: "inv-1",
+    date: "Sep 10, 2026",
+    period: "Sep 10 – Oct 10, 2026",
+    description: "Pro 3-Month Free Trial (Month 1)",
+    amount: "$0.00",
+    status: "paid",
+  },
+  {
+    id: "inv-2",
+    date: "Oct 10, 2026",
+    period: "Oct 10 – Nov 10, 2026",
+    description: "Pro 3-Month Free Trial (Month 2)",
+    amount: "$0.00",
+    status: "paid",
+  },
+  {
+    id: "inv-3",
+    date: "Jan 10, 2027",
+    period: "Jan 10 – Feb 10, 2027",
+    description: "Pro Monthly Membership (Scheduled Renewal)",
+    amount: "$19.99",
+    status: "upcoming",
+  },
+];
+
+export const defaultProProfile: ProProfileData = {
+  businessName: "Ortega Plumbing & Gas",
+  contactName: "Luis Ortega",
+  trade: "Plumbing",
+  categorySlug: "plumbing",
+  tagline: "Licensed master plumber serving residential Austin & Central Texas",
+  bio: "Over 10 years of trusted plumbing diagnostics, emergency leak remediation, tankless water heater installations, and drain restoration. We provide itemized pricing upfront with zero platform fees.",
+  phone: "(512) 555-0198",
+  email: "luis@ortegaplumbing.com",
+  street: "2201 South Lamar Blvd",
+  city: "Austin",
+  state: "TX",
+  zip: "78704",
+  radiusMiles: 25,
+  startingPrice: 95,
+  yearsInBusiness: "10+ years",
+  responseTime: "Usually under 1 hour",
+  emergency: true,
+  businessHours: defaultWeeklyHours(),
+  acceptedPayments: [
+    "Apple Pay",
+    "Cash",
+    "Check",
+    "Credit or debit",
+    "Google Pay",
+    "PayPal",
+    "Venmo",
+    "Zelle",
+  ],
+  specialOffer: {
+    active: true,
+    title: "$25 Off First Diagnostic Call",
+    discount: "$25 OFF",
+    terms: "Valid for all first-time residential homeowners across Travis & Williamson counties. Mention LocalHomeFix on booking.",
+  },
+  services: [
+    {
+      id: "srv-1",
+      name: "Leak Detection & Emergency Pipe Repair",
+      price: 95,
+      unit: "starting rate",
+      description: "Electronic water line detection and non-invasive pipe repairs.",
+    },
+    {
+      id: "srv-2",
+      name: "Water Heater Flush, Repair & Replacement",
+      price: 140,
+      unit: "flush & diag",
+      description: "Standard tank & tankless servicing, element replacement, and anode rods.",
+    },
+    {
+      id: "srv-3",
+      name: "Drain Clearing & Hydro-Jetting",
+      price: 89,
+      unit: "starting rate",
+      description: "Kitchen sinks, bathroom lines, and main sewer branch snake clearing.",
+    },
+    {
+      id: "srv-4",
+      name: "Fixture, Toilet & Faucet Installation",
+      price: 110,
+      unit: "per fixture",
+      description: "OEM fixture mounting, supply hookups, and leak-tested seal guarantee.",
+    },
+    {
+      id: "srv-5",
+      name: "Garbage Disposal Repair & Replacement",
+      price: 85,
+      unit: "starting rate",
+      description: "Humming or jammed disposals, seal gaskets, and new unit installs.",
+    },
+  ],
+  includedPerks: [
+    "Free upfront itemized quote",
+    "1-Year workmanship & leak warranty",
+    "Floor protection & clean boot covers",
+    "OEM certified plumbing parts",
+    "Direct payment on 100% completion ($0 platform fee)",
+  ],
+  licenseNumber: "TX-M-42981",
+  licenseState: "TX",
+  licenseDoc: defaultLicenseDoc(),
+  insuranceCarrier: "Next Insurance",
+  insuranceCoverage: "$1,000,000",
+  insuranceExpires: "2027-09",
+  insuranceDoc: defaultInsuranceDoc(),
+  portfolio: [
+    {
+      title: "Kitchen supply line repair",
+      image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
+    },
+  ],
+};

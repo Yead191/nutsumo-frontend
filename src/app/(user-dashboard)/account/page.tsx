@@ -24,21 +24,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { getCategory, getPro, urgencyLabels } from "@/Mockdata";
+import { demoHomeowner, getCategory, getPro, urgencyLabels } from "@/Mockdata";
 import {
   jobCardSummary,
   selectAllJobs,
   selectAllQuotes,
 } from "@/lib/marketplace";
-import { useAppSelector } from "@/redux/hooks";
 import { cn } from "@/lib/cn";
 import type { Job } from "@/types";
 
 export default function AccountPage() {
-  const user = useAppSelector((state) => state.auth.user);
-  const allJobs = useAppSelector(selectAllJobs);
-  const quotes = useAppSelector(selectAllQuotes);
-  const bookings = useAppSelector((state) => state.marketplace.bookings);
+  const user = demoHomeowner;
+  const allJobs = selectAllJobs();
+  const quotes = selectAllQuotes();
+  const bookings: Record<string, any> = {};
   const [searchQuery, setSearchQuery] = useState("");
 
   const activeRequests = useMemo(() => {

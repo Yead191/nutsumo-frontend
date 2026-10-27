@@ -3,11 +3,10 @@
 import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { photos } from "@/lib/media";
-import { useAppSelector } from "@/redux/hooks";
 import { postJobHref } from "@/lib/role-access";
 
 export function HomeCta() {
-  const user = useAppSelector((state) => state.auth.user);
+  const user = null;
 
   return (
     <section className="bg-white py-[var(--section-sm)] md:py-[var(--section)]">

@@ -2,13 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { setBudget } from "@/redux/slices/filterSlice";
 import { cn } from "@/lib/cn";
 
-export function BudgetDropdownFilter({ className }: { className?: string }) {
-  const dispatch = useAppDispatch();
-  const { minPrice, maxPrice, budgetTier } = useAppSelector((state) => state.filters);
+export function BudgetDropdownFilter({
+  className,
+  value,
+  onChange,
+}: {
+  className?: string;
+  value?: { minPrice?: string; maxPrice?: string; budgetTier?: string };
+  onChange?: (val: { minPrice: string; maxPrice: string; budgetTier: string }) => void;
+}) {
+  const [internalBudget, setInternalBudget] = useState({
+    minPrice: value?.minPrice || "",
+    maxPrice: value?.maxPrice || "",
+    budgetTier: value?.budgetTier || "",
+  });
+  const minPrice = value?.minPrice ?? internalBudget.minPrice;
+  const maxPrice = value?.maxPrice ?? internalBudget.maxPrice;
+  const budgetTier = value?.budgetTier ?? internalBudget.budgetTier;
 
   const [open, setOpen] = useState(false);
   const [tempTier, setTempTier] = useState(budgetTier || "");
@@ -47,30 +59,31 @@ export function BudgetDropdownFilter({ className }: { className?: string }) {
   }, [open]);
 
   function handleApply() {
+    let next = { minPrice: "", maxPrice: "", budgetTier: "" };
     if (tempTier === "value") {
-      dispatch(setBudget({ minPrice: "", maxPrice: "85", budgetTier: "value" }));
+      next = { minPrice: "", maxPrice: "85", budgetTier: "value" };
     } else if (tempTier === "mid_range") {
-      dispatch(setBudget({ minPrice: "85", maxPrice: "130", budgetTier: "mid_range" }));
+      next = { minPrice: "85", maxPrice: "130", budgetTier: "mid_range" };
     } else if (tempTier === "high_end") {
-      dispatch(setBudget({ minPrice: "130", maxPrice: "", budgetTier: "high_end" }));
+      next = { minPrice: "130", maxPrice: "", budgetTier: "high_end" };
     } else if (tempTier === "custom") {
-      dispatch(
-        setBudget({
-          minPrice: "",
-          maxPrice: tempCustom.trim(),
-          budgetTier: tempCustom.trim() ? "custom" : "",
-        }),
-      );
-    } else {
-      dispatch(setBudget({ minPrice: "", maxPrice: "", budgetTier: "" }));
+      next = {
+        minPrice: "",
+        maxPrice: tempCustom.trim(),
+        budgetTier: tempCustom.trim() ? "custom" : "",
+      };
     }
+    setInternalBudget(next);
+    onChange?.(next);
     setOpen(false);
   }
 
   function handleClear() {
     setTempTier("");
     setTempCustom("");
-    dispatch(setBudget({ minPrice: "", maxPrice: "", budgetTier: "" }));
+    const next = { minPrice: "", maxPrice: "", budgetTier: "" };
+    setInternalBudget(next);
+    onChange?.(next);
     setOpen(false);
   }
 

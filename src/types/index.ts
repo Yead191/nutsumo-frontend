@@ -263,6 +263,93 @@ export interface IntakeDraft {
   answers?: Record<string, string>;
 }
 
+export interface SavedAddress {
+  id: string;
+  label: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  body: string;
+  href: string;
+  createdAt: string;
+  read: boolean;
+  role: "homeowner" | "pro" | "admin" | "all";
+}
+
+export interface ReviewItem {
+  id: string;
+  jobId: string;
+  proId: string;
+  author: string;
+  rating: number;
+  body: string;
+  createdAt: string;
+  reply?: string;
+}
+
+export interface InvoiceItem {
+  id: string;
+  date: string;
+  period?: string;
+  description?: string;
+  amount: string;
+  status: "paid" | "upcoming" | "failed";
+}
+
+export interface ProServiceItem {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  description: string;
+}
+
+export interface ProSpecialOffer {
+  active: boolean;
+  title: string;
+  discount: string;
+  terms: string;
+}
+
+export interface ProProfileData {
+  businessName: string;
+  contactName: string;
+  trade: string;
+  categorySlug: string;
+  tagline: string;
+  bio: string;
+  phone: string;
+  email: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  radiusMiles: number;
+  startingPrice: number;
+  yearsInBusiness: string;
+  responseTime: string;
+  emergency: boolean;
+  businessHours: any;
+  acceptedPayments: string[];
+  specialOffer: ProSpecialOffer;
+  services: ProServiceItem[];
+  includedPerks: string[];
+  licenseNumber: string;
+  licenseState: string;
+  licenseDoc: any;
+  insuranceCarrier: string;
+  insuranceCoverage: string;
+  insuranceExpires: string;
+  insuranceDoc: any;
+  portfolio: { title: string; image: string }[];
+}
+
 // Compatibility types for next-fetch actions
 export type CartData = any;
 export type AddToCartPayload = any;
@@ -274,3 +361,4 @@ export type Partner = any;
 export type PartnerLogo = any;
 export type PartnerListParams = any;
 export type TrialEligibility = any;
+

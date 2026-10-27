@@ -5,8 +5,7 @@ import { AlertTriangle, CheckCircle2, Clock, FileText, FileUp, XCircle } from "l
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AppliedBanner } from "@/components/web-pages/applied-banner";
-import { saveApplicationDraft, submitApplication } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { defaultProProfile } from "@/Mockdata";
 
 const statusConfig = {
   draft: { label: "Draft", icon: FileText, className: "text-muted" },
@@ -37,11 +36,14 @@ function DocRow({
 }
 
 export default function ProApplicationPage() {
-  const dispatch = useAppDispatch();
-  const status = useAppSelector((state) => state.features.applicationStatus);
-  const reason = useAppSelector((state) => state.features.rejectionReason);
-  const draft = useAppSelector((state) => state.features.applicationDraft);
-  const proProfile = useAppSelector((state) => state.features.proProfile);
+  const [status, setStatus] = useState<"draft" | "submitted" | "needs_info" | "rejected" | "cleared">("cleared");
+  const reason = "";
+  const draft: Record<string, string> = {
+    licenseFile: "TX-M-42981-Master-Plumber-Certificate.pdf",
+    insuranceFile: "Next-General-Liability-COI-2026.pdf",
+    backgroundCheck: "clear",
+  };
+  const proProfile = defaultProProfile;
 
   const [licenseFile, setLicenseFile] = useState(
     draft.licenseFile || "TX-M-42981-Master-Plumber-Certificate.pdf",
@@ -57,14 +59,7 @@ export default function ProApplicationPage() {
     draft.backgroundCheck === "clear" || status === "cleared" || status === "submitted";
 
   function handleSubmit() {
-    dispatch(
-      saveApplicationDraft({
-        savedAt: new Date().toISOString(),
-        licenseFile,
-        insuranceFile,
-      }),
-    );
-    dispatch(submitApplication());
+    setStatus("submitted");
   }
 
   function handleFileUpload(
@@ -76,12 +71,6 @@ export default function ProApplicationPage() {
     startTransition(() => {
       if (type === "license") setLicenseFile(file.name);
       else setInsuranceFile(file.name);
-      dispatch(
-        saveApplicationDraft({
-          savedAt: new Date().toISOString(),
-          [type === "license" ? "licenseFile" : "insuranceFile"]: file.name,
-        }),
-      );
     });
   }
 

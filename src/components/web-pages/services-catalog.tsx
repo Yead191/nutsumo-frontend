@@ -4,13 +4,11 @@ import { useRouter } from "next/navigation";
 import { ServiceTile } from "@/components/shared/service-tile";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/Mockdata";
-
-import { useAppSelector } from "@/redux/hooks";
 import { postJobHref } from "@/lib/role-access";
 
 export function ServicesCatalog() {
   const router = useRouter();
-  const user = useAppSelector((state) => state.auth.user);
+  const user = null;
 
   return (
     <section className="bg-surface py-[var(--section-sm)] md:py-[var(--section)]">

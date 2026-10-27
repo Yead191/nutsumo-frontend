@@ -1,13 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, Heart, MapPin, ShieldCheck, Star } from "lucide-react";
 import { photos } from "@/lib/media";
 import { loginHref } from "@/lib/role-access";
-import { toggleFavorite } from "@/redux/slices/featuresSlice";
 import { useRoleAccess } from "@/hooks/use-role-access";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import type { Professional } from "@/types";
 import { cn } from "@/lib/cn";
 
@@ -23,14 +22,8 @@ export function ProCard({
   const router = useRouter();
   const pathname = usePathname();
   const { access } = useRoleAccess();
-  const user = useAppSelector((state) => state.auth.user);
-  const isOwner =
-    user?.role === "ARTISAN" &&
-    (pro.id === "pro-1" ||
-      pro.name.toLowerCase() === (user.name || "").toLowerCase());
-  const saved = useAppSelector((state) =>
-    state.features.favorites.includes(pro.id),
-  );
+  const [saved, setSaved] = useState(false);
+  const isOwner = false;
   const image = photos.services[pro.categorySlug] || photos.banner;
   const href = `/browse-pros/${pro.id}`;
 
@@ -42,6 +35,7 @@ export function ProCard({
       return;
     }
     if (!access.canSavePro) return;
+    setSaved((prev) => !prev);
   }
 
   return (

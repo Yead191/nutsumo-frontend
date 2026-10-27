@@ -5,15 +5,11 @@ import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Check, ShieldCheck, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, NativeSelect, TextArea } from "@/components/ui/field";
-import { categories, getPro, professionals } from "@/Mockdata";
+import { categories, demoHomeowner, getPro, professionals, seedAddresses } from "@/Mockdata";
 import { labelForAnswer, questionsForCategory } from "@/lib/intake-questions";
 import { matchEligiblePros } from "@/lib/matching";
-import { loginAs } from "@/redux/slices/authSlice";
-import { clearDraft } from "@/redux/slices/intakeSlice";
-import { addJob } from "@/redux/slices/marketplaceSlice";
-import { addNotification, invitePro, setJobPhotos, type SavedAddress } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import type { IntakeAnswer, JobVisibility, Professional, Urgency, User } from "@/types";
+import type { IntakeAnswer, JobVisibility, Professional, SavedAddress, Urgency, User } from "@/types";
+import type { ListingVisibility } from "@/lib/admin-data";
 import { cn } from "@/lib/cn";
 
 type Phase = "category" | "questions" | "details" | "matches" | "sent";
@@ -75,11 +71,10 @@ function readPhotos(files: FileList | null): Promise<string[]> {
 export function QuoteRequestFlow() {
   const searchParams = useSearchParams();
   const invitedPro = getPro(searchParams.get("invite") ?? "");
-  const draft = useAppSelector((state) => state.intake.draft);
-  const user = useAppSelector((state) => state.auth.user);
-  const addresses = useAppSelector((state) => state.features.addresses);
-  const listingStatus = useAppSelector((state) => state.admin.listingStatus);
-  const dispatch = useAppDispatch();
+  const draft = { categorySlug: "", zip: "78701", problem: "", summary: "", answers: {} as Record<string, string> };
+  const user = demoHomeowner;
+  const addresses = seedAddresses;
+  const listingStatus: Record<string, ListingVisibility> = {};
 
   const location = useMemo(
     () => resolveJobLocation(draft.zip, user, addresses),
@@ -173,83 +168,9 @@ export function QuoteRequestFlow() {
   }
 
   function publishJob(pro?: Professional) {
-    const title = [category?.name, intakeAnswers[0]?.value].filter(Boolean).join(" · ");
-    const fullDescription = (description.trim() || draft.problem || "").trim();
     const createdId = `job-local-${Date.now()}`;
-    const visibility: JobVisibility = pro ? "direct" : "open";
     const matchedIds = pro ? [pro.id] : matches.map((item) => item.id);
 
-    if (!user) {
-      dispatch(loginAs("homeowner"));
-    }
-
-    dispatch(
-      addJob({
-        id: createdId,
-        title: title || category?.name || "Service request",
-        categorySlug,
-        description: fullDescription,
-        zip: location.zip,
-        city: location.city,
-        state: location.state,
-        urgency: urgencyFromWhen(answers.when),
-        budget: budget.trim() || undefined,
-        homeownerName: user?.name ?? "Maya Chen",
-        intakeAnswers,
-        requestedProId: pro?.id,
-        visibility,
-        photos,
-        matchedProIds: matchedIds,
-      }),
-    );
-    if (photos.length) {
-      dispatch(setJobPhotos({ jobId: createdId, photos }));
-    }
-
-    if (pro) {
-      dispatch(invitePro({ jobId: createdId, proId: pro.id }));
-      dispatch(
-        addNotification({
-          title: "Quote request",
-          body: `${user?.name ?? "A homeowner"} asked you to quote ${title || "a job"} in ${location.zip}.`,
-          href: `/pro/jobs/${createdId}`,
-          createdAt: "Just now",
-          role: "pro",
-        }),
-      );
-      dispatch(
-        addNotification({
-          title: "Request sent",
-          body: `${pro.name} has your details and can send a quotation. Hiring is not confirmed until you accept it.`,
-          href: `/account/jobs/${createdId}`,
-          createdAt: "Just now",
-          role: "homeowner",
-        }),
-      );
-    } else {
-      if (matchedIds.includes("pro-1")) {
-        dispatch(
-          addNotification({
-            title: "New matching job",
-            body: `${title || "A new request"} was posted in ${location.zip}. Review and send a quotation.`,
-            href: `/pro/jobs/${createdId}`,
-            createdAt: "Just now",
-            role: "pro",
-          }),
-        );
-      }
-      dispatch(
-        addNotification({
-          title: "Job published",
-          body: `${matchedIds.length} matching professional${matchedIds.length === 1 ? "" : "s"} can now send quotations.`,
-          href: `/account/jobs/${createdId}`,
-          createdAt: "Just now",
-          role: "homeowner",
-        }),
-      );
-    }
-
-    dispatch(clearDraft());
     setRequestedPro(pro ?? null);
     setPublishedOpen(!pro);
     setMatchedCount(matchedIds.length);

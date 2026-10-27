@@ -21,30 +21,28 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { getCategory, getPro } from "@/Mockdata";
+import { demoHomeowner, getCategory, getPro, seedReviews } from "@/Mockdata";
 import {
   jobCardSummary,
   paymentMethodLabels,
   selectAllQuotes,
   selectHomeownerBookingsGrouped,
 } from "@/lib/marketplace";
-import { useAppSelector } from "@/redux/hooks";
 import { cn } from "@/lib/cn";
 import type { Job } from "@/types";
 
 type BookingTab = "all" | "upcoming" | "inProgress" | "history";
 
 export default function MyBookingsPage() {
-  const user = useAppSelector((state) => state.auth.user);
-  const state = useAppSelector((state) => state);
+  const user = demoHomeowner;
   const grouped = useMemo(
-    () => selectHomeownerBookingsGrouped(state, user?.name ?? "Homeowner"),
-    [state, user?.name],
+    () => selectHomeownerBookingsGrouped(undefined, user.name),
+    [user.name],
   );
-  const quotes = useAppSelector(selectAllQuotes);
-  const bookings = state.marketplace.bookings;
-  const hiredByJob = state.marketplace.hiredByJob;
-  const reviews = state.features.reviews;
+  const quotes = selectAllQuotes();
+  const bookings: Record<string, any> = {};
+  const hiredByJob: Record<string, any> = {};
+  const reviews = seedReviews;
 
   const [activeTab, setActiveTab] = useState<BookingTab>("all");
   const [searchQuery, setSearchQuery] = useState("");

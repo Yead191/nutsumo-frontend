@@ -10,12 +10,11 @@ import { photos } from "@/lib/media";
 import { loginHref } from "@/lib/role-access";
 import { getCategory } from "@/Mockdata";
 import { selectAllJobs } from "@/lib/marketplace";
-import { useAppSelector } from "@/redux/hooks";
-
+import type { User } from "@/types";
 /** Public gate & preview — private job bidding and client contact live on /pro/jobs after clearance + membership. */
 export default function BrowseJobsPage() {
-  const user = useAppSelector((state) => state.auth.user);
-  const allJobs = useAppSelector(selectAllJobs);
+  const user: any = null;
+  const allJobs = selectAllJobs();
   const router = useRouter();
 
   useEffect(() => {

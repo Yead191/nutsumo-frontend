@@ -31,9 +31,8 @@ import {
   getProGallery,
 } from "@/lib/pro-extras";
 import { loginHref } from "@/lib/role-access";
-import { toggleFavorite } from "@/redux/slices/featuresSlice";
 import { useRoleAccess } from "@/hooks/use-role-access";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { seedReviews as mockSeedReviews, defaultProProfile } from "@/Mockdata";
 import type { Professional } from "@/types";
 import { cn } from "@/lib/cn";
 import {
@@ -54,33 +53,14 @@ function initials(name: string) {
 
 export function ProProfileContent({ pro }: { pro: Professional }) {
   // Listing sections: about, services, photos, reviews. No FAQ list.
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const { access } = useRoleAccess();
-  const saved = useAppSelector((state) => state.features.favorites.includes(pro.id));
-  const seedReviews = useAppSelector((state) =>
-    state.features.reviews.filter((item) => item.proId === pro.id)
+  const seedReviews = useMemo(
+    () => mockSeedReviews.filter((item) => item.proId === pro.id),
+    [pro.id],
   );
-  const completions = useAppSelector((state) => state.marketplace.completions);
-  const hiredByJob = useAppSelector((state) => state.marketplace.hiredByJob);
-  const extraQuotes = useAppSelector((state) => state.marketplace.extraQuotes);
-
-  const dynamicCompletedJobs = useMemo(() => {
-    let extra = 0;
-    for (const [jobId, comp] of Object.entries(completions)) {
-      if (comp.homeownerConfirmedAt) {
-        const quoteId = hiredByJob[jobId];
-        const quote = extraQuotes.find((q) => q.id === quoteId);
-        if (quote && quote.proId === pro.id) {
-          extra++;
-        } else if (pro.id === "pro-1") {
-          extra++;
-        }
-      }
-    }
-    return (pro.jobsCompleted || 65) + extra;
-  }, [completions, hiredByJob, extraQuotes, pro.id, pro.jobsCompleted]);
+  const dynamicCompletedJobs = pro.jobsCompleted || 65;
 
   const [activeTab, setActiveTab] = useState<"about" | "services" | "photos" | "reviews">("about");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all");
@@ -89,8 +69,9 @@ export function ProProfileContent({ pro }: { pro: Professional }) {
   const [copied, setCopied] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const [bioExpanded, setBioExpanded] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  const proProfile = useAppSelector((state) => state.features.proProfile);
+  const proProfile = defaultProProfile;
   const isDemoPro = pro.id === "pro-1";
 
   const defaultBio =
@@ -189,7 +170,7 @@ export function ProProfileContent({ pro }: { pro: Professional }) {
       return;
     }
     if (!access.canSavePro) return;
-    dispatch(toggleFavorite(pro.id));
+    setSaved((prev) => !prev);
   }
 
   function onShare() {

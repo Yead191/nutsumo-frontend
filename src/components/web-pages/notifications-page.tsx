@@ -1,17 +1,30 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/cn";
-import { markAllNotificationsRead, markNotificationRead } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { seedNotifications } from "@/Mockdata";
+import type { AppNotification } from "@/types";
 
 export function NotificationsPage({ role }: { role: "homeowner" | "pro" }) {
-  const dispatch = useAppDispatch();
-  const notes = useAppSelector((state) =>
-    state.features.notifications.filter((item) => item.role === role || item.role === "all"),
-  );
+  const [allNotes, setAllNotes] = useState<AppNotification[]>(seedNotifications);
+  const notes = allNotes.filter((item) => (item.role as any) === role || item.role === "all");
   const unread = notes.filter((item) => !item.read).length;
+
+  function markRead(id: string) {
+    setAllNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+    );
+  }
+
+  function markAllRead() {
+    setAllNotes((prev) =>
+      prev.map((n) =>
+        (n.role as any) === role || n.role === "all" ? { ...n, read: true } : n,
+      ),
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -33,7 +46,7 @@ export function NotificationsPage({ role }: { role: "homeowner" | "pro" }) {
         {unread > 0 ? (
           <button
             type="button"
-            onClick={() => dispatch(markAllNotificationsRead(role))}
+            onClick={markAllRead}
             className="font-display text-xs font-semibold text-primary hover:underline self-start sm:self-auto"
           >
             Mark all as read
@@ -68,7 +81,7 @@ export function NotificationsPage({ role }: { role: "homeowner" | "pro" }) {
                   <Link
                     href={note.href}
                     onClick={() => {
-                      if (!note.read) dispatch(markNotificationRead(note.id));
+                      if (!note.read) markRead(note.id);
                     }}
                     className="font-display text-sm font-bold leading-5 text-title hover:text-primary"
                   >
@@ -81,7 +94,7 @@ export function NotificationsPage({ role }: { role: "homeowner" | "pro" }) {
                   <Link
                     href={note.href}
                     onClick={() => {
-                      if (!note.read) dispatch(markNotificationRead(note.id));
+                      if (!note.read) markRead(note.id);
                     }}
                     className="font-semibold text-primary"
                   >
@@ -90,7 +103,7 @@ export function NotificationsPage({ role }: { role: "homeowner" | "pro" }) {
                   {!note.read ? (
                     <button
                       type="button"
-                      onClick={() => dispatch(markNotificationRead(note.id))}
+                      onClick={() => markRead(note.id)}
                       className="font-semibold text-muted hover:text-title"
                     >
                       Mark read

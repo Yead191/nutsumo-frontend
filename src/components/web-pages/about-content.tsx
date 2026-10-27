@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { PageBanner } from "@/components/layout/page-banner";
 import { photos } from "@/lib/media";
 import { postJobHref } from "@/lib/role-access";
-import { useAppSelector } from "@/redux/hooks";
 import { cn } from "@/lib/cn";
 
 export interface AboutPillarData {
@@ -123,7 +122,7 @@ function getPillarIcon(name?: string) {
 }
 
 export function AboutContent() {
-  const user = useAppSelector((state) => state.auth.user);
+  const user = null;
   const [activeTab, setActiveTab] = useState<"mission" | "vision">("mission");
   const [data, setData] = useState<AboutContentData>(defaultAboutData);
 

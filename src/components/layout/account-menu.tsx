@@ -12,8 +12,6 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { cn } from "@/lib/cn";
-import { loginAs, logout } from "@/redux/slices/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
 import type { User } from "@/types";
 
 function roleLabel(role: User["role"]) {
@@ -24,7 +22,6 @@ function roleLabel(role: User["role"]) {
 export function AccountMenu({ user }: { user: User }) {
   const pathname = usePathname();
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (prevPathname !== pathname) {
@@ -53,7 +50,6 @@ export function AccountMenu({ user }: { user: User }) {
   }, []);
 
   function handleRoleSwitch(targetRole: User["role"]) {
-    dispatch(loginAs(targetRole));
     setOpen(false);
     router.push(targetRole === "pro" ? "/pro" : "/account");
   }
@@ -148,7 +144,6 @@ export function AccountMenu({ user }: { user: User }) {
               role="menuitem"
               className="flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left font-display text-xs sm:text-sm font-medium text-error hover:bg-red-50 transition-colors"
               onClick={() => {
-                dispatch(logout());
                 router.push("/");
               }}
             >

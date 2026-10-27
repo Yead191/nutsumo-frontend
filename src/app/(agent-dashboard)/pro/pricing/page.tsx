@@ -15,38 +15,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, TextField } from "@/components/ui/field";
-import { startMembership } from "@/redux/slices/marketplaceSlice";
-import {
-  setMembershipCancelled,
-  setMembershipPaused,
-  setSubscriptionPlan,
-  updatePaymentMethod,
-  unlockContact,
-} from "@/redux/slices/featuresSlice";
 import { useRoleAccess } from "@/hooks/use-role-access";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { cn } from "@/lib/cn";
 
 export default function PricingPage() {
-  const dispatch = useAppDispatch();
   const { applicationStatus } = useRoleAccess();
-  const active = useAppSelector((state) => state.marketplace.membershipActive);
-  const cancelled = useAppSelector((state) => state.features.membershipCancelled);
-  const trialDaysLeft = useAppSelector((state) => state.features.trialDaysLeft ?? 67);
-  const currentPlan = useAppSelector(
-    (state) => state.features.subscriptionPlan ?? "trial"
-  );
-  const currentRenewalDate = useAppSelector(
-    (state) => state.features.renewalDate ?? "Jan 10, 2027"
-  );
-  const paymentMethod = useAppSelector(
-    (state) =>
-      state.features.paymentMethod ?? {
-        brand: "Visa",
-        last4: "4242",
-        exp: "08/29",
-      }
-  );
+  const [active, setActive] = useState(true);
+  const [cancelled, setCancelled] = useState(false);
+  const [trialDaysLeft, setTrialDaysLeft] = useState(67);
+  const [currentPlan, setCurrentPlan] = useState<"trial" | "monthly" | "annual">("trial");
+  const [currentRenewalDate, setCurrentRenewalDate] = useState("Jan 10, 2027");
+  const [paymentMethod, setPaymentMethod] = useState({
+    brand: "Visa",
+    last4: "4242",
+    exp: "08/29",
+  });
 
   const [billingPreference, setBillingPreference] = useState<"annual" | "monthly">("annual");
   const [showCardModal, setShowCardModal] = useState(false);
@@ -70,28 +53,14 @@ export default function PricingPage() {
   }
 
   function handleStartTrial() {
-    dispatch(startMembership());
-    dispatch(setMembershipPaused(false));
-    dispatch(setMembershipCancelled(false));
-    dispatch(
-      setSubscriptionPlan({
-        plan: "trial",
-        billingCycle: billingPreference,
-        renewalDate: "Jan 10, 2027",
-      })
-    );
-    if (applicationStatus === "cleared") dispatch(unlockContact());
+    setActive(true);
+    setCancelled(false);
+    setCurrentPlan("trial");
     showToast("3-Month Free Trial started successfully. Enjoy zero platform fees!");
   }
 
   function handleSelectPlan(plan: "monthly" | "annual", immediate = false) {
-    dispatch(
-      setSubscriptionPlan({
-        plan,
-        billingCycle: plan,
-        renewalDate: immediate ? "Nov 20, 2026" : currentRenewalDate,
-      })
-    );
+    setCurrentPlan(plan);
     if (immediate) {
       showToast(
         `Upgraded to Pro ${plan === "annual" ? "Annual" : "Monthly"}. Your subscription is active.`
@@ -106,7 +75,7 @@ export default function PricingPage() {
   }
 
   function handleCancelAutoRenew() {
-    dispatch(setMembershipCancelled(true));
+    setCancelled(true);
     showToast("Auto-renewal cancelled. You will not be charged when your trial expires.");
   }
 
@@ -114,13 +83,11 @@ export default function PricingPage() {
     e.preventDefault();
     const cleanNumber = cardForm.number.replace(/\D/g, "");
     const last4 = cleanNumber.length >= 4 ? cleanNumber.slice(-4) : "4242";
-    dispatch(
-      updatePaymentMethod({
-        brand: cleanNumber.startsWith("3") ? "Amex" : cleanNumber.startsWith("5") ? "Mastercard" : "Visa",
-        last4,
-        exp: cardForm.exp || "08/29",
-      })
-    );
+    setPaymentMethod({
+      brand: cleanNumber.startsWith("3") ? "Amex" : cleanNumber.startsWith("5") ? "Mastercard" : "Visa",
+      last4,
+      exp: cardForm.exp || "08/29",
+    });
     setShowCardModal(false);
     showToast("Payment method updated successfully.");
   }

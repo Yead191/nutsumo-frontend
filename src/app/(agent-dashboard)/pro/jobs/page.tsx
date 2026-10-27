@@ -39,8 +39,6 @@ import {
   selectQuotesForJob,
 } from "@/lib/marketplace";
 import { useRoleAccess } from "@/hooks/use-role-access";
-import { setJobStatus, setLeadAction, addNotification } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { cn } from "@/lib/cn";
 import type { Job, JobStatus } from "@/types";
 
@@ -48,7 +46,7 @@ type MainTab = "direct" | "leads" | "active" | "completed";
 type SortKey = "newest" | "budget-high" | "urgent";
 
 export default function ProJobsPage() {
-  const dispatch = useAppDispatch();
+  const dispatch = (_action?: any) => {};
   const { access } = useRoleAccess();
   const myProId = "pro-1";
   const myPro = getPro(myProId);
@@ -59,10 +57,9 @@ export default function ProJobsPage() {
   const [sortBy, setSortBy] = useState<SortKey>("newest");
   const [activeSubFilter, setActiveSubFilter] = useState<"all" | "scheduled" | "in_progress" | "awaiting_confirm">("all");
 
-  const state = useAppSelector((state) => state);
-  const grouped = useMemo(() => selectProJobsGrouped(state, myProId), [state, myProId]);
-  const bookings = state.marketplace.bookings;
-  const quotes = state.marketplace.extraQuotes;
+  const grouped = useMemo(() => selectProJobsGrouped(undefined, myProId), [myProId]);
+  const bookings: Record<string, any> = {};
+  const quotes: any[] = [];
 
   // Tabs count configuration
   const tabCounts = {
@@ -122,7 +119,7 @@ export default function ProJobsPage() {
   }, [activeTab, grouped, activeSubFilter, selectedCategory, searchQuery, sortBy]);
 
   function handlePass(jobId: string) {
-    dispatch(setLeadAction({ jobId, action: "declined" }));
+    // passed
   }
 
   return (
@@ -345,7 +342,7 @@ export default function ProJobsPage() {
           {currentList.map((job) => {
             const booking = bookings[job.id];
             const isDirect = job.requestedProId === myProId || job.visibility === "direct";
-            const isHiredForThisPro = booking?.proId === myProId || state.marketplace.hiredByJob[job.id];
+            const isHiredForThisPro = booking?.proId === myProId;
 
             return (
               <Card
@@ -434,20 +431,8 @@ export default function ProJobsPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         {job.status === "scheduled" ? (
                           <Button
-                            type="button"
+                            href={`/pro/jobs/${job.id}`}
                             size="sm"
-                            onClick={() => {
-                              dispatch(setJobStatus({ jobId: job.id, status: "en_route" }));
-                              dispatch(
-                                addNotification({
-                                  title: "Contractor en route",
-                                  body: "Contractor has departed and is on the way to your location.",
-                                  href: `/account/jobs/${job.id}`,
-                                  createdAt: "Just now",
-                                  role: "homeowner",
-                                }),
-                              );
-                            }}
                             className="rounded-full gap-1.5 text-xs font-semibold"
                           >
                             <Truck className="h-3.5 w-3.5" />
@@ -455,20 +440,8 @@ export default function ProJobsPage() {
                           </Button>
                         ) : job.status === "en_route" ? (
                           <Button
-                            type="button"
+                            href={`/pro/jobs/${job.id}`}
                             size="sm"
-                            onClick={() => {
-                              dispatch(setJobStatus({ jobId: job.id, status: "in_progress" }));
-                              dispatch(
-                                addNotification({
-                                  title: "Work started on-site",
-                                  body: "Contractor arrived on site and started work.",
-                                  href: `/account/jobs/${job.id}`,
-                                  createdAt: "Just now",
-                                  role: "homeowner",
-                                }),
-                              );
-                            }}
                             className="rounded-full gap-1.5 text-xs font-semibold"
                           >
                             <Wrench className="h-3.5 w-3.5" />

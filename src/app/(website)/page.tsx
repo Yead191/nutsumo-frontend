@@ -15,13 +15,12 @@ export default function HomePage() {
     <>
       <HomeHero />
       <HomeAbout />
-      {/* <HomeServices /> */}
-      {/* <HomeProcess />
+      <HomeServices />
+      <HomeProcess />
       <HomeWhyChoose />
       <HomePros />
-      <PricingPlans />
       <FaqSection />
-      <HomeCta /> */}
+      <HomeCta />
     </>
   );
 }

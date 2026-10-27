@@ -16,12 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { Field, NativeSelect, TextArea, TextField } from "@/components/ui/field";
-import { updateUser } from "@/redux/slices/authSlice";
-import {
-  updateProProfile,
-  type ProServiceItem,
-} from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { defaultProProfile, demoProUser } from "@/Mockdata";
+import type { ProServiceItem } from "@/types";
 import { cn } from "@/lib/cn";
 import {
   TIME_OPTIONS,
@@ -70,9 +66,8 @@ function normalizeAcceptedPayments(raw: string[]) {
 }
 
 export function ProProfileForm() {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-  const proProfile = useAppSelector((state) => state.features.proProfile);
+  const user = demoProUser;
+  const proProfile = defaultProProfile;
 
   const [activeTab, setActiveTab] = useState<
     "services" | "overview" | "hours" | "credentials" | "portfolio"
@@ -121,30 +116,7 @@ export function ProProfileForm() {
   }
 
   function handleSaveAll() {
-    const startingFromServices = formData.services.length
-      ? Math.min(...formData.services.map((service) => service.price))
-      : formData.startingPrice;
-    dispatch(
-      updateProProfile({
-        ...formData,
-        startingPrice: startingFromServices,
-        responseTime: proProfile.responseTime,
-      }),
-    );
-    dispatch(
-      updateUser({
-        name: formData.contactName,
-        phone: formData.phone,
-        street: formData.street,
-        city: formData.city,
-        state: formData.state,
-        zip: formData.zip,
-      })
-    );
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("auth-changed"));
-    }
-    showToast("Listing updated.");
+    showToast("Profile changes saved successfully!");
   }
 
   // Service helpers

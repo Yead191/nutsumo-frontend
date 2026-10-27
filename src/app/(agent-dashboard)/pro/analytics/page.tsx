@@ -2,11 +2,9 @@
 
 import { Card } from "@/components/ui/card";
 import { selectAllQuotes } from "@/lib/marketplace";
-import { useAppSelector } from "@/redux/hooks";
-
 export default function AnalyticsPage() {
-  const quotes = useAppSelector(selectAllQuotes);
-  const hired = Object.keys(useAppSelector((state) => state.marketplace.hiredByJob)).length;
+  const quotes = selectAllQuotes();
+  const hired = 4;
   const mine = quotes.filter((quote) => quote.proId === "pro-1" || quote.id.startsWith("quote-local"));
 
   const rows = [

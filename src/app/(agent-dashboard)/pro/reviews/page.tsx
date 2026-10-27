@@ -14,8 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs } from "@/components/ui/tabs";
 import { TextArea, TextField } from "@/components/ui/field";
-import { replyToReview, addNotification } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { seedReviews, defaultProProfile } from "@/Mockdata";
 import { cn } from "@/lib/cn";
 
 function initials(name: string) {
@@ -38,11 +37,11 @@ type FilterType =
   | "1-star";
 
 export default function ProReviewsPage() {
-  const dispatch = useAppDispatch();
-  const reviews = useAppSelector((state) =>
-    state.features.reviews.filter((item) => item.proId === "pro-1")
+  const [reviewsList, setReviewsList] = useState(
+    seedReviews.filter((item) => item.proId === "pro-1"),
   );
-  const proProfile = useAppSelector((state) => state.features.proProfile);
+  const reviews = reviewsList;
+  const proProfile = defaultProProfile;
 
   const [replyDraft, setReplyDraft] = useState<Record<string, string>>({});
   const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
@@ -121,7 +120,9 @@ export default function ProReviewsPage() {
   function handlePostReply(reviewId: string) {
     const text = replyDraft[reviewId]?.trim();
     if (!text) return;
-    dispatch(replyToReview({ id: reviewId, reply: text }));
+    setReviewsList((prev) =>
+      prev.map((r) => (r.id === reviewId ? { ...r, reply: text } : r)),
+    );
     setReplyDraft((prev) => ({ ...prev, [reviewId]: "" }));
     setEditingReplyId(null);
     showToast("Response posted publicly to client review.");
@@ -544,15 +545,6 @@ export default function ProReviewsPage() {
                   type="button"
                   size="sm"
                   onClick={() => {
-                    dispatch(
-                      addNotification({
-                        title: "Review invite queued",
-                        body: "Review invitation sent to recent client.",
-                        href: "/pro/reviews",
-                        createdAt: "Just now",
-                        role: "pro",
-                      })
-                    );
                     setShowRequestModal(false);
                     showToast("Review invitation sent to client.");
                   }}

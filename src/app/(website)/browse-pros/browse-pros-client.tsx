@@ -9,28 +9,28 @@ import { Field, NativeSelect, TextField } from "@/components/ui/field";
 import { ProCard } from "@/components/shared/pro-card";
 import { BudgetDropdownFilter } from "@/components/shared/budget-filter";
 import { categories, professionals } from "@/Mockdata";
-import { loginAs } from "@/redux/slices/authSlice";
-import {
-  setCategory,
-  setMinRating,
-  setQuery,
-  setSort,
-  setZip,
-} from "@/redux/slices/filterSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { postJobHref } from "@/lib/role-access";
 import { getProDistance, parseResponseTimeHours } from "@/lib/geo-distance";
 import { cn } from "@/lib/cn";
+import type { User } from "@/types";
 
 const PAGE_SIZE = 8;
 
 export function BrowseProsClient() {
   const params = useSearchParams();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
-  const filters = useAppSelector((state) => state.filters);
-  const category = filters.category || params.get("category") || "";
-  const location = filters.zip || params.get("zip") || params.get("location") || "";
+  const user: any = null;
+  const [filters, setFilters] = useState({
+    query: "",
+    category: params.get("category") || "",
+    zip: params.get("zip") || params.get("location") || "",
+    minPrice: "",
+    maxPrice: "",
+    budgetTier: "",
+    minRating: "",
+    sort: "rated",
+  });
+  const category = filters.category;
+  const location = filters.zip;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [prevFilterKey, setPrevFilterKey] = useState("");
@@ -70,7 +70,7 @@ export function BrowseProsClient() {
       distance: getProDistance(
         pro,
         location,
-        user ? { zip: user.zip, city: user.city } : undefined,
+        undefined,
       ),
     }));
 
@@ -155,15 +155,6 @@ export function BrowseProsClient() {
                 <Button href="/browse-pros/pro-1" variant="ghost" size="sm">
                   My Storefront ↗
                 </Button>
-                <button
-                  type="button"
-                  onClick={() => dispatch(loginAs("homeowner"))}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-line bg-smoke px-3 py-1.5 font-display text-xs font-medium text-title hover:bg-white hover:border-primary/40 transition-colors"
-                  title="Switch to Homeowner Mode"
-                >
-                  <Repeat className="h-3.5 w-3.5 text-muted" />
-                  <span>Switch to Homeowner</span>
-                </button>
               </div>
             </div>
           </div>
@@ -173,14 +164,18 @@ export function BrowseProsClient() {
           <Field label="Search">
             <TextField
               value={filters.query}
-              onChange={(event) => dispatch(setQuery(event.target.value))}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, query: event.target.value }))
+              }
               placeholder="Name or service"
             />
           </Field>
           <Field label="Category">
             <NativeSelect
               value={category}
-              onChange={(event) => dispatch(setCategory(event.target.value))}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, category: event.target.value }))
+              }
             >
               <option value="">All services</option>
               {categories.map((item) => (
@@ -193,17 +188,31 @@ export function BrowseProsClient() {
           <Field label="Location">
             <TextField
               value={location}
-              onChange={(event) => dispatch(setZip(event.target.value))}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, zip: event.target.value }))
+              }
               placeholder="ZIP or city"
             />
           </Field>
           <Field label="Budget">
-            <BudgetDropdownFilter />
+            <BudgetDropdownFilter
+              value={filters}
+              onChange={(budget) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  minPrice: budget.minPrice,
+                  maxPrice: budget.maxPrice,
+                  budgetTier: budget.budgetTier,
+                }))
+              }
+            />
           </Field>
           <Field label="Min rating">
             <NativeSelect
               value={filters.minRating}
-              onChange={(event) => dispatch(setMinRating(event.target.value))}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, minRating: event.target.value }))
+              }
             >
               <option value="">Any</option>
               <option value="4.5">4.5+</option>
@@ -214,7 +223,9 @@ export function BrowseProsClient() {
           <Field label="Sort">
             <NativeSelect
               value={filters.sort}
-              onChange={(event) => dispatch(setSort(event.target.value as typeof filters.sort))}
+              onChange={(event) =>
+                setFilters((prev) => ({ ...prev, sort: event.target.value }))
+              }
             >
               <option value="rated">Highest rated</option>
               <option value="reviews">Most reviews</option>

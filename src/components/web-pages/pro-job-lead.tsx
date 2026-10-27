@@ -1,37 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { RequestDetail } from "@/components/web-pages/request-detail";
 import { ProQuoteForm } from "@/components/web-pages/pro-quote-form";
 import { Button } from "@/components/ui/button";
 import { selectJob, selectQuotesForJob } from "@/lib/marketplace";
 import { useRoleAccess } from "@/hooks/use-role-access";
-import { setLeadAction } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-
 import { cn } from "@/lib/cn";
 
 export function ProJobLead({ jobId }: { jobId: string }) {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const { access } = useRoleAccess();
-  const job = useAppSelector((state) => selectJob(state, jobId));
-  const leadAction = useAppSelector((state) => state.features.leadActions[jobId] ?? "open");
-  const hiredQuoteId = useAppSelector((state) => state.marketplace.hiredByJob[jobId]);
-  const quotes = useAppSelector((state) => selectQuotesForJob(state, jobId));
+  const job = selectJob(undefined, jobId);
+  const [leadAction, setLeadActionState] = useState<"open" | "accepted" | "declined">("open");
+  const hiredQuoteId = null;
+  const quotes = selectQuotesForJob(undefined, jobId);
   const myQuote = quotes.find((quote) => quote.proId === "pro-1");
   const alreadyQuoted = Boolean(myQuote);
   const forSomeoneElse = Boolean(job?.requestedProId && job.requestedProId !== "pro-1");
-  const hiredElsewhere = Boolean(hiredQuoteId && !quotes.some((quote) => quote.id === hiredQuoteId && quote.proId === "pro-1"));
+  const hiredElsewhere = false;
   const accepted = leadAction === "accepted" || alreadyQuoted;
   const passed = leadAction === "declined";
 
   function accept() {
-    dispatch(setLeadAction({ jobId, action: "accepted" }));
+    setLeadActionState("accepted");
   }
 
   function pass() {
-    dispatch(setLeadAction({ jobId, action: "declined" }));
+    setLeadActionState("declined");
     router.push("/pro/jobs");
   }
 

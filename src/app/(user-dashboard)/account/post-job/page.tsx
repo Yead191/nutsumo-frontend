@@ -34,13 +34,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, NativeSelect, TextArea, TextField } from "@/components/ui/field";
-import { categories, getPro, professionals } from "@/Mockdata";
+import { categories, getPro, professionals, demoHomeowner, seedAddresses } from "@/Mockdata";
 import { matchEligiblePros } from "@/lib/matching";
-import { loginAs } from "@/redux/slices/authSlice";
-import { clearDraft } from "@/redux/slices/intakeSlice";
-import { addJob, addQuote } from "@/redux/slices/marketplaceSlice";
-import { addNotification, invitePro, setJobPhotos, setJobStatus } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import type { JobVisibility, PropertyType, Urgency } from "@/types";
 import { cn } from "@/lib/cn";
 
@@ -121,12 +116,12 @@ function BookingFlow() {
   const inviteId = searchParams.get("invite");
   const invitedPro = inviteId ? getPro(inviteId) : null;
 
-  const draft = useAppSelector((state) => state.intake.draft);
-  const intakeReady = useAppSelector((state) => state.intake.hydrated);
-  const user = useAppSelector((state) => state.auth.user);
-  const addresses = useAppSelector((state) => state.features.addresses);
-  const listingStatus = useAppSelector((state) => state.admin.listingStatus);
-  const dispatch = useAppDispatch();
+  const draft = { problem: "", categorySlug: "", zip: "", summary: "", title: "" };
+  const intakeReady = true;
+  const user = demoHomeowner;
+  const addresses = seedAddresses;
+  const listingStatus = {};
+  const dispatch = (_action?: any) => {};
   const fileRef = useRef<HTMLInputElement>(null);
 
   // 3-Step Streamlined Flow
@@ -266,105 +261,6 @@ function BookingFlow() {
     );
     const matchedIds = invitedPro ? [invitedPro.id] : matches.map((item) => item.id);
 
-    if (!user) {
-      dispatch(loginAs("homeowner"));
-    }
-
-    dispatch(
-      addJob({
-        id: jobId,
-        title: titleInput.trim(),
-        categorySlug,
-        description: enhancedDescription,
-        zip: zipInput.trim(),
-        city: activeAddress?.city || user?.city || "Austin",
-        state: activeAddress?.state || user?.state || "TX",
-        urgency,
-        budget: budget || undefined,
-        propertyType,
-        intakeAnswers: [
-          {
-            id: "materials",
-            label: "Parts & materials",
-            value: MATERIAL_OPTIONS.find((item) => item.id === materialsStatus)?.title ?? "Pro brings parts",
-          },
-          {
-            id: "timing",
-            label: "Timing",
-            value: timeLabel,
-          },
-        ],
-        homeownerName: user?.name ?? "Homeowner",
-        requestedProId: invitedPro?.id,
-        visibility,
-        photos: photoUrls,
-        matchedProIds: matchedIds,
-      }),
-    );
-
-    if (photoUrls.length) {
-      dispatch(setJobPhotos({ jobId, photos: photoUrls }));
-    }
-
-    if (!invitedPro) {
-      matches.slice(0, 3).forEach((pro, index) => {
-        dispatch(
-          addQuote({
-            jobId,
-            proId: pro.id,
-            priceType: "fixed",
-            amount: 140 + index * 45,
-            scope: `Quoted work for ${titleInput.trim()}.`,
-            availability: urgency === "asap" ? "Same day / tomorrow" : "This week",
-            estimatedDuration: "1–3 hours",
-            proposedSchedule: timeLabel,
-            paymentTerms: "Pay the pro directly after the work is done.",
-            warranty: "90-day workmanship",
-            materialsIncluded: true,
-          }),
-        );
-      });
-      if (matches.length) {
-        dispatch(setJobStatus({ jobId, status: "quotes_in" }));
-      }
-    }
-
-    if (invitedPro) {
-      dispatch(invitePro({ jobId, proId: invitedPro.id }));
-      dispatch(
-        addNotification({
-          title: "Quote request",
-          body: `${user?.name ?? "A homeowner"} asked you to quote "${titleInput.trim()}" in ${zipInput.trim()}.`,
-          href: `/pro/jobs/${jobId}`,
-          createdAt: "Just now",
-          role: "pro",
-        }),
-      );
-    } else if (matchedIds.includes("pro-1")) {
-      dispatch(
-        addNotification({
-          title: "New matching job",
-          body: `${titleInput.trim()} was posted in ${zipInput.trim()}. Review and send a quotation.`,
-          href: `/pro/jobs/${jobId}`,
-          createdAt: "Just now",
-          role: "pro",
-        }),
-      );
-    }
-
-    dispatch(
-      addNotification({
-        title: invitedPro ? "Request sent" : "Job published",
-        body: invitedPro
-          ? `${invitedPro.name} has your details and can send a quotation. Hiring is not confirmed until you accept it.`
-          : `${matchedIds.length} matching professional${matchedIds.length === 1 ? "" : "s"} can now send quotations.`,
-        href: `/account/jobs/${jobId}`,
-        createdAt: "Just now",
-        role: "homeowner",
-      }),
-    );
-
-    dispatch(clearDraft());
     setSubmittedJobId(jobId);
   }
 

@@ -5,25 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, Check, CheckCheck, Clock } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  markAllNotificationsRead,
-  markNotificationRead,
-  type AppNotification,
-} from "@/redux/slices/featuresSlice";
-import type { User } from "@/types";
+import { seedNotifications } from "@/Mockdata";
+import type { AppNotification, User } from "@/types";
 
 export function NotificationMenu({ user }: { user: User }) {
   const router = useRouter();
-  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  const allNotifications = useAppSelector((state) => state.features.notifications);
+  const [allNotifications, setAllNotifications] = useState<AppNotification[]>(seedNotifications);
   const notifications = useMemo(
     () =>
       allNotifications.filter(
-        (n) => n.role === user.role as any || n.role === "all",
+        (n) => (n.role as any) === (user.role as any) || n.role === "all",
       ),
     [allNotifications, user.role],
   );
@@ -54,7 +48,9 @@ export function NotificationMenu({ user }: { user: User }) {
 
   function handleSelectNotification(notif: AppNotification) {
     if (!notif.read) {
-      dispatch(markNotificationRead(notif.id));
+      setAllNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n)),
+      );
     }
     setOpen(false);
     router.push(notif.href);
@@ -62,7 +58,11 @@ export function NotificationMenu({ user }: { user: User }) {
 
   function handleMarkAllRead(e: React.MouseEvent) {
     e.stopPropagation();
-    dispatch(markAllNotificationsRead(user.role as any));
+    setAllNotifications((prev) =>
+      prev.map((n) =>
+        (n.role as any) === (user.role as any) || n.role === "all" ? { ...n, read: true } : n,
+      ),
+    );
   }
 
   return (

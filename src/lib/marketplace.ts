@@ -1,71 +1,63 @@
-import { createSelector } from "@reduxjs/toolkit";
 import { jobs as seedJobs, quotes as seedQuotes } from "@/Mockdata";
-import type { RootState } from "@/redux/store";
 import type { Job, JobStatus, Quote } from "@/types";
 
-export const selectAllJobs = createSelector(
-  [
-    (state: RootState) => state.marketplace.extraJobs,
-    (state: RootState) => state.marketplace.hiredByJob,
-    (state: RootState) => state.features.jobStatusOverride,
-    (state: RootState) => state.marketplace.completions,
-    (state: RootState) => state.marketplace.bookings,
-  ],
-  (extraJobs, hired, overrides, completions, bookings): Job[] => {
-    return [...extraJobs, ...seedJobs].map((job) => {
-      let status: JobStatus = overrides[job.id] ?? job.status;
+export const selectAllJobs = (state?: any): Job[] => {
+  const extraJobs = state?.marketplace?.extraJobs ?? [];
+  const hired = state?.marketplace?.hiredByJob ?? {};
+  const overrides = state?.features?.jobStatusOverride ?? {};
+  const completions = state?.marketplace?.completions ?? {};
+  const bookings = state?.marketplace?.bookings ?? {};
 
-      if (status === "cancelled" || status === "disputed" || status === "completed") {
-        return { ...job, status };
-      }
+  return [...extraJobs, ...seedJobs].map((job) => {
+    let status: JobStatus = overrides[job.id] ?? job.status;
 
-      const completion = completions[job.id];
-      if (completion?.homeownerConfirmedAt) {
-        status = "completed";
-      } else if (completion?.proMarkedAt) {
-        status = "awaiting_confirm";
-      } else if (bookings[job.id]?.status === "confirmed" && hired[job.id]) {
-        if (status === "hired" || status === "getting_quotes" || status === "quotes_in" || status === "active") {
-          status = "scheduled";
-        }
-      } else if (hired[job.id]) {
-        if (status !== "scheduled" && status !== "in_progress" && status !== "awaiting_confirm") {
-          status = "hired";
-        }
-      }
-
+    if (status === "cancelled" || status === "disputed" || status === "completed") {
       return { ...job, status };
-    });
-  },
-);
+    }
 
-export function selectJob(state: RootState, id: string) {
+    const completion = completions[job.id];
+    if (completion?.homeownerConfirmedAt) {
+      status = "completed";
+    } else if (completion?.proMarkedAt) {
+      status = "awaiting_confirm";
+    } else if (bookings[job.id]?.status === "confirmed" && hired[job.id]) {
+      if (status === "hired" || status === "getting_quotes" || status === "quotes_in" || status === "active") {
+        status = "scheduled";
+      }
+    } else if (hired[job.id]) {
+      if (status !== "scheduled" && status !== "in_progress" && status !== "awaiting_confirm") {
+        status = "hired";
+      }
+    }
+
+    return { ...job, status };
+  });
+};
+
+export function selectJob(state: any, id: string) {
   return selectAllJobs(state).find((job) => job.id === id);
 }
 
-export const selectAllQuotes = createSelector(
-  [
-    (state: RootState) => state.marketplace.extraQuotes,
-    (state: RootState) => state.marketplace.quoteOverrides,
-  ],
-  (extraQuotes, overrides): Quote[] => {
-    const merge = (quote: Quote): Quote => {
-      const patch = overrides[quote.id] ?? {};
-      return {
-        ...quote,
-        ...patch,
-        status: patch.status ?? quote.status ?? "pending",
-      };
-    };
-    return [...extraQuotes.map(merge), ...seedQuotes.map(merge)];
-  },
-);
+export const selectAllQuotes = (state?: any): Quote[] => {
+  const extraQuotes: Quote[] = state?.marketplace?.extraQuotes ?? [];
+  const overrides: Record<string, Partial<Quote>> = state?.marketplace?.quoteOverrides ?? {};
 
-export function selectQuotesForJob(state: RootState, jobId: string) {
+  const merge = (quote: Quote): Quote => {
+    const patch = overrides[quote.id] ?? {};
+    return {
+      ...quote,
+      ...patch,
+      status: patch.status ?? quote.status ?? "pending",
+    };
+  };
+  return [...extraQuotes.map(merge), ...seedQuotes.map(merge)];
+};
+
+export function selectQuotesForJob(state: any, jobId: string) {
   return selectAllQuotes(state).filter((quote) => quote.jobId === jobId);
 }
 
-export function selectJobsForHomeowner(state: RootState, name: string) {
+export function selectJobsForHomeowner(state: any, name: string) {
   if (!name || name === "Homeowner" || name === "Maya Chen") {
     return selectAllJobs(state).filter(
       (job) => job.homeownerName === "Maya Chen" || job.homeownerName === "Homeowner"
@@ -76,20 +68,20 @@ export function selectJobsForHomeowner(state: RootState, name: string) {
   );
 }
 
-export function selectBooking(state: RootState, jobId: string) {
-  return state.marketplace.bookings[jobId];
+export function selectBooking(state: any, jobId: string) {
+  return state?.marketplace?.bookings?.[jobId];
 }
 
-export function selectChangeRequests(state: RootState, jobId: string) {
-  return state.marketplace.changeRequests.filter((cr) => cr.jobId === jobId);
+export function selectChangeRequests(state: any, jobId: string) {
+  return (state?.marketplace?.changeRequests ?? []).filter((cr: any) => cr.jobId === jobId);
 }
 
-export function selectCompletion(state: RootState, jobId: string) {
-  return state.marketplace.completions[jobId];
+export function selectCompletion(state: any, jobId: string) {
+  return state?.marketplace?.completions?.[jobId];
 }
 
-export function selectHiredQuoteId(state: RootState, jobId: string) {
-  return state.marketplace.hiredByJob[jobId];
+export function selectHiredQuoteId(state: any, jobId: string) {
+  return state?.marketplace?.hiredByJob?.[jobId];
 }
 
 const TIMING_TAG = /\[Preferred Timing:\s*([^\]]+)\]/gi;
@@ -161,13 +153,13 @@ export const paymentMethodLabels: Record<string, string> = {
   other: "Other agreed method",
 };
 
-export function selectProJobsGrouped(state: RootState, proId: string = "pro-1") {
+export function selectProJobsGrouped(state?: any, proId: string = "pro-1") {
   const allJobs = selectAllJobs(state);
-  const hiredByJob = state.marketplace.hiredByJob;
-  const bookings = state.marketplace.bookings;
+  const hiredByJob = state?.marketplace?.hiredByJob ?? {};
+  const bookings = state?.marketplace?.bookings ?? {};
   const quotes = selectAllQuotes(state);
-  const invitedPros = state.features.invitedPros;
-  const leadActions = state.features.leadActions;
+  const invitedPros = state?.features?.invitedPros ?? {};
+  const leadActions = state?.features?.leadActions ?? {};
 
   // 1. Direct 1-on-1 inquiries specifically directed to this pro
   const directInquiries = allJobs.filter((job) => {
@@ -242,7 +234,7 @@ export function selectProJobsGrouped(state: RootState, proId: string = "pro-1") 
   };
 }
 
-export function selectHomeownerJobsGrouped(state: RootState, homeownerName: string) {
+export function selectHomeownerJobsGrouped(state?: any, homeownerName: string = "Maya Chen") {
   const mine = selectJobsForHomeowner(state, homeownerName);
   const active = mine.filter((j) =>
     ["hired", "scheduled", "en_route", "in_progress", "awaiting_confirm"].includes(j.status)
@@ -262,7 +254,7 @@ export function selectHomeownerJobsGrouped(state: RootState, homeownerName: stri
   };
 }
 
-export function selectHomeownerBookingsGrouped(state: RootState, homeownerName: string) {
+export function selectHomeownerBookingsGrouped(state?: any, homeownerName: string = "Maya Chen") {
   const mine = selectJobsForHomeowner(state, homeownerName);
   const booked = mine.filter((j) =>
     ["hired", "scheduled", "en_route", "in_progress", "awaiting_confirm", "completed", "cancelled", "disputed"].includes(j.status)
@@ -282,7 +274,7 @@ export function selectHomeownerBookingsGrouped(state: RootState, homeownerName: 
   };
 }
 
-export function selectHomeownerRequests(state: RootState, homeownerName: string) {
+export function selectHomeownerRequests(state?: any, homeownerName: string = "Maya Chen") {
   const mine = selectJobsForHomeowner(state, homeownerName);
   return mine.filter((j) =>
     ["draft", "active", "getting_quotes", "quotes_in"].includes(j.status)

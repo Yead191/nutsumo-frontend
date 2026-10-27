@@ -15,16 +15,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { logout } from "@/redux/slices/authSlice";
-import { setTwoFactor } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { demoHomeowner, demoProUser } from "@/Mockdata";
 import { cn } from "@/lib/cn";
 
 export function SecuritySettings({ role }: { role: "homeowner" | "pro" }) {
-  const dispatch = useAppDispatch();
   const router = useRouter();
-  const user = useAppSelector((state) => state.auth.user);
-  const twoFactorOn = useAppSelector((state) => state.features.twoFactorOn);
+  const user = role === "pro" ? demoProUser : demoHomeowner;
+  const [twoFactorOn, setTwoFactorOn] = useState(false);
 
   const [deleteArmed, setDeleteArmed] = useState(false);
   const [sessionsCleared, setSessionsCleared] = useState(false);
@@ -34,7 +31,7 @@ export function SecuritySettings({ role }: { role: "homeowner" | "pro" }) {
 
   function handleToggle2FA() {
     const nextState = !twoFactorOn;
-    dispatch(setTwoFactor(nextState));
+    setTwoFactorOn(nextState);
     setTwoFactorFeedback(
       nextState
         ? "Two-factor authentication enabled. A verification code will be sent to your phone on new logins."
@@ -287,7 +284,6 @@ export function SecuritySettings({ role }: { role: "homeowner" | "pro" }) {
                 size="sm"
                 className="bg-error hover:bg-red-700 text-white"
                 onClick={() => {
-                  dispatch(logout());
                   router.push("/");
                 }}
               >

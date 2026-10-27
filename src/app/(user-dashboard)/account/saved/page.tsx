@@ -5,10 +5,9 @@ import { ProCard } from "@/components/shared/pro-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { professionals } from "@/Mockdata";
-import { useAppSelector } from "@/redux/hooks";
 
 export default function SavedProsPage() {
-  const favorites = useAppSelector((state) => state.features.favorites);
+  const favorites = ["pro-1", "pro-2", "pro-3"];
   const list = professionals.filter(
     (pro) => favorites.includes(pro.id) && pro.clearance === "cleared",
   );

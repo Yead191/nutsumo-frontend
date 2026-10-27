@@ -70,7 +70,8 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
     }
 
     try {
-      const { logoutUser } = await import("@/helpers/next-fetch/apiActions/authActions");
+      const { logoutUser } =
+        await import("@/helpers/next-fetch/apiActions/authActions");
       await logoutUser();
     } catch {}
 
@@ -92,11 +93,11 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full border border-slate-200/80 bg-white hover:border-[#FE375D] shadow-2xs transition-all cursor-pointer"
+        className="flex items-center justify-center gap-2 p-1   rounded-full  shadow-2xs transition-all cursor-pointer"
         aria-expanded={isOpen}
         aria-label="User menu"
       >
-        <div className="relative h-8 w-8 rounded-full overflow-hidden bg-[#FE375D]/10 border border-[#FE375D]/20 flex items-center justify-center text-[#FE375D] font-bold text-xs select-none">
+        <div className="relative h-10 w-10 rounded-full overflow-hidden bg-[#FE375D]/10 border border-[#FE375D]/20 flex items-center justify-center text-[#FE375D] font-bold text-xs select-none">
           {userImage ? (
             <Image
               src={userImage}
@@ -109,7 +110,7 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
           )}
         </div>
 
-        <span className="text-xs font-bold text-slate-800 max-w-[100px] truncate hidden sm:inline-block">
+        {/* <span className="text-xs font-bold text-slate-800 max-w-[100px] truncate hidden sm:inline-block">
           {user?.name || "My Account"}
         </span>
 
@@ -118,7 +119,7 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
             "h-3.5 w-3.5 text-slate-400 transition-transform duration-200",
             isOpen && "rotate-180 text-[#FE375D]"
           )}
-        />
+        /> */}
       </button>
 
       {/* Floating Dropdown Card */}

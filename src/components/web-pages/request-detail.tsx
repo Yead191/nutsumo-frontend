@@ -36,27 +36,24 @@ import {
 import {
   getCategory,
   getPro,
+  seedReviews,
   urgencyLabels,
 } from "@/Mockdata";
-import {
-  acknowledgeChangeRequest,
-  addChangeRequest,
-  confirmBooking,
-  homeownerConfirmComplete,
-  proMarkComplete,
-  requestReschedule,
-  resolveChangeRequest,
-  setPaymentArrangement,
-} from "@/redux/slices/marketplaceSlice";
-import {
-  addNotification,
-  addReview,
-  updateReview,
-  replyToReview,
-  setJobStatus,
-} from "@/redux/slices/featuresSlice";
 import type { DirectPaymentMethod } from "@/types";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+
+const acknowledgeChangeRequest = (p: any) => ({ type: "acknowledgeChangeRequest", payload: p });
+const addChangeRequest = (p: any) => ({ type: "addChangeRequest", payload: p });
+const confirmBooking = (p: any) => ({ type: "confirmBooking", payload: p });
+const homeownerConfirmComplete = (p: any) => ({ type: "homeownerConfirmComplete", payload: p });
+const proMarkComplete = (p: any) => ({ type: "proMarkComplete", payload: p });
+const requestReschedule = (p: any) => ({ type: "requestReschedule", payload: p });
+const resolveChangeRequest = (p: any) => ({ type: "resolveChangeRequest", payload: p });
+const setPaymentArrangement = (p: any) => ({ type: "setPaymentArrangement", payload: p });
+const addNotification = (p: any) => ({ type: "addNotification", payload: p });
+const addReview = (p: any) => ({ type: "addReview", payload: p });
+const updateReview = (p: any) => ({ type: "updateReview", payload: p });
+const replyToReview = (p: any) => ({ type: "replyToReview", payload: p });
+const setJobStatus = (p: any) => ({ type: "setJobStatus", payload: p });
 
 function initials(name: string) {
   return name
@@ -82,17 +79,55 @@ export function RequestDetail({
   canHire?: boolean;
   viewer?: "homeowner" | "pro";
 }) {
-  const dispatch = useAppDispatch();
-  const job = useAppSelector((state) => selectJob(state, id));
-  const quotes = useAppSelector((state) => selectQuotesForJob(state, id));
-  const booking = useAppSelector((state) => selectBooking(state, id));
-  const changeRequests = useAppSelector((state) => selectChangeRequests(state, id));
-  const completion = useAppSelector((state) => selectCompletion(state, id));
-  const storedPhotos = useAppSelector((state) => state.features.jobPhotos[id] ?? []);
+  const initialJob = selectJob(undefined, id);
+  const [job, setJob] = useState(initialJob);
+  const quotes = useMemo(() => selectQuotesForJob(undefined, id), [id]);
+  const [booking, setBooking] = useState<any>(() => selectBooking(undefined, id));
+  const [changeRequests, setChangeRequests] = useState<any[]>(() => selectChangeRequests(undefined, id));
+  const [completion, setCompletion] = useState<any>(() => selectCompletion(undefined, id));
+  const storedPhotos: string[] = [];
   const isProView = viewer === "pro";
-  const marketplaceReady = useAppSelector((state) => state.marketplace.hydrated);
-  const hiredQuoteId = useAppSelector((state) => state.marketplace.hiredByJob[id]);
-  const hiredQuote = quotes.find((quote) => quote.id === hiredQuoteId);
+  const marketplaceReady = true;
+  const hiredQuote = quotes.find((quote) => quote.status === "accepted") || quotes[0];
+  const hiredQuoteId = hiredQuote?.id;
+  const [existingReview, setExistingReview] = useState<any>(() =>
+    seedReviews.find((item) => item.jobId === id),
+  );
+
+  const dispatch = (action: any) => {
+    if (!action) return;
+    if (action.type === "setJobStatus" && action.payload?.status) {
+      setJob((prev) => (prev ? { ...prev, status: action.payload.status } : undefined));
+    }
+    if (action.type === "confirmBooking" || action.type === "requestReschedule") {
+      setBooking((prev: any) => ({ ...prev, ...action.payload }));
+    }
+    if (action.type === "proMarkComplete" || action.type === "homeownerConfirmComplete") {
+      setJob((prev) => (prev ? { ...prev, status: "completed" } : undefined));
+      setCompletion((prev: any) => ({
+        ...prev,
+        ...action.payload,
+        homeownerConfirmedAt: new Date().toISOString(),
+      }));
+    }
+    if (action.type === "addChangeRequest") {
+      setChangeRequests((prev: any) => [
+        ...(prev || []),
+        { id: `cr-${Date.now()}`, ...action.payload, status: "pending" },
+      ]);
+    }
+    if (action.type === "resolveChangeRequest") {
+      setChangeRequests((prev: any) =>
+        (prev || []).map((cr: any) =>
+          cr.id === action.payload.requestId ? { ...cr, status: action.payload.status } : cr,
+        ),
+      );
+    }
+    if (action.type === "addReview" || action.type === "updateReview") {
+      setExistingReview(action.payload);
+    }
+  };
+
   const [reviewRating, setReviewRating] = useState<number>(5);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [reviewBody, setReviewBody] = useState("");
@@ -112,9 +147,6 @@ export function RequestDetail({
   const [arrangePay, setArrangePay] = useState<DirectPaymentMethod>("cash");
   const [selectedReviewTags, setSelectedReviewTags] = useState<string[]>([]);
   const [wouldRecommend, setWouldRecommend] = useState<"yes" | "neutral" | "no">("yes");
-  const existingReview = useAppSelector((state) =>
-    state.features.reviews.find((item) => item.jobId === id)
-  );
   const [proReplyDraft, setProReplyDraft] = useState("");
 
   const currentDisplayRating = hoverRating || reviewRating;
@@ -574,7 +606,7 @@ export function RequestDetail({
 
           {booking.priceHistory && booking.priceHistory.length > 1 ? (
             <ul className="mt-4 space-y-1 text-xs text-muted">
-              {booking.priceHistory.map((row) => (
+              {booking.priceHistory.map((row: any) => (
                 <li key={row.id}>
                   ${row.previousAmount} → ${row.newAmount} · {row.reason}
                 </li>

@@ -7,12 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, NativeSelect, TextArea, TextField } from "@/components/ui/field";
 import { useRoleAccess } from "@/hooks/use-role-access";
-import { addQuote, acceptCounter, setOfferStatus } from "@/redux/slices/marketplaceSlice";
-import { addNotification, setJobStatus } from "@/redux/slices/featuresSlice";
 import { selectJob, selectQuotesForJob } from "@/lib/marketplace";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { cn } from "@/lib/cn";
-import type { QuotePriceType } from "@/types";
+import type { Quote, QuotePriceType } from "@/types";
 
 function getISODatePlus(days: number) {
   const d = new Date();
@@ -58,14 +55,14 @@ export function ProQuoteForm({
   jobId: string;
   onPass?: () => void;
 }) {
-  const dispatch = useAppDispatch();
   const { access } = useRoleAccess();
-  const job = useAppSelector((state) => selectJob(state, jobId));
-  const hiredQuoteId = useAppSelector((state) => state.marketplace.hiredByJob[jobId]);
-  const quotes = useAppSelector((state) => selectQuotesForJob(state, jobId));
+  const job = selectJob(undefined, jobId);
+  const quotes = selectQuotesForJob(undefined, jobId);
   const myQuote = quotes.find((q) => q.proId === "pro-1");
-  const myCounters = quotes.filter((q) => q.proId === "pro-1" && q.status === "countered");
-  const jobClosed = Boolean(hiredQuoteId) || ["hired", "scheduled", "cancelled", "completed", "disputed"].includes(job?.status ?? "");
+  const [myCounters, setMyCounters] = useState<Quote[]>(() =>
+    quotes.filter((q) => q.proId === "pro-1" && q.status === "countered"),
+  );
+  const jobClosed = ["hired", "scheduled", "cancelled", "completed", "disputed"].includes(job?.status ?? "");
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [selectedDate, setSelectedDate] = useState(() => getISODatePlus(1));
@@ -97,19 +94,6 @@ export function ProQuoteForm({
     const amount = Number(data.get("amount"));
     const scope = String(data.get("scope") ?? "").trim();
     const availability = String(data.get("availability") ?? "").trim();
-    const exclusions = String(data.get("exclusions") ?? "").trim();
-    const estimatedDuration = String(data.get("duration") ?? "").trim();
-    const proposedSchedule = String(data.get("schedule") ?? "").trim();
-    const expiresAt = String(data.get("expires") ?? "").trim();
-    const materialsIncluded = data.get("materials") === "yes";
-
-    const methodLabels = acceptedMethods.map((m) => {
-      const found = PAYMENT_METHOD_OPTIONS.find((opt) => opt.id === m);
-      return found ? found.label : m;
-    });
-    const compiledPaymentTerms = `${paymentSchedule} · Accepts: ${methodLabels.join(", ")}${
-      paymentNote.trim() ? ` · Note: ${paymentNote.trim()}` : ""
-    }`;
 
     if (!Number.isFinite(amount) || amount <= 0) {
       setError("Enter a valid amount.");
@@ -124,34 +108,6 @@ export function ProQuoteForm({
       return;
     }
     setError("");
-    dispatch(
-      addQuote({
-        jobId,
-        proId: "pro-1",
-        priceType: String(data.get("priceType") ?? "estimate") as QuotePriceType,
-        amount,
-        scope,
-        exclusions: exclusions || undefined,
-        availability,
-        materialsIncluded,
-        estimatedDuration: estimatedDuration || undefined,
-        proposedSchedule: proposedSchedule || undefined,
-        expiresAt: expiresAt || undefined,
-        paymentTerms: compiledPaymentTerms,
-        notes: contractorNotes.trim() || undefined,
-        warranty: String(data.get("warranty") ?? "").trim() || undefined,
-      }),
-    );
-    dispatch(setJobStatus({ jobId, status: "quotes_in" }));
-    dispatch(
-      addNotification({
-        title: "New offer",
-        body: "A professional sent a quote on your request.",
-        href: `/account/jobs/${jobId}`,
-        createdAt: "Just now",
-        role: "homeowner",
-      }),
-    );
     setSaved(true);
     event.currentTarget.reset();
   }
@@ -170,17 +126,7 @@ export function ProQuoteForm({
               type="button"
               size="sm"
               onClick={() => {
-                dispatch(acceptCounter({ quoteId: quote.id, jobId }));
-                dispatch(setJobStatus({ jobId, status: "hired" }));
-                dispatch(
-                  addNotification({
-                    title: "Counter accepted",
-                    body: "Confirm a schedule on the job to finish booking.",
-                    href: `/account/jobs/${jobId}`,
-                    createdAt: "Just now",
-                    role: "homeowner",
-                  }),
-                );
+                setMyCounters((prev) => prev.filter((q) => q.id !== quote.id));
               }}
             >
               Accept counter
@@ -189,7 +135,9 @@ export function ProQuoteForm({
               type="button"
               size="sm"
               variant="ghost"
-              onClick={() => dispatch(setOfferStatus({ quoteId: quote.id, status: "rejected" }))}
+              onClick={() => {
+                setMyCounters((prev) => prev.filter((q) => q.id !== quote.id));
+              }}
             >
               Decline
             </Button>
