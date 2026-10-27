@@ -45,3 +45,19 @@ export async function logoutUser(): Promise<{ success: boolean }> {
 
   return { success: true };
 }
+
+/** Submit Artisan National ID (Front, Back) and Live Selfie */
+export async function submitArtisanIdentity(formData: FormData) {
+  return nextFetch("/auth/verify-identity", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+/** Get Artisan Identity Verification Status */
+export async function getIdentityStatus(email?: string) {
+  const query = email ? `?email=${encodeURIComponent(email)}` : "";
+  return nextFetch(`/auth/identity-status${query}`, {
+    method: "GET",
+  });
+}

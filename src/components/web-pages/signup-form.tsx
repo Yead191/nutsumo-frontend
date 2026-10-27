@@ -16,20 +16,14 @@ export function SignupForm() {
   const router = useRouter();
   const [role, setRole] = React.useState<"USER" | "ARTISAN">("USER");
 
-  // Common fields
+  // Form fields matching the mobile app screens
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
+  const [trade, setTrade] = React.useState("Plumber");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-
-  // Artisan specific fields
-  const [company, setCompany] = React.useState("");
-  const [jobTitle, setJobTitle] = React.useState("");
-  const [yearsExperience, setYearsExperience] = React.useState("3-5 years");
-  const [hourlyRate, setHourlyRate] = React.useState("45");
-  const [bio, setBio] = React.useState("");
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
@@ -54,88 +48,45 @@ export function SignupForm() {
       return;
     }
 
-    if (role === "ARTISAN" && !company) {
-      setError("Please enter your Company or Business Name.");
-      return;
-    }
-
     try {
       setIsLoading(true);
 
-      if (role === "USER") {
-        // Customer Registration
-        const res = await nextFetch("/auth/register", {
-          method: "POST",
-          body: {
-            name,
-            email,
-            password,
-            phone: phone || undefined,
-          },
-        });
+      const res = await nextFetch("/auth/register", {
+        method: "POST",
+        body: {
+          name,
+          email,
+          password,
+          phone: phone || undefined,
+          role,
+          trade: role === "ARTISAN" ? trade : undefined,
+        },
+      });
 
-        if (
-          !res?.success &&
-          res?.message?.includes("Account is not verified")
-        ) {
-          toast.info("Account already created. Please verify your email.");
-          router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
-          return;
-        }
-
-        if (!res?.success) {
-          const msg = res?.message || "Registration failed. Please try again.";
-          setError(msg);
-          toast.error(msg);
-          return;
-        }
-
-        toast.success(res.message || "Account created! Please check your email for the verification code.");
-        router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
-      } else {
-        // Artisan Registration
-        const vendorProfile = JSON.stringify({
-          jobTitle: jobTitle || "Artisan Specialist",
-          contactNo: phone || "1234567890",
-          bio: bio || ("Professional " + (jobTitle || "Artisan") + " registered on Nutsumo."),
-          expertise: [jobTitle || "General Maintenance"],
-          yearsExperience: yearsExperience || "3-5 years",
-          degree: "Trade Qualification",
-          hourlyRate: Number(hourlyRate) || 45,
-          availability: "Full Time",
-          consultationTypes: ["In-Person", "On-site Quote"],
-        });
-
-        const res = await nextFetch("/auth/register/vendor", {
-          method: "POST",
-          body: {
-            name,
-            email,
-            password,
-            company,
-            vendorProfile,
-          },
-        });
-
-        if (
-          !res?.success &&
-          res?.message?.includes("Account is not verified")
-        ) {
-          toast.info("Account already created. Please verify your email.");
-          router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
-          return;
-        }
-
-        if (!res?.success) {
-          const msg = res?.message || "Artisan registration failed. Please try again.";
-          setError(msg);
-          toast.error(msg);
-          return;
-        }
-
-        toast.success(res.message || "Artisan account created! Please verify your email to continue.");
-        router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
+      if (
+        !res?.success &&
+        res?.message?.includes("Account is not verified")
+      ) {
+        toast.info("Account already created. Please verify your email.");
+        router.push(
+          `/verify-otp?email=${encodeURIComponent(email)}&flow=verify&role=${role}`
+        );
+        return;
       }
+
+      if (!res?.success) {
+        const msg = res?.message || "Registration failed. Please try again.";
+        setError(msg);
+        toast.error(msg);
+        return;
+      }
+
+      toast.success(
+        res.message || "Account created! Please check your email for the verification code."
+      );
+      router.push(
+        `/verify-otp?email=${encodeURIComponent(email)}&flow=verify&role=${role}`
+      );
     } catch (err: any) {
       console.error("Signup error:", err);
       const msg = err?.message || "Network error. Please try again.";
@@ -151,7 +102,10 @@ export function SignupForm() {
       setIsGoogleLoading(true);
       const res = await loginWithGoogle(tokenResponse.access_token);
       if (res?.success) {
-        const token = (res.data as any)?.createToken || (res.data as any)?.accessToken || (res.data as any)?.token;
+        const token =
+          (res.data as any)?.createToken ||
+          (res.data as any)?.accessToken ||
+          (res.data as any)?.token;
         const userRole = res.data?.role || "USER";
         if (token) Cookies.set("accessToken", token, { expires: 7, path: "/" });
         if (userRole) Cookies.set("role", userRole, { expires: 7, path: "/" });
@@ -223,19 +177,19 @@ export function SignupForm() {
 
       {/* Red Eyebrow */}
       <span className="block text-xs font-bold uppercase tracking-wider text-[#FE375D] mb-1.5">
-        {role === "USER" ? "YOUR CUSTOMER ACCOUNT" : "BECOME A VERIFIED ARTISAN"}
+        {role === "USER" ? "YOUR CUSTOMER ACCOUNT" : "ARTISAN REGISTRATION"}
       </span>
 
       {/* Main Headline */}
       <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-2">
-        {role === "USER" ? "Create your account." : "Join as an Artisan."}
+        Create account
       </h1>
 
       {/* Subtitle */}
       <p className="text-sm text-slate-500 mb-6">
         {role === "USER"
-          ? "Join Nutsumo to hire verified artisans and manage your bookings."
-          : "Grow your trade business and get matched with quality clients."}
+          ? "Sign up to find trusted Job Seekers, compare quotes and manage your services with ease."
+          : "Sign up as an Artisan to connect with clients, get verified, and grow your trade business."}
       </p>
 
       {error && (
@@ -252,7 +206,7 @@ export function SignupForm() {
             htmlFor="name"
             className="block text-xs font-bold text-slate-800 mb-1"
           >
-            Full Name *
+            Full name *
           </label>
           <input
             id="name"
@@ -260,7 +214,7 @@ export function SignupForm() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. John Doe"
+            placeholder="Enter your full name"
             className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
           />
         </div>
@@ -271,7 +225,7 @@ export function SignupForm() {
             htmlFor="email"
             className="block text-xs font-bold text-slate-800 mb-1"
           >
-            Email address *
+            Email address or Phone number *
           </label>
           <input
             id="email"
@@ -279,95 +233,37 @@ export function SignupForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
+            placeholder="Enter your email or phone number"
             className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
           />
         </div>
 
-        {/* Phone */}
-        <div>
-          <label
-            htmlFor="phone"
-            className="block text-xs font-bold text-slate-800 mb-1"
-          >
-            Phone number {role === "ARTISAN" ? "*" : "(optional)"}
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            required={role === "ARTISAN"}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+1 (555) 000-0000"
-            className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
-          />
-        </div>
-
-        {/* Artisan Specific Fields */}
+        {/* Primary Trade for Artisan */}
         {role === "ARTISAN" && (
-          <>
-            <div>
-              <label
-                htmlFor="company"
-                className="block text-xs font-bold text-slate-800 mb-1"
-              >
-                Business / Company Name *
-              </label>
-              <input
-                id="company"
-                type="text"
-                required
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                placeholder="e.g. Apex Plumbing & Electric Ltd"
-                className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label
-                  htmlFor="jobTitle"
-                  className="block text-xs font-bold text-slate-800 mb-1"
-                >
-                  Primary Trade *
-                </label>
-                <select
-                  id="jobTitle"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-3 text-sm text-slate-900 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
-                >
-                  <option value="">Select Trade</option>
-                  <option value="Plumber">Plumber</option>
-                  <option value="Electrician">Electrician</option>
-                  <option value="Carpenter">Carpenter</option>
-                  <option value="Painter & Decorator">Painter & Decorator</option>
-                  <option value="HVAC Specialist">HVAC Specialist</option>
-                  <option value="Mason / Builder">Mason / Builder</option>
-                  <option value="Handyman">Handyman</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="hourlyRate"
-                  className="block text-xs font-bold text-slate-800 mb-1"
-                >
-                  Hourly Rate ($)
-                </label>
-                <input
-                  id="hourlyRate"
-                  type="number"
-                  min="1"
-                  value={hourlyRate}
-                  onChange={(e) => setHourlyRate(e.target.value)}
-                  placeholder="45"
-                  className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
-                />
-              </div>
-            </div>
-          </>
+          <div>
+            <label
+              htmlFor="trade"
+              className="block text-xs font-bold text-slate-800 mb-1"
+            >
+              Primary Trade / Skill *
+            </label>
+            <select
+              id="trade"
+              value={trade}
+              onChange={(e) => setTrade(e.target.value)}
+              className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-3 text-sm text-slate-900 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+            >
+              <option value="Plumber">Plumber</option>
+              <option value="Electrician">Electrician</option>
+              <option value="Carpenter">Carpenter</option>
+              <option value="Painter & Decorator">Painter & Decorator</option>
+              <option value="HVAC Specialist">HVAC Specialist</option>
+              <option value="Mason / Builder">Mason / Builder</option>
+              <option value="Handyman">Handyman</option>
+              <option value="Roofer">Roofer</option>
+              <option value="Welder">Welder</option>
+            </select>
+          </div>
         )}
 
         {/* Password */}
@@ -386,7 +282,7 @@ export function SignupForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Enter your password"
               className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 pr-11 pl-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
             />
             <button
@@ -414,13 +310,13 @@ export function SignupForm() {
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="Re-enter your password"
             className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
           />
         </div>
 
         <p className="text-[11px] leading-relaxed text-slate-400 pt-1">
-          By registering, you agree to Nutsumo&apos;s Terms of Service and Privacy Policy.
+          By clicking Signup, you agree to Nutsumo&apos;s Terms of Service and Privacy Policy.
         </p>
 
         {/* Submit Button */}
@@ -432,11 +328,11 @@ export function SignupForm() {
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              <span>Creating Account...</span>
+              <span>Creating account...</span>
             </>
           ) : (
             <>
-              <span>{role === "USER" ? "Create Account" : "Register as Artisan"}</span>
+              <span>Signup</span>
               <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
                 <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
               </span>
@@ -467,7 +363,7 @@ export function SignupForm() {
             ) : (
               <GoogleIcon className="h-4.5 w-4.5" />
             )}
-            <span>Sign up with Google</span>
+            <span>Sign in with Google</span>
           </button>
         </>
       )}
@@ -479,7 +375,7 @@ export function SignupForm() {
           href="/login"
           className="font-bold text-[#FE375D] hover:underline"
         >
-          Log in
+          Login
         </Link>
       </p>
     </div>

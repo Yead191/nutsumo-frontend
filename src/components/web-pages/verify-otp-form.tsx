@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 import { nextFetch } from "@/helpers/next-fetch/core/NextFetch";
 import { useResendOtp } from "@/hooks/useResendOtp";
 import { OtpInput } from "@/components/ui/otp-input";
@@ -17,6 +18,7 @@ export function VerifyOtpForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
   const flow = searchParams.get("flow") === "reset" ? "reset" : "verify";
+  const roleParam = searchParams.get("role") || "";
 
   const [code, setCode] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -51,6 +53,7 @@ export function VerifyOtpForm() {
 
         toast.success(response?.message || "Email verified successfully!");
 
+        // Password Reset flow
         if (flow === "reset") {
           const data = response.data;
           const token =
@@ -68,7 +71,27 @@ export function VerifyOtpForm() {
           return;
         }
 
-        // Account verification flow
+        // Account Verification flow
+        const userRole = response.data?.role || roleParam;
+        const createToken = response.data?.createToken;
+
+        if (createToken) {
+          Cookies.set("accessToken", createToken, { expires: 7, path: "/" });
+        }
+        if (userRole) {
+          Cookies.set("role", userRole, { expires: 7, path: "/" });
+        }
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("auth-changed"));
+        }
+
+        // If Artisan, route directly to ID Card & Selfie Verification!
+        if (userRole === "ARTISAN") {
+          toast.info("Please verify your National ID and selfie to complete registration.");
+          router.push(`/verify-identity?email=${encodeURIComponent(email)}`);
+          return;
+        }
+
         toast.success("Account verified! You can now log in.");
         router.push("/login");
       } catch (err: any) {
@@ -78,7 +101,7 @@ export function VerifyOtpForm() {
         setIsSubmitting(false);
       }
     },
-    [email, flow, router]
+    [email, flow, roleParam, router]
   );
 
   return (
@@ -88,18 +111,19 @@ export function VerifyOtpForm() {
 
       {/* Red Eyebrow */}
       <span className="block text-xs font-bold uppercase tracking-wider text-[#FE375D] mb-1.5">
-        ACCOUNT SECURITY
+        ACCOUNT VERIFICATION
       </span>
 
       {/* Main Headline */}
       <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-2">
-        Verify your email.
+        Verify your account
       </h1>
 
       {/* Subtitle */}
       <p className="text-sm text-slate-500 mb-6">
-        Enter the 4-digit code sent to{" "}
+        We&apos;ve sent a verification code to{" "}
         <span className="font-semibold text-slate-800">{email || "your email"}</span>.
+        Enter the code below to continue.
       </p>
 
       <div className="space-y-6">
@@ -122,11 +146,11 @@ export function VerifyOtpForm() {
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              <span>Verifying Code...</span>
+              <span>Verifying...</span>
             </>
           ) : (
             <>
-              <span>{flow === "reset" ? "Verify & Continue" : "Verify Email"}</span>
+              <span>{flow === "reset" ? "Verify & Continue" : "Verify"}</span>
               <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
                 <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
               </span>
@@ -136,14 +160,14 @@ export function VerifyOtpForm() {
 
         {/* Resend OTP */}
         <p className="text-center text-xs text-slate-500">
-          Didn&apos;t receive the code?{" "}
+          Didn&apos;t receive any code?{" "}
           <button
             type="button"
             onClick={() => resend(email)}
             disabled={isCoolingDown || !email}
             className="font-bold text-[#FE375D] hover:underline disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
           >
-            {isCoolingDown ? ("Resend in " + resendIn + "s") : "Resend code"}
+            {isCoolingDown ? ("Resend in " + resendIn + "s") : "Resend"}
           </button>
         </p>
 

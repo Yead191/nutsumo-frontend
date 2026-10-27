@@ -164,15 +164,17 @@ export function Navbar({ user: initialUser }: NavbarProps) {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Brand Logo */}
-        <Image
-          src="/logo.png"
-          alt="Nutsumo"
-          width={180}
-          height={60}
-          priority
-          draggable={false}
-          className={"w-40 h-fit object-contain"}
-        />
+        <Link href={"/"} className="">
+          <Image
+            src="/logo.png"
+            alt="Nutsumo"
+            width={180}
+            height={60}
+            priority
+            draggable={false}
+            className={"w-40 h-fit object-contain"}
+          />
+        </Link>
 
         {/* Center Floating Nav Pill with Frosted Glass & Blur Effect */}
         <nav className="hidden md:flex items-center">
