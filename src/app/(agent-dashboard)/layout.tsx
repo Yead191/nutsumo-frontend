@@ -21,11 +21,13 @@ export default function AgentDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-surface">
+    <div className="flex min-h-screen flex-col bg-surface pt-20">
       <Navbar user={demoProUser} />
       <div className="container-site flex flex-1 flex-col items-stretch gap-6 pt-6 pb-12 md:flex-row md:items-start md:gap-8 md:pt-8 md:pb-16">
         <DashboardSidebar items={items} />
-        <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col">{children}</div>
+        <div className="flex min-h-0 min-w-0 w-full flex-1 flex-col">
+          {children}
+        </div>
       </div>
     </div>
   );
