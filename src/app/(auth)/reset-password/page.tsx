@@ -1,14 +1,10 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { ResetPasswordForm } from "@/components/web-pages/reset-password-form";
 
 export default function ResetPasswordPage() {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.replace("/forgot-password");
-  }, [router]);
-
-  return null;
+  return (
+    <Suspense fallback={<div className="text-sm text-slate-400">Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
 }

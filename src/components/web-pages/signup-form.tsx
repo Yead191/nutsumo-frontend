@@ -1,375 +1,483 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Field, TextField } from "@/components/ui/field";
-import { PasswordField } from "@/components/ui/password-field";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Loader2, ArrowRight, UserCheck, Wrench } from "lucide-react";
+import { toast } from "sonner";
+import { useGoogleLogin } from "@react-oauth/google";
+import { nextFetch } from "@/helpers/next-fetch/core/NextFetch";
+import { loginWithGoogle } from "@/helpers/next-fetch/apiActions/authActions";
 import { GoogleIcon } from "@/components/ui/google-icon";
-import { AuthLinks } from "@/components/web-pages/auth-links";
-import { loginAs } from "@/redux/slices/authSlice";
-import { setEmailVerified, setPhoneVerified } from "@/redux/slices/featuresSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import Cookies from "js-cookie";
 import { cn } from "@/lib/cn";
 
-const DEMO_OTP = "123456";
-const OTP_LEN = 6;
-
 export function SignupForm() {
-  const dispatch = useAppDispatch();
   const router = useRouter();
-  const search = useSearchParams();
-  const nextPath = search.get("next");
-  const needsAccountForRequest = Boolean(nextPath?.includes("/account/post-job"));
-  const draft = useAppSelector((state) => state.intake.draft);
-  const user = useAppSelector((state) => state.auth.user);
+  const [role, setRole] = React.useState<"USER" | "ARTISAN">("USER");
 
-  const [role, setRole] = useState<"homeowner" | "pro">("homeowner");
-  const [step, setStep] = useState<"details" | "otp">("details");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [zip, setZip] = useState(draft.zip || "");
-  const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LEN).fill(""));
-  const [error, setError] = useState("");
-  const [resent, setResent] = useState(false);
-  const inputs = useRef<Array<HTMLInputElement | null>>([]);
+  // Common fields
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [phone, setPhone] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
 
-  useEffect(() => {
-    if (user) {
-      if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-        router.replace(nextPath);
+  // Artisan specific fields
+  const [company, setCompany] = React.useState("");
+  const [jobTitle, setJobTitle] = React.useState("");
+  const [yearsExperience, setYearsExperience] = React.useState("3-5 years");
+  const [hourlyRate, setHourlyRate] = React.useState("45");
+  const [bio, setBio] = React.useState("");
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!name || !email || !password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    if (role === "ARTISAN" && !company) {
+      setError("Please enter your Company or Business Name.");
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      if (role === "USER") {
+        // Customer Registration
+        const res = await nextFetch("/auth/register", {
+          method: "POST",
+          body: {
+            name,
+            email,
+            password,
+            phone: phone || undefined,
+          },
+        });
+
+        if (
+          !res?.success &&
+          res?.message?.includes("Account is not verified")
+        ) {
+          toast.info("Account already created. Please verify your email.");
+          router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
+          return;
+        }
+
+        if (!res?.success) {
+          const msg = res?.message || "Registration failed. Please try again.";
+          setError(msg);
+          toast.error(msg);
+          return;
+        }
+
+        toast.success(res.message || "Account created! Please check your email for the verification code.");
+        router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
       } else {
-        router.replace(user.role === "pro" ? "/pro" : "/account");
+        // Artisan Registration
+        const vendorProfile = JSON.stringify({
+          jobTitle: jobTitle || "Artisan Specialist",
+          contactNo: phone || "1234567890",
+          bio: bio || ("Professional " + (jobTitle || "Artisan") + " registered on Nutsumo."),
+          expertise: [jobTitle || "General Maintenance"],
+          yearsExperience: yearsExperience || "3-5 years",
+          degree: "Trade Qualification",
+          hourlyRate: Number(hourlyRate) || 45,
+          availability: "Full Time",
+          consultationTypes: ["In-Person", "On-site Quote"],
+        });
+
+        const res = await nextFetch("/auth/register/vendor", {
+          method: "POST",
+          body: {
+            name,
+            email,
+            password,
+            company,
+            vendorProfile,
+          },
+        });
+
+        if (
+          !res?.success &&
+          res?.message?.includes("Account is not verified")
+        ) {
+          toast.info("Account already created. Please verify your email.");
+          router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
+          return;
+        }
+
+        if (!res?.success) {
+          const msg = res?.message || "Artisan registration failed. Please try again.";
+          setError(msg);
+          toast.error(msg);
+          return;
+        }
+
+        toast.success(res.message || "Artisan account created! Please verify your email to continue.");
+        router.push("/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify");
       }
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      const msg = err?.message || "Network error. Please try again.";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setIsLoading(false);
     }
-  }, [user, nextPath, router]);
+  };
 
-  useEffect(() => {
-    if (step === "otp") inputs.current[0]?.focus();
-  }, [step]);
+  const handleGoogleSuccess = async (tokenResponse: any) => {
+    try {
+      setIsGoogleLoading(true);
+      const res = await loginWithGoogle(tokenResponse.access_token);
+      if (res?.success) {
+        const token = (res.data as any)?.createToken || (res.data as any)?.accessToken || (res.data as any)?.token;
+        const userRole = res.data?.role || "USER";
+        if (token) Cookies.set("accessToken", token, { expires: 7 });
+        if (userRole) Cookies.set("role", userRole, { expires: 7 });
 
-  useEffect(() => {
-    if (role === "pro") router.push("/pro-register");
-  }, [role, router]);
-
-  function finishSignup() {
-    dispatch(
-      loginAs({
-        role: "homeowner",
-        profile: {
-          name: name.trim() || "Alex Mercer",
-          email: email.trim() || "alex@example.com",
-          phone: phone.trim() || "(512) 555-0199",
-          zip: zip.trim() || "78701",
-          city: "Austin",
-          state: "TX",
-        },
-      }),
-    );
-    dispatch(setEmailVerified(true));
-    dispatch(setPhoneVerified(true));
-    if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-      router.push(nextPath);
-      return;
+        toast.success("Signed up with Google successfully!");
+        router.push("/");
+        router.refresh();
+      } else {
+        toast.error(res?.message || "Google sign up failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Google sign up failed");
+    } finally {
+      setIsGoogleLoading(false);
     }
-    router.push(draft.summary ? "/account/post-job" : "/account");
-  }
+  };
 
-  function handleGoogleSignUp() {
-    setError("");
-    dispatch(
-      loginAs({
-        role: "homeowner",
-        profile: {
-          name: "Alex Mercer",
-          email: "alex.mercer@gmail.com",
-          phone: "(512) 555-0199",
-          zip: draft.zip || "78701",
-          city: "Austin",
-          state: "TX",
-        },
-      }),
-    );
-    dispatch(setEmailVerified(true));
-    dispatch(setPhoneVerified(true));
-    if (nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")) {
-      router.push(nextPath);
-      return;
-    }
-    router.push(draft.summary ? "/account/post-job" : "/account");
-  }
-
-  function submitDetails(event: React.FormEvent) {
-    event.preventDefault();
-    setError("");
-    finishSignup();
-  }
-
-  function submitOtp(event: React.FormEvent) {
-    event.preventDefault();
-    setError("");
-    finishSignup();
-  }
-
-  function onOtpChange(index: number, value: string) {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const next = [...otp];
-    next[index] = digit;
-    setOtp(next);
-    setError("");
-    if (digit && index < OTP_LEN - 1) inputs.current[index + 1]?.focus();
-  }
-
-  function onOtpKeyDown(index: number, event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Backspace" && !otp[index] && index > 0) {
-      inputs.current[index - 1]?.focus();
-    }
-  }
-
-  function onOtpPaste(event: React.ClipboardEvent<HTMLInputElement>) {
-    event.preventDefault();
-    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LEN);
-    if (!pasted) return;
-    const next = Array(OTP_LEN).fill("");
-    pasted.split("").forEach((char, i) => {
-      next[i] = char;
-    });
-    setOtp(next);
-    inputs.current[Math.min(pasted.length, OTP_LEN) - 1]?.focus();
-  }
-
-  const maskedPhone = phone.replace(/\D/g, "").replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
-
-  if (step === "otp") {
-    return (
-      <div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
-          Step 2 of 2
-        </span>
-        <h1 className="mt-3 font-display text-[22px] sm:text-[24px] font-semibold leading-snug tracking-tight text-title">
-          Verify your phone
-        </h1>
-        <p className="mt-1.5 font-sans text-sm leading-relaxed text-[#757575]">
-          Enter the 6-digit code sent to <span className="font-semibold text-title">{maskedPhone || phone}</span>.
-        </p>
-        <p className="mt-1 font-sans text-xs text-[#757575]/80">Demo code: {DEMO_OTP}</p>
-
-        <form className="mt-6 space-y-4" onSubmit={submitOtp}>
-          <div className="flex justify-between gap-2">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => {
-                  inputs.current[index] = el;
-                }}
-                type="text"
-                inputMode="numeric"
-                autoComplete={index === 0 ? "one-time-code" : "off"}
-                maxLength={1}
-                value={digit}
-                onChange={(event) => onOtpChange(index, event.target.value)}
-                onKeyDown={(event) => onOtpKeyDown(index, event)}
-                onPaste={onOtpPaste}
-                className={cn(
-                  "h-12 w-10 rounded-[10px] border border-line bg-white text-center font-display text-lg font-bold text-title outline-none focus:border-primary sm:h-14 sm:w-12",
-                )}
-                aria-label={`Digit ${index + 1}`}
-              />
-            ))}
-          </div>
-          {error ? <p className="text-sm text-error">{error}</p> : null}
-          <Button type="submit" className="w-full">
-            Verify and create account ↗
-          </Button>
-          <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-            <button
-              type="button"
-              className="font-semibold text-muted hover:text-title"
-              onClick={() => {
-                setStep("details");
-                setError("");
-              }}
-            >
-              ← Edit details
-            </button>
-            <button
-              type="button"
-              className="font-semibold text-primary"
-              onClick={() => {
-                setResent(true);
-                setError("");
-              }}
-            >
-              {resent ? "Code resent" : "Resend code"}
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => toast.error("Google signup was cancelled or failed"),
+  });
 
   return (
-    <div>
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
-        Step 1 of 2
+    <div className="w-full max-w-md mx-auto">
+      {/* Brand title */}
+      <p className="text-sm font-bold text-slate-900 tracking-tight mb-2">Nutsumo</p>
+
+      {/* Role Toggle Tabs */}
+      <div className="mb-4 grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200/80">
+        <button
+          type="button"
+          onClick={() => {
+            setRole("USER");
+            setError("");
+          }}
+          className={cn(
+            "flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-xl transition-all cursor-pointer",
+            role === "USER"
+              ? "bg-white text-slate-900 shadow-sm"
+              : "text-slate-500 hover:text-slate-900"
+          )}
+        >
+          <UserCheck className="h-3.5 w-3.5 text-[#FE375D]" />
+          <span>Customer</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setRole("ARTISAN");
+            setError("");
+          }}
+          className={cn(
+            "flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-xl transition-all cursor-pointer",
+            role === "ARTISAN"
+              ? "bg-white text-slate-900 shadow-sm"
+              : "text-slate-500 hover:text-slate-900"
+          )}
+        >
+          <Wrench className="h-3.5 w-3.5 text-[#FE375D]" />
+          <span>Artisan / Pro</span>
+        </button>
+      </div>
+
+      {/* Red Eyebrow */}
+      <span className="block text-xs font-bold uppercase tracking-wider text-[#FE375D] mb-1.5">
+        {role === "USER" ? "YOUR CUSTOMER ACCOUNT" : "BECOME A VERIFIED ARTISAN"}
       </span>
-      <h1 className="mt-3 font-display text-[22px] sm:text-[26px] font-semibold leading-snug tracking-tight text-title">
-        Create a free account
+
+      {/* Main Headline */}
+      <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 mb-2">
+        {role === "USER" ? "Create your account." : "Join as an Artisan."}
       </h1>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-[#757575]">
-        {needsAccountForRequest
-          ? "You need a homeowner account to create a request. Signup is free."
-          : "Choose your role. Homeowners are free. Pros apply for review."}
+
+      {/* Subtitle */}
+      <p className="text-sm text-slate-500 mb-6">
+        {role === "USER"
+          ? "Join Nutsumo to hire verified artisans and manage your bookings."
+          : "Grow your trade business and get matched with quality clients."}
       </p>
 
-      <div
-        role="tablist"
-        aria-label="Account type"
-        className="mt-6 grid grid-cols-2 rounded-full border border-line bg-smoke p-1"
-      >
-        {(
-          [
-            ["homeowner", "Homeowner"],
-            ["pro", "Professional"],
-          ] as const
-        ).map(([value, label]) => {
-          const active = role === value;
-          return (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setRole(value)}
-              className={cn(
-                "min-h-[44px] rounded-full font-display text-sm font-bold transition-colors",
-                active
-                  ? "bg-primary text-white shadow-sm"
-                  : "bg-transparent text-title hover:text-primary",
-              )}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
+      {error && (
+        <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600 font-medium animate-in fade-in duration-200">
+          {error}
+        </div>
+      )}
 
-      <form className="mt-7 space-y-5" onSubmit={submitDetails}>
-        <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-[1.5fr_1fr]">
-          <Field label="Full name">
-            <TextField
-              required
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Jane Smith"
-              autoComplete="name"
-            />
-          </Field>
-          <Field label="Home ZIP">
-            <TextField
-              required
-              value={zip}
-              onChange={(event) => setZip(event.target.value)}
-              placeholder="78701"
-              inputMode="numeric"
-              autoComplete="postal-code"
-            />
-          </Field>
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-3.5">
+        {/* Full Name */}
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-xs font-bold text-slate-800 mb-1"
+          >
+            Full Name *
+          </label>
+          <input
+            id="name"
+            type="text"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. John Doe"
+            className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+          />
         </div>
 
-        <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-          <Field label="Email">
-            <TextField
-              required
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="you@email.com"
-              autoComplete="email"
-            />
-          </Field>
-          <Field label="Mobile phone">
-            <TextField
-              required
-              type="tel"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              placeholder="(512) 555-0100"
-              autoComplete="tel"
-            />
-          </Field>
+        {/* Email Address */}
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-xs font-bold text-slate-800 mb-1"
+          >
+            Email address *
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+          />
         </div>
 
-        <div className="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
-          <Field label="Password">
-            <PasswordField
+        {/* Phone */}
+        <div>
+          <label
+            htmlFor="phone"
+            className="block text-xs font-bold text-slate-800 mb-1"
+          >
+            Phone number {role === "ARTISAN" ? "*" : "(optional)"}
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            required={role === "ARTISAN"}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+1 (555) 000-0000"
+            className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+          />
+        </div>
+
+        {/* Artisan Specific Fields */}
+        {role === "ARTISAN" && (
+          <>
+            <div>
+              <label
+                htmlFor="company"
+                className="block text-xs font-bold text-slate-800 mb-1"
+              >
+                Business / Company Name *
+              </label>
+              <input
+                id="company"
+                type="text"
+                required
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                placeholder="e.g. Apex Plumbing & Electric Ltd"
+                className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  htmlFor="jobTitle"
+                  className="block text-xs font-bold text-slate-800 mb-1"
+                >
+                  Primary Trade *
+                </label>
+                <select
+                  id="jobTitle"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-3 text-sm text-slate-900 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+                >
+                  <option value="">Select Trade</option>
+                  <option value="Plumber">Plumber</option>
+                  <option value="Electrician">Electrician</option>
+                  <option value="Carpenter">Carpenter</option>
+                  <option value="Painter & Decorator">Painter & Decorator</option>
+                  <option value="HVAC Specialist">HVAC Specialist</option>
+                  <option value="Mason / Builder">Mason / Builder</option>
+                  <option value="Handyman">Handyman</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="hourlyRate"
+                  className="block text-xs font-bold text-slate-800 mb-1"
+                >
+                  Hourly Rate ($)
+                </label>
+                <input
+                  id="hourlyRate"
+                  type="number"
+                  min="1"
+                  value={hourlyRate}
+                  onChange={(e) => setHourlyRate(e.target.value)}
+                  placeholder="45"
+                  className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Password */}
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-xs font-bold text-slate-800 mb-1"
+          >
+            Password (min 8 characters) *
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               required
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Min 6 characters"
-              autoComplete="new-password"
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 pr-11 pl-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
             />
-          </Field>
-          <Field label="Confirm password">
-            <PasswordField
-              required
-              value={confirm}
-              onChange={(event) => setConfirm(event.target.value)}
-              placeholder="Repeat password"
-              autoComplete="new-password"
-            />
-          </Field>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
-        <label className="flex items-start gap-2.5 pt-1 text-sm leading-6 text-copy">
-          <input type="checkbox" required className="mt-0.5 h-4 w-4 rounded accent-primary" />
-          <span>
-            I agree to the{" "}
-            <Link href="/terms" className="font-semibold text-primary hover:underline">
-              Terms & Conditions
-            </Link>{" "}
-            and{" "}
-            <Link href="/privacy" className="font-semibold text-primary hover:underline">
-              Privacy Policy
-            </Link>
-            .
-          </span>
-        </label>
-        {error ? <p className="text-xs font-medium text-error">{error}</p> : null}
-        <Button type="submit" className="w-full">
-          Continue to OTP ↗
-        </Button>
+        {/* Confirm Password */}
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-xs font-bold text-slate-800 mb-1"
+          >
+            Confirm Password *
+          </label>
+          <input
+            id="confirmPassword"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="••••••••"
+            className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
+          />
+        </div>
+
+        <p className="text-[11px] leading-relaxed text-slate-400 pt-1">
+          By registering, you agree to Nutsumo&apos;s Terms of Service and Privacy Policy.
+        </p>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="h-12 sm:h-13 w-full rounded-xl bg-[#FE375D] hover:bg-[#e0284e] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(254,55,93,0.3)] transition-all group disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer mt-2"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              <span>Creating Account...</span>
+            </>
+          ) : (
+            <>
+              <span>{role === "USER" ? "Create Account" : "Register as Artisan"}</span>
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
+                <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
+              </span>
+            </>
+          )}
+        </button>
       </form>
 
-      {/* Or Divider */}
-      <div className="relative my-6 flex items-center justify-center">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-line/80" />
-        </div>
-        <span className="relative bg-white px-3 font-display text-xs font-medium uppercase tracking-wider text-muted">
-          Or
-        </span>
-      </div>
+      {/* Google Sign up for User */}
+      {role === "USER" && (
+        <>
+          <div className="relative my-4 flex items-center">
+            <div className="w-full border-t border-slate-200" />
+            <span className="bg-white px-3 text-xs text-slate-400 select-none">
+              or
+            </span>
+            <div className="w-full border-t border-slate-200" />
+          </div>
 
-      {/* Google Sign Up Button */}
-      <button
-        type="button"
-        onClick={handleGoogleSignUp}
-        className="flex w-full items-center justify-center gap-2.5 rounded-full border border-line bg-white px-5 py-3 font-display text-sm font-semibold text-title shadow-2xs transition-all duration-200 hover:bg-smoke/70 hover:border-line hover:shadow-xs active:scale-[0.99] focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary cursor-pointer"
-      >
-        <GoogleIcon className="h-4.5 w-4.5" />
-        <span>Continue with Google ↗</span>
-      </button>
+          <button
+            type="button"
+            onClick={() => googleLogin()}
+            disabled={isGoogleLoading}
+            className="h-12 w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center gap-3 text-sm font-semibold text-slate-700 shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+          >
+            {isGoogleLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin text-slate-500" />
+            ) : (
+              <GoogleIcon className="h-4.5 w-4.5" />
+            )}
+            <span>Sign up with Google</span>
+          </button>
+        </>
+      )}
 
-      <AuthLinks
-        prompt="Already have an account?"
-        href={nextPath ? `/login?next=${encodeURIComponent(nextPath)}` : "/login"}
-        label="Sign in ↗"
-      />
+      {/* Footer Login Link */}
+      <p className="mt-5 text-center text-xs sm:text-sm text-slate-500">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="font-bold text-[#FE375D] hover:underline"
+        >
+          Log in
+        </Link>
+      </p>
     </div>
   );
 }

@@ -1,39 +1,44 @@
+import Link from "next/link";
+import Image from "next/image";
 import { Logo } from "@/components/ui/logo";
-import { photos } from "@/lib/media";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <div className="grid min-h-screen bg-surface lg:grid-cols-[42%_1fr] xl:grid-cols-[45%_1fr] 2xl:grid-cols-[47%_1fr]">
-      <aside className="auth-panel relative hidden overflow-hidden bg-ink text-white lg:flex lg:flex-col lg:justify-between lg:p-8 xl:p-12 2xl:p-14">
-        <div
-          className="absolute inset-0 bg-cover bg-[center_30%]"
-          style={{ backgroundImage: `url(${photos.auth})` }}
-        />
-        <div className="auth-wash absolute inset-0" />
-        <div className="relative">
-          <Logo variant="dark" size="lg" />
-        </div>
-        <div className="relative max-w-[420px] xl:max-w-[460px]">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 font-display text-[11px] font-semibold uppercase tracking-[0.14em] !text-white/80 backdrop-blur-md">
-            Direct & Transparent
-          </span>
-          <h2 className="mt-4 font-display text-[22px] xl:text-[25px] font-medium leading-[1.25] tracking-tight !text-white">
-            Browse free. Account only when you need to act.
-          </h2>
-          <p className="mt-3 font-sans text-[13px] xl:text-sm leading-relaxed !text-white/80">
-            Sign in to post a request, compare quotes, or manage jobs. New here? You can create a free account in 30 seconds.
-          </p>
-        </div>
-      </aside>
+    <div className="min-h-screen bg-[#F6F7F9] flex items-center justify-center p-3 sm:p-6 lg:p-8">
+      <div className="w-full max-w-6xl rounded-[28px] sm:rounded-[36px] bg-white border border-slate-200/80 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] overflow-hidden grid lg:grid-cols-2">
+        {/* Left Column: Visual Image with Logo at top-left */}
+        <div className="relative hidden lg:block min-h-[640px] w-full bg-slate-100 overflow-hidden">
+          <Image
+            src="/images/auth/auth-img.png"
+            alt="Nutsumo Verified Artisans"
+            fill
+            priority
+            className="object-cover object-center select-none"
+          />
 
-      <div className="flex flex-col bg-surface px-5 py-10 sm:px-8 lg:px-8 xl:px-14 2xl:px-20">
-        <div className="mb-8 lg:hidden">
-          <Logo size="md" />
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-[580px] rounded-[28px] border border-line/70 bg-white px-6 py-8 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:px-9 sm:py-10">
-            {children}
+          {/* Top-left Logo replacing back to homepage */}
+          <div className="absolute top-6 left-6 z-10">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-2xl bg-white/95 backdrop-blur-md px-4 py-2.5 shadow-md border border-white/80 hover:bg-white hover:scale-[1.02] transition-all"
+            >
+              <Logo size="sm" />
+            </Link>
           </div>
+        </div>
+
+        {/* Right Column: Form View */}
+        <div className="flex flex-col justify-center px-6 py-8 sm:px-10 lg:px-12 xl:px-14 bg-white">
+          <div className="mb-6 lg:hidden flex items-center justify-between">
+            <Link href="/">
+              <Logo size="md" />
+            </Link>
+          </div>
+          {children}
         </div>
       </div>
     </div>
