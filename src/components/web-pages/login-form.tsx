@@ -44,14 +44,16 @@ export function LoginForm() {
       });
       console.log(response, "auth");
       // Handle unverified account
+      const errMessage = (response?.message || "").toLowerCase();
       if (
         !response?.success &&
-        (response?.message?.includes("not verified") ||
+        (errMessage.includes("not verified") ||
+          errMessage.includes("verification code") ||
           (response as any)?.suggestRoute?.includes("verify-email"))
       ) {
-        toast.info("Please verify your email to activate your account.");
+        toast.info("Your email is not verified yet. A verification code has been sent.");
         router.push(
-          "/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify",
+          "/verify-otp?email=" + encodeURIComponent(email) + "&flow=verify&role=ARTISAN"
         );
         return;
       }
@@ -73,6 +75,9 @@ export function LoginForm() {
         response.data?.user?.role ||
         response.data?.data?.role ||
         "USER";
+      const identityStatus =
+        response.data?.identityStatus ||
+        response.data?.user?.identityStatus;
 
       if (accessToken) {
         Cookies.set("accessToken", accessToken, { expires: 7, path: "/" });
@@ -80,12 +85,23 @@ export function LoginForm() {
       if (role) {
         Cookies.set("role", role, { expires: 7, path: "/" });
       }
+      if (identityStatus) {
+        Cookies.set("identityStatus", identityStatus, { expires: 7, path: "/" });
+      }
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("auth-changed"));
       }
 
       toast.success(response.message || "Welcome back to Nutsumo!");
+
+      // If Artisan and identity documents are not yet submitted or need updates, direct to verification
+      if (role === "ARTISAN" && (identityStatus === "not_submitted" || identityStatus === "needs_update")) {
+        toast.info("Please complete your identity verification to start accepting jobs.");
+        router.push("/verify-identity?email=" + encodeURIComponent(email));
+        return;
+      }
+
       router.push(redirectTo);
       router.refresh();
     } catch (err: any) {

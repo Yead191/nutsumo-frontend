@@ -13,6 +13,10 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  ShieldCheck,
+  ShieldAlert,
+  AlertTriangle,
+  ArrowRight,
 } from "lucide-react";
 import { getImageUrl } from "@/lib/getImageUrl";
 import { cn } from "@/lib/cn";
@@ -150,12 +154,75 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
               </div>
             </div>
 
-            {/* Role Badge */}
-            <div className="mt-2 flex items-center gap-1.5">
+            {/* Role Badge & Identity Status */}
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FE375D]/10 text-[#FE375D]">
-                {isArtisan ? "Artisan / Pro" : "Customer"}
+                {isArtisan ? "Artisan" : "Customer"}
               </span>
+
+              {isArtisan && (
+                <>
+                  {user?.identityStatus === "verified" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                      <span>Verified</span>
+                    </span>
+                  )}
+                  {user?.identityStatus === "pending" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                      <span>In Review</span>
+                    </span>
+                  )}
+                  {(user?.identityStatus === "not_submitted" ||
+                    !user?.identityStatus) && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                      <AlertTriangle className="w-3 h-3 text-rose-600" />
+                      <span>Unverified</span>
+                    </span>
+                  )}
+                  {user?.identityStatus === "needs_update" && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-200">
+                      <ShieldAlert className="w-3 h-3 text-red-600" />
+                      <span>Update Needed</span>
+                    </span>
+                  )}
+                </>
+              )}
             </div>
+
+            {/* Artisan Verification Action Callout */}
+            {isArtisan &&
+              (user?.identityStatus === "not_submitted" ||
+                user?.identityStatus === "needs_update" ||
+                !user?.identityStatus) && (
+                <div className="mt-2.5 p-2.5 rounded-xl bg-rose-50/90 border border-rose-200/80 text-left">
+                  <p className="text-[11px] font-bold text-rose-900 mb-0.5">
+                    {user?.identityStatus === "needs_update"
+                      ? "Action Needed: Update ID"
+                      : "Identity Verification Required"}
+                  </p>
+                  <p className="text-[10px] text-rose-700 leading-snug mb-2">
+                    Upload your National ID & live selfie to activate your
+                    account and start receiving clients.
+                  </p>
+                  <Link
+                    href={
+                      "/verify-identity?email=" +
+                      encodeURIComponent(user?.email || "")
+                    }
+                    onClick={() => setIsOpen(false)}
+                    className="w-full h-7 rounded-lg bg-[#FE375D] hover:bg-[#e0284e] text-white text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                  >
+                    <span>
+                      {user?.identityStatus === "needs_update"
+                        ? "Update Documents"
+                        : "Verify Identity Now"}
+                    </span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              )}
           </div>
 
           {/* Links */}

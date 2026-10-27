@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
@@ -16,11 +15,10 @@ import {
   CheckCircle2,
   ArrowRight,
   SwitchCamera,
-  ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { submitArtisanIdentity, getIdentityStatus } from "@/helpers/next-fetch/apiActions/authActions";
+import { getMyProfile } from "@/helpers/next-fetch/apiActions/profileActions";
 
 type StepType =
   | "front_capture"
@@ -73,17 +71,32 @@ export function ArtisanIdentityFlow() {
   // Hidden file input refs
   const frontInputRef = React.useRef<HTMLInputElement | null>(null);
   const backInputRef = React.useRef<HTMLInputElement | null>(null);
-  const selfieInputRef = React.useRef<HTMLInputElement | null>(null);
+  const selfieCameraInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  // 1. Initial Identity Status Check
+  // 1. Initial Identity Status Check & Email Recovery
   React.useEffect(() => {
-    async function checkStatus() {
-      if (!emailParam) {
+    async function init() {
+      let activeEmail = emailParam;
+
+      if (!activeEmail) {
+        try {
+          const profileRes = await getMyProfile();
+          if (profileRes?.data?.email) {
+            activeEmail = profileRes.data.email;
+            setEmail(activeEmail);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!activeEmail) {
         setIsCheckingStatus(false);
         return;
       }
+
       try {
-        const res = await getIdentityStatus(emailParam);
+        const res = await getIdentityStatus(activeEmail);
         if (res?.success && res.data) {
           const status = res.data.identityStatus;
           if (status === "pending") {
@@ -104,14 +117,8 @@ export function ArtisanIdentityFlow() {
         setIsCheckingStatus(false);
       }
     }
-    checkStatus();
+    init();
   }, [emailParam]);
-
-  // Determine facing mode required for current step
-  const currentFacingMode = React.useMemo(() => {
-    if (step.startsWith("selfie")) return "user";
-    return facingMode;
-  }, [step, facingMode]);
 
   // 2. Camera Handling
   const stopCamera = React.useCallback(() => {
@@ -127,7 +134,11 @@ export function ArtisanIdentityFlow() {
       stopCamera();
       setCameraError(null);
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setCameraError("Camera not supported on this browser. Please upload from gallery.");
+        setCameraError(
+          step.startsWith("selfie")
+            ? "Live camera is required for selfie verification. Please use a device with a front camera."
+            : "Camera not supported on this browser. Please upload from gallery."
+        );
         return;
       }
       try {
@@ -146,11 +157,15 @@ export function ArtisanIdentityFlow() {
         }
       } catch (err: any) {
         console.warn("Camera start error:", err);
-        setCameraError("Camera permission denied or camera unavailable. Please upload a photo.");
+        setCameraError(
+          step.startsWith("selfie")
+            ? "Camera permission denied or camera unavailable. Live selfie must be captured via camera."
+            : "Camera permission denied or camera unavailable. Please upload a photo."
+        );
         setCameraActive(false);
       }
     },
-    [stopCamera]
+    [stopCamera, step]
   );
 
   // Auto start camera when entering a capture step
@@ -170,7 +185,7 @@ export function ArtisanIdentityFlow() {
     };
   }, [step]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When videoRef attaches, bind stream
+  // When video attaches, bind stream
   React.useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
@@ -194,7 +209,6 @@ export function ArtisanIdentityFlow() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Flip horizontally if front-facing selfie
     if (step.startsWith("selfie") || facingMode === "user") {
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
@@ -207,7 +221,7 @@ export function ArtisanIdentityFlow() {
           toast.error("Failed to capture photo");
           return;
         }
-        const file = new File([blob], `${target}_${Date.now()}.jpg`, { type: "image/jpeg" });
+        const file = new File([blob], target + "_" + Date.now() + ".jpg", { type: "image/jpeg" });
         const url = URL.createObjectURL(blob);
 
         if (target === "nidFront") {
@@ -227,10 +241,10 @@ export function ArtisanIdentityFlow() {
     );
   };
 
-  // Handle file chosen from gallery/picker
+  // Handle file chosen from gallery/picker (ONLY for NID Front and NID Back)
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
-    target: "nidFront" | "nidBack" | "selfie"
+    target: "nidFront" | "nidBack"
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -248,13 +262,20 @@ export function ArtisanIdentityFlow() {
     if (target === "nidFront") {
       setFiles((prev) => ({ ...prev, nidFront: file, nidFrontUrl: url }));
       setStep("front_confirm");
-    } else if (target === "nidBack") {
+    } else {
       setFiles((prev) => ({ ...prev, nidBack: file, nidBackUrl: url }));
       setStep("back_confirm");
-    } else {
-      setFiles((prev) => ({ ...prev, selfie: file, selfieUrl: url }));
-      setStep("selfie_confirm");
     }
+    stopCamera();
+  };
+
+  // Direct camera capture fallback for mobile browsers on selfie
+  const handleSelfieCameraOnly = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setFiles((prev) => ({ ...prev, selfie: file, selfieUrl: url }));
+    setStep("selfie_confirm");
     stopCamera();
   };
 
@@ -302,13 +323,10 @@ export function ArtisanIdentityFlow() {
     );
   }
 
-  // ==========================================
   // SCREEN 9: APPLICATION SUBMITTED / UNDER REVIEW
-  // ==========================================
   if (step === "under_review") {
     return (
       <div className="w-full max-w-sm mx-auto text-center py-8 px-4 flex flex-col items-center animate-in fade-in duration-300">
-        {/* Animated Hourglass badge matching design */}
         <div className="relative mb-8 mt-4">
           <div className="w-28 h-28 rounded-full border-4 border-dashed border-[#FE375D] flex items-center justify-center animate-[spin_12s_linear_infinite]"></div>
           <div className="absolute inset-0 flex items-center justify-center">
@@ -325,7 +343,6 @@ export function ArtisanIdentityFlow() {
           Your request is now under review by the admin. Once the admin approves it, you will receive a notification.
         </p>
 
-        {/* Status indicator pill */}
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold mb-8">
           <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
           Status: Verification In Progress
@@ -364,9 +381,7 @@ export function ArtisanIdentityFlow() {
     );
   }
 
-  // ==========================================
   // SCREEN 10: SUCCESSFUL VERIFICATION
-  // ==========================================
   if (step === "verified") {
     return (
       <div className="w-full max-w-sm mx-auto text-center py-8 px-4 flex flex-col items-center animate-in zoom-in-95 duration-300">
@@ -396,9 +411,7 @@ export function ArtisanIdentityFlow() {
     );
   }
 
-  // ==========================================
   // SCREEN 11: ALERT MESSAGE / UPDATE NEEDED
-  // ==========================================
   if (step === "needs_update") {
     return (
       <div className="w-full max-w-sm mx-auto text-center py-8 px-4 flex flex-col items-center animate-in shake duration-300">
@@ -440,9 +453,7 @@ export function ArtisanIdentityFlow() {
     );
   }
 
-  // ==========================================
   // SUBMITTING LOADER SCREEN
-  // ==========================================
   if (step === "submitting") {
     return (
       <div className="w-full max-w-sm mx-auto text-center py-16 px-4 flex flex-col items-center">
@@ -455,11 +466,8 @@ export function ArtisanIdentityFlow() {
     );
   }
 
-  // ==========================================
-  // MULTI-STEP CAPTURE & CONFIRMATION SCREENS
-  // ==========================================
-
-  // Step Header metadata
+  // MULTI-STEP CAPTURE & CONFIRMATION
+  const isSelfieStep = step.startsWith("selfie");
   let stepTitle = "Take Your National ID Card front side photo";
   let stepBadge = "STEP 1 OF 3 • FRONT ID";
   let isConfirmStep = false;
@@ -488,7 +496,7 @@ export function ArtisanIdentityFlow() {
     currentTarget = "nidBack";
   } else if (step === "selfie_capture") {
     stepTitle = "Take a Live Selfie";
-    stepBadge = "STEP 3 OF 3 • FACE VERIFICATION";
+    stepBadge = "STEP 3 OF 3 • CAMERA ONLY";
     currentTarget = "selfie";
   } else if (step === "selfie_confirm") {
     stepTitle = "Verify Your Live Selfie";
@@ -500,7 +508,6 @@ export function ArtisanIdentityFlow() {
 
   return (
     <div className="w-full max-w-sm mx-auto flex flex-col select-none">
-      {/* Brand title */}
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-bold text-slate-900 tracking-tight">Nutsumo</p>
         <span className="text-[10px] font-bold tracking-wider uppercase text-[#FE375D] bg-[#FE375D]/10 px-2.5 py-0.5 rounded-full">
@@ -508,15 +515,18 @@ export function ArtisanIdentityFlow() {
         </span>
       </div>
 
-      {/* Screen Title */}
-      <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900 leading-snug mb-4">
+      <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900 leading-snug mb-1">
         {stepTitle}
       </h2>
 
-      {/* Viewfinder Frame (Matching reference mockup) */}
+      <p className="text-xs text-slate-500 mb-4">
+        {isSelfieStep
+          ? "Live camera verification only. Gallery upload is disabled for security."
+          : "Position your ID card clearly within the viewfinder frame."}
+      </p>
+
       <div className="relative w-full aspect-[4/5] bg-slate-100 rounded-3xl overflow-hidden border border-slate-200 shadow-inner flex flex-col items-center justify-center">
         {isConfirmStep && previewUrl ? (
-          // CONFIRMATION VIEW
           <div className="relative w-full h-full bg-slate-900">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -530,7 +540,6 @@ export function ArtisanIdentityFlow() {
             </div>
           </div>
         ) : (
-          // LIVE CAMERA OR FALLBACK VIEW
           <div className="relative w-full h-full bg-slate-900 flex items-center justify-center">
             {cameraActive ? (
               <video
@@ -538,35 +547,47 @@ export function ArtisanIdentityFlow() {
                 autoPlay
                 playsInline
                 muted
-                className={`w-full h-full object-cover ${
-                  step.startsWith("selfie") || facingMode === "user" ? "-scale-x-100" : ""
-                }`}
+                className={"w-full h-full object-cover " + (isSelfieStep || facingMode === "user" ? "-scale-x-100" : "")}
               />
             ) : (
               <div className="flex flex-col items-center justify-center p-6 text-center text-white/70">
                 <Camera className="w-12 h-12 text-slate-400 mb-3" />
-                <p className="text-xs font-medium text-white mb-1">Camera is initializing or disabled</p>
-                <p className="text-[11px] text-slate-400 mb-4 max-w-xs">
-                  {cameraError || "You can allow browser camera access or upload an image directly from your gallery."}
+                <p className="text-xs font-medium text-white mb-1">
+                  {isSelfieStep ? "Live Camera Required" : "Camera is initializing or disabled"}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (currentTarget === "nidFront") frontInputRef.current?.click();
-                    else if (currentTarget === "nidBack") backInputRef.current?.click();
-                    else selfieInputRef.current?.click();
-                  }}
-                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-sm border border-white/20 flex items-center gap-2 cursor-pointer transition-colors"
-                >
-                  <ImageIcon className="w-4 h-4" />
-                  <span>Choose from Gallery</span>
-                </button>
+                <p className="text-[11px] text-slate-400 mb-4 max-w-xs">
+                  {cameraError ||
+                    (isSelfieStep
+                      ? "To protect your identity, selfies must be taken live using your device camera."
+                      : "You can allow browser camera access or upload an image directly from your gallery.")}
+                </p>
+
+                {isSelfieStep ? (
+                  <button
+                    type="button"
+                    onClick={() => selfieCameraInputRef.current?.click()}
+                    className="px-4 py-2 rounded-xl bg-[#FE375D] hover:bg-[#e0284e] text-white text-xs font-semibold shadow-md flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <Camera className="w-4 h-4" />
+                    <span>Open Camera Directly</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (currentTarget === "nidFront") frontInputRef.current?.click();
+                      else backInputRef.current?.click();
+                    }}
+                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-sm border border-white/20 flex items-center gap-2 cursor-pointer transition-colors"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    <span>Choose from Gallery</span>
+                  </button>
+                )}
               </div>
             )}
 
-            {/* Overlays / Guidelines */}
-            {step.startsWith("selfie") ? (
-              // Selfie Oval Face Guideline
+            {isSelfieStep ? (
               <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
                 <div className="w-48 h-64 border-2 border-dashed border-[#FE375D] rounded-[50%] shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
                 <p className="mt-3 text-[11px] font-medium text-white/90 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full">
@@ -574,10 +595,8 @@ export function ArtisanIdentityFlow() {
                 </p>
               </div>
             ) : (
-              // ID Card Rectangular Guideline with Corner Marks
               <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-6">
                 <div className="relative w-full aspect-[1.58/1] rounded-2xl border-2 border-dashed border-white/60 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] flex items-center justify-center">
-                  {/* Corner accents */}
                   <span className="absolute -top-1 -left-1 w-5 h-5 border-t-3 border-l-3 border-[#FE375D] rounded-tl-lg" />
                   <span className="absolute -top-1 -right-1 w-5 h-5 border-t-3 border-r-3 border-[#FE375D] rounded-tr-lg" />
                   <span className="absolute -bottom-1 -left-1 w-5 h-5 border-b-3 border-l-3 border-[#FE375D] rounded-bl-lg" />
@@ -589,7 +608,6 @@ export function ArtisanIdentityFlow() {
               </div>
             )}
 
-            {/* Camera Switch button (top right of viewfinder) */}
             {cameraActive && (
               <button
                 type="button"
@@ -604,12 +622,10 @@ export function ArtisanIdentityFlow() {
         )}
       </div>
 
-      {/* Hidden File Inputs for Gallery / Native Picker fallback */}
       <input
         ref={frontInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => handleFileUpload(e, "nidFront")}
       />
@@ -617,39 +633,35 @@ export function ArtisanIdentityFlow() {
         ref={backInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={(e) => handleFileUpload(e, "nidBack")}
       />
       <input
-        ref={selfieInputRef}
+        ref={selfieCameraInputRef}
         type="file"
         accept="image/*"
         capture="user"
         className="hidden"
-        onChange={(e) => handleFileUpload(e, "selfie")}
+        onChange={handleSelfieCameraOnly}
       />
 
-      {/* BOTTOM ACTION CONTROLS (Faithfully matching design) */}
       <div className="mt-6 flex items-center justify-center gap-6 sm:gap-8">
         {isConfirmStep ? (
-          // ================= CONFIRMATION BAR: Gallery | Checkmark | Retake =================
           <>
-            {/* Left: Gallery Icon Button */}
-            <button
-              type="button"
-              onClick={() => {
-                if (currentTarget === "nidFront") frontInputRef.current?.click();
-                else if (currentTarget === "nidBack") backInputRef.current?.click();
-                else selfieInputRef.current?.click();
-              }}
-              title="Pick from gallery"
-              className="w-12 h-12 rounded-full border border-[#FE375D]/40 text-[#FE375D] hover:bg-[#FE375D]/10 flex items-center justify-center transition-all cursor-pointer"
-            >
-              <ImageIcon className="w-5 h-5" />
-            </button>
+            {!isSelfieStep ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentTarget === "nidFront") frontInputRef.current?.click();
+                  else backInputRef.current?.click();
+                }}
+                title="Pick from gallery"
+                className="w-12 h-12 rounded-full border border-[#FE375D]/40 text-[#FE375D] hover:bg-[#FE375D]/10 flex items-center justify-center transition-all cursor-pointer"
+              >
+                <ImageIcon className="w-5 h-5" />
+              </button>
+            ) : null}
 
-            {/* Center: Red Circular Checkmark Button (Confirm) */}
             <button
               type="button"
               onClick={() => {
@@ -667,7 +679,6 @@ export function ArtisanIdentityFlow() {
               <Check className="w-8 h-8 stroke-[3]" />
             </button>
 
-            {/* Right: Retake Icon Button */}
             <button
               type="button"
               onClick={() => {
@@ -682,32 +693,33 @@ export function ArtisanIdentityFlow() {
             </button>
           </>
         ) : (
-          // ================= CAPTURE BAR: Gallery button | Red Camera Capture Button =================
           <div className="flex items-center gap-6">
-            <button
-              type="button"
-              onClick={() => {
-                if (currentTarget === "nidFront") frontInputRef.current?.click();
-                else if (currentTarget === "nidBack") backInputRef.current?.click();
-                else selfieInputRef.current?.click();
-              }}
-              title="Pick from gallery"
-              className="w-12 h-12 rounded-full border border-slate-200 text-slate-600 hover:text-[#FE375D] hover:border-[#FE375D]/40 hover:bg-[#FE375D]/5 flex items-center justify-center transition-all cursor-pointer"
-            >
-              <ImageIcon className="w-5 h-5" />
-            </button>
+            {!isSelfieStep ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentTarget === "nidFront") frontInputRef.current?.click();
+                  else backInputRef.current?.click();
+                }}
+                title="Pick from gallery"
+                className="w-12 h-12 rounded-full border border-slate-200 text-slate-600 hover:text-[#FE375D] hover:border-[#FE375D]/40 hover:bg-[#FE375D]/5 flex items-center justify-center transition-all cursor-pointer"
+              >
+                <ImageIcon className="w-5 h-5" />
+              </button>
+            ) : null}
 
-            {/* Big Red Camera Button */}
             <button
               type="button"
               onClick={() => {
                 if (cameraActive) {
                   capturePhoto(currentTarget);
                 } else {
-                  // Fallback: trigger file picker
-                  if (currentTarget === "nidFront") frontInputRef.current?.click();
-                  else if (currentTarget === "nidBack") backInputRef.current?.click();
-                  else selfieInputRef.current?.click();
+                  if (isSelfieStep) {
+                    selfieCameraInputRef.current?.click();
+                  } else {
+                    if (currentTarget === "nidFront") frontInputRef.current?.click();
+                    else backInputRef.current?.click();
+                  }
                 }
               }}
               title="Take photo"
@@ -719,22 +731,15 @@ export function ArtisanIdentityFlow() {
         )}
       </div>
 
-      {/* Progress Dots */}
       <div className="mt-8 flex items-center justify-center gap-2">
         <span
-          className={`h-1.5 rounded-full transition-all ${
-            step.startsWith("front") ? "w-6 bg-[#FE375D]" : "w-1.5 bg-slate-300"
-          }`}
+          className={"h-1.5 rounded-full transition-all " + (step.startsWith("front") ? "w-6 bg-[#FE375D]" : "w-1.5 bg-slate-300")}
         />
         <span
-          className={`h-1.5 rounded-full transition-all ${
-            step.startsWith("back") ? "w-6 bg-[#FE375D]" : "w-1.5 bg-slate-300"
-          }`}
+          className={"h-1.5 rounded-full transition-all " + (step.startsWith("back") ? "w-6 bg-[#FE375D]" : "w-1.5 bg-slate-300")}
         />
         <span
-          className={`h-1.5 rounded-full transition-all ${
-            step.startsWith("selfie") ? "w-6 bg-[#FE375D]" : "w-1.5 bg-slate-300"
-          }`}
+          className={"h-1.5 rounded-full transition-all " + (step.startsWith("selfie") ? "w-6 bg-[#FE375D]" : "w-1.5 bg-slate-300")}
         />
       </div>
     </div>
