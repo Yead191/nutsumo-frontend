@@ -28,3 +28,11 @@ export async function changePassword(body: {
     body,
   });
 }
+
+/** GET /user/profile — fetch authenticated user profile */
+export async function getMyProfile() {
+  return nextFetch("/user/profile", {
+    method: "GET",
+    tags: ["user-profile"],
+  });
+}

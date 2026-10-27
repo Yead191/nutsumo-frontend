@@ -1,9 +1,10 @@
 import { Suspense } from "react";
 import { SignupForm } from "@/components/web-pages/signup-form";
+import { AuthSkeleton } from "@/components/auth/auth-skeleton";
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="text-sm text-muted">Loading signup…</div>}>
+    <Suspense fallback={<AuthSkeleton />}>
       <SignupForm />
     </Suspense>
   );

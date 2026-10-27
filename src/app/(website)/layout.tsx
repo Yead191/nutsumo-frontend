@@ -1,5 +1,5 @@
 import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { NavServer } from "@/components/layout/NavServer";
 
 export default function WebsiteLayout({
   children,
@@ -8,7 +8,7 @@ export default function WebsiteLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
+      <NavServer />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
