@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
-import { Logo } from "@/components/ui/logo";
 import { ProfileMenu } from "@/components/layout/profile-menu";
 import { cn } from "@/lib/cn";
 import Image from "next/image";
@@ -31,22 +30,18 @@ interface NavbarProps {
   user?: any;
 }
 
-export function Navbar({ user: initialUser }: NavbarProps) {
+export function Navbar({ user }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [open, setOpen] = useState(false);
   const [isOverHero, setIsOverHero] = useState(isHome);
   const [isAtTop, setIsAtTop] = useState(true);
-  const [user, setUser] = useState(initialUser);
-  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(initialUser));
   const [hideBanner, setHideBanner] = useState(false);
 
   // Centralized logout handler that clears client & server session immediately
   const handleLogout = useCallback(async () => {
     // 1. Immediately update UI state so Navbar revalidates instantly with zero delay
-    setUser(null);
-    setIsAuthenticated(false);
     setOpen(false);
 
     // 2. Remove auth cookies across all paths
@@ -80,49 +75,6 @@ export function Navbar({ user: initialUser }: NavbarProps) {
     router.refresh();
   }, [router]);
 
-  // Sync state whenever initialUser prop from server component updates
-  useEffect(() => {
-    setUser(initialUser ?? null);
-    const token = Cookies.get("accessToken");
-    setIsAuthenticated(Boolean(initialUser || token));
-  }, [initialUser]);
-
-  // Synchronize client-side cookies & profile reactively
-  const syncUser = useCallback(() => {
-    const token = Cookies.get("accessToken");
-    const hasToken = Boolean(token);
-    setIsAuthenticated(hasToken);
-
-    if (!hasToken) {
-      setUser(null);
-      return;
-    }
-
-    import("@/helpers/next-fetch/apiActions/profileActions")
-      .then(({ getMyProfile }) => getMyProfile())
-      .then((res) => {
-        if (res?.success && res.data) {
-          setUser(res.data);
-        } else if (res?.isBlocked) {
-          handleLogout();
-        }
-      })
-      .catch(() => {});
-  }, [handleLogout]);
-
-  useEffect(() => {
-    syncUser();
-
-    const onAuthEvent = () => syncUser();
-    window.addEventListener("auth-changed", onAuthEvent);
-    window.addEventListener("storage", onAuthEvent);
-
-    return () => {
-      window.removeEventListener("auth-changed", onAuthEvent);
-      window.removeEventListener("storage", onAuthEvent);
-    };
-  }, [pathname, syncUser]);
-
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -147,12 +99,12 @@ export function Navbar({ user: initialUser }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname, isHome]);
 
-  const isArtisan = user?.role === "ARTISAN";
+  const isArtisan = Boolean(user?.role === "ARTISAN");
   const myJobsHref = isArtisan ? "/pro/jobs" : "/account/bookings";
   const postJobHref = "/account/post-job";
 
   const isArtisanUnverified =
-    isAuthenticated &&
+    user &&
     user?.role === "ARTISAN" &&
     (user?.identityStatus === "not_submitted" ||
       user?.identityStatus === "needs_update" ||
@@ -268,7 +220,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
 
           {/* Right CTA / Auth Controls */}
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            {isAuthenticated ? (
+            {user && user?._id ? (
               <>
                 {/* Button 1: My Jobs */}
                 <Link
@@ -349,7 +301,7 @@ export function Navbar({ user: initialUser }: NavbarProps) {
 
               <div className="h-px bg-slate-100 my-2" />
 
-              {isAuthenticated ? (
+              {user && user?._id ? (
                 <div className="flex flex-col gap-2.5 pt-1">
                   {/* User info display on mobile */}
                   <div className="px-2 py-1 flex items-center justify-between">

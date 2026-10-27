@@ -10,6 +10,9 @@ import {
   ChevronRight,
   ClipboardList,
   CreditCard,
+  DollarSign,
+  Layers,
+  Award,
   FileCheck,
   KeyRound,
   LayoutDashboard,
@@ -37,6 +40,9 @@ function getSidebarIcon(label: string) {
   if (norm.includes("profile")) return UserRound;
   if (norm.includes("security")) return ShieldCheck;
   if (norm.includes("password")) return KeyRound;
+  if (norm.includes("service")) return DollarSign;
+  if (norm.includes("portfolio")) return Layers;
+  if (norm.includes("reputation")) return Award;
   if (norm.includes("subscription") || norm.includes("membership") || norm.includes("pricing")) return CreditCard;
   return Briefcase;
 }

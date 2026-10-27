@@ -17,7 +17,7 @@ const getProfile = async (): Promise<any | null> => {
         "Content-Type": "application/json",
       },
       // cache: "no-store",
-      cache: "default",
+      cache: "force-cache",
       next: {
         tags: ["user-profile"],
         revalidate: 30,
