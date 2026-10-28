@@ -167,3 +167,96 @@ export async function deletePortfolioItem(id: string) {
 
   return result;
 }
+
+
+/**
+ * GET /service — fetch catalog services with pagination & search
+ */
+export async function getCatalogServices(params: {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+  category?: string;
+} = {}) {
+  const searchParams = new URLSearchParams();
+  if (params.page) searchParams.append("page", String(params.page));
+  if (params.limit) searchParams.append("limit", String(params.limit));
+  if (params.searchTerm) searchParams.append("searchTerm", params.searchTerm);
+  if (params.category) searchParams.append("category", params.category);
+
+  const query = searchParams.toString();
+  return nextFetch(`/service${query ? `?${query}` : ""}`, {
+    method: "GET",
+    cache: "no-store",
+  });
+}
+
+/**
+ * GET /artisan-service/my-services — fetch authenticated artisan's services
+ */
+export async function getArtisanSelectedServices() {
+  return nextFetch("/artisan-service/my-services", {
+    method: "GET",
+    cache: "no-store",
+    tags: ["artisan-services"],
+  });
+}
+
+/**
+ * POST /artisan-service — add a service selection for the artisan
+ */
+export async function addArtisanService(payload: {
+  service: string;
+  rateAmount: number;
+  rateType: "HOURLY" | "DAILY";
+  isActive?: boolean;
+}) {
+  const result = await nextFetch("/artisan-service", {
+    method: "POST",
+    body: payload,
+  });
+
+  if (result.success) {
+    await revalidateTags(["artisan-services", "user-profile"]);
+  }
+
+  return result;
+}
+
+/**
+ * PATCH /artisan-service/:id — update artisan service rate or status
+ */
+export async function updateArtisanService(
+  id: string,
+  payload: {
+    rateAmount?: number;
+    rateType?: "HOURLY" | "DAILY";
+    isActive?: boolean;
+  },
+) {
+  const result = await nextFetch(`/artisan-service/${id}`, {
+    method: "PATCH",
+    body: payload,
+  });
+
+  if (result.success) {
+    await revalidateTags(["artisan-services", "user-profile"]);
+  }
+
+  return result;
+}
+
+/**
+ * DELETE /artisan-service/:id — remove artisan service selection
+ */
+export async function deleteArtisanService(id: string) {
+  const result = await nextFetch(`/artisan-service/${id}`, {
+    method: "DELETE",
+  });
+
+  if (result.success) {
+    await revalidateTags(["artisan-services", "user-profile"]);
+  }
+
+  return result;
+}
