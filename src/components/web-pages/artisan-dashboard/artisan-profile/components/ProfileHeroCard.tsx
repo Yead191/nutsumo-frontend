@@ -46,7 +46,7 @@ export function ProfileHeroCard({
     previewUrl || (form.image ? getImageUrl(form.image) || form.image : "");
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-line/80 bg-gradient-to-br from-white via-white to-slate-50 p-6 sm:p-8 shadow-xs">
+    <div className="relative overflow-hidden rounded-3xl border border-line/80 bg-linear-to-br from-white via-white to-slate-50 p-6 sm:p-8 shadow-xs">
       <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
 
       {/* Hidden File Input */}

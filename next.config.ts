@@ -1,9 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
   allowedDevOrigins: ["10.10.26.170", "localhost", "127.0.0.1"],
   images: {
     dangerouslyAllowLocalIP: true,
+
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "i.pravatar.cc" },

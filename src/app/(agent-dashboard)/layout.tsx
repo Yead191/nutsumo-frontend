@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import getProfile from "@/helpers/next-fetch/core/getProfile";
 import { DashboardSidebar } from "@/components/layout/dashboard-sidebar";
 import { NavServer } from "@/components/layout/NavServer";
 
@@ -14,11 +16,23 @@ const items = [
   { href: "/pro/password", label: "Password" },
 ];
 
-export default function AgentDashboardLayout({
+export default async function AgentDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getProfile();
+
+  // If not authenticated, redirect to login
+  if (!user) {
+    redirect("/login?redirect=/pro");
+  }
+
+  // If authenticated but user role is not ARTISAN, deny access to artisan dashboard
+  if (user.role !== "ARTISAN") {
+    redirect("/account");
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-surface pt-20">
       <NavServer />
