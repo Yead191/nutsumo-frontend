@@ -101,7 +101,7 @@ export function ProfileHeroCard({
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-display text-xl sm:text-2xl font-black tracking-tight text-title">
-                {form.businessName || form.name || "Artisan Profile"}
+                {form.name || form.businessName || "Artisan Profile"}
               </h1>
 
               {/* Identity Verification Badges */}
@@ -207,14 +207,13 @@ export function ProfileHeroCard({
             type="button"
             onClick={onSave}
             disabled={isSaving}
-            className="h-10 px-5 text-sm font-bold shadow-sm mt-5 sm:mt-5 flex items-center gap-2"
+            className=" text-sm font-bold shadow-sm mt-5 sm:mt-5 flex items-center gap-2"
           >
             {isSaving ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <Save className="h-4 w-4" />
+              <Save className="h-8 w-5" />
             )}
-            {isSaving ? "Saving..." : "Save Profile"}
           </Button>
         </div>
       </div>

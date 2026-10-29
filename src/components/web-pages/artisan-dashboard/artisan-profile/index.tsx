@@ -23,14 +23,17 @@ export function ProfessionalProfileManager({
     name: user?.name || "",
     email: user?.email || "",
     image: user?.image || "",
-    businessName: user?.businessName || "",
-    trade: user?.trade || "",
-    location: user?.location || "",
+    businessName: user?.businessName || user?.artisanProfile?.businessName || "",
+    trade: user?.trade || user?.artisanProfile?.trade || "",
+    location: user?.location || user?.artisanProfile?.location || "",
     phone: user?.phone || "",
-    experienceYears: user?.experienceYears ?? 0,
-    bio: user?.bio || "",
+    experienceYears:
+      user?.experienceYears ?? user?.artisanProfile?.experienceYears ?? 0,
+    bio: user?.bio || user?.artisanProfile?.bio || "",
     availabilityStatus:
-      (user?.availabilityStatus as AvailabilityStatus) || "Available",
+      (user?.availabilityStatus as AvailabilityStatus) ||
+      (user?.artisanProfile?.availabilityStatus as AvailabilityStatus) ||
+      "Available",
     identityStatus: user?.identityStatus || "not_submitted",
   });
 
@@ -42,13 +45,23 @@ export function ProfessionalProfileManager({
         name: user?.name ?? prev.name,
         email: user?.email ?? prev.email,
         image: user?.image ?? prev.image,
-        businessName: user?.businessName ?? prev.businessName,
-        trade: user?.trade ?? prev.trade,
-        location: user?.location ?? prev.location,
+        businessName:
+          user?.businessName ??
+          user?.artisanProfile?.businessName ??
+          prev.businessName,
+        trade: user?.trade ?? user?.artisanProfile?.trade ?? prev.trade,
+        location:
+          user?.location ?? user?.artisanProfile?.location ?? prev.location,
         phone: user?.phone ?? prev.phone,
-        experienceYears: user?.experienceYears ?? prev.experienceYears,
-        bio: user?.bio ?? prev.bio,
-        availabilityStatus: user?.availabilityStatus ?? prev.availabilityStatus,
+        experienceYears:
+          user?.experienceYears ??
+          user?.artisanProfile?.experienceYears ??
+          prev.experienceYears,
+        bio: user?.bio ?? user?.artisanProfile?.bio ?? prev.bio,
+        availabilityStatus:
+          (user?.availabilityStatus as AvailabilityStatus) ??
+          (user?.artisanProfile?.availabilityStatus as AvailabilityStatus) ??
+          prev.availabilityStatus,
         identityStatus: user?.identityStatus ?? prev.identityStatus,
       }));
     }

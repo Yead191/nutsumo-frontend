@@ -107,14 +107,9 @@ export async function getSinglePortfolioItem(id: string) {
  * POST /portfolio — create new portfolio project
  * Invalidates 'artisan-portfolio' cache so fresh projects are immediately visible.
  */
-export async function createPortfolioItem(payload: {
-  title: string;
-  description: string;
-  category: string;
-  images: Array<{ url: string; type: "before" | "after" | "work" }>;
-  completedAt?: string;
-  isPublished?: boolean;
-}) {
+export async function createPortfolioItem(
+  payload: FormData | Record<string, any>,
+) {
   const result = await nextFetch("/portfolio", {
     method: "POST",
     body: payload,
@@ -133,14 +128,7 @@ export async function createPortfolioItem(payload: {
  */
 export async function updatePortfolioItem(
   id: string,
-  payload: Partial<{
-    title: string;
-    description: string;
-    category: string;
-    images: Array<{ url: string; type: "before" | "after" | "work" }>;
-    completedAt?: string;
-    isPublished?: boolean;
-  }>,
+  payload: FormData | Record<string, any>,
 ) {
   const result = await nextFetch(`/portfolio/${id}`, {
     method: "PATCH",
