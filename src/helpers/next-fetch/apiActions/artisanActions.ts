@@ -168,16 +168,17 @@ export async function deletePortfolioItem(id: string) {
   return result;
 }
 
-
 /**
  * GET /service — fetch catalog services with pagination & search
  */
-export async function getCatalogServices(params: {
-  page?: number;
-  limit?: number;
-  searchTerm?: string;
-  category?: string;
-} = {}) {
+export async function getCatalogServices(
+  params: {
+    page?: number;
+    limit?: number;
+    searchTerm?: string;
+    category?: string;
+  } = {},
+) {
   const searchParams = new URLSearchParams();
   if (params.page) searchParams.append("page", String(params.page));
   if (params.limit) searchParams.append("limit", String(params.limit));
@@ -197,7 +198,10 @@ export async function getCatalogServices(params: {
 export async function getArtisanSelectedServices() {
   return nextFetch("/artisan-service/my-services", {
     method: "GET",
-    cache: "no-store",
+    cache: "force-cache",
+    next: {
+      revalidate: ONE_HOUR,
+    },
     tags: ["artisan-services"],
   });
 }
@@ -209,6 +213,7 @@ export async function addArtisanService(payload: {
   service: string;
   rateAmount: number;
   rateType: "HOURLY" | "DAILY";
+  description?: string;
   isActive?: boolean;
 }) {
   const result = await nextFetch("/artisan-service", {
@@ -231,6 +236,7 @@ export async function updateArtisanService(
   payload: {
     rateAmount?: number;
     rateType?: "HOURLY" | "DAILY";
+    description?: string;
     isActive?: boolean;
   },
 ) {
