@@ -102,12 +102,15 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
         aria-label="User menu"
       >
         <div className="relative h-10 w-10 rounded-full overflow-hidden bg-[#FE375D]/10 border border-[#FE375D]/20 flex items-center justify-center text-[#FE375D] font-bold text-xs select-none">
-          {userImage ? (
+          {user?.image ? (
             <Image
-              src={userImage}
+              src={getImageUrl(user?.image) || ""}
               alt={user?.name || "User avatar"}
-              fill
-              className="object-cover"
+              width={60}
+              height={60}
+              className="object-cover h-full w-full"
+              draggable={false}
+              loading="eager"
             />
           ) : (
             <span>{getInitials(user?.name)}</span>

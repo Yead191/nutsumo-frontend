@@ -30,7 +30,9 @@ export async function getArtisanProfile() {
  * PATCH /user/profile — update authenticated artisan/user profile
  * Purges 'user-profile' tag from Next.js Data Cache upon successful update.
  */
-export async function updateArtisanProfile(payload: Record<string, any>) {
+export async function updateArtisanProfile(
+  payload: FormData | Record<string, any>,
+) {
   const result = await nextFetch("/user/profile", {
     method: "PATCH",
     body: payload,

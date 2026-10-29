@@ -26,6 +26,7 @@ export function HomeHero() {
           alt="Trust is earned through good work - Nutsumo"
           fill
           priority
+          loading="eager"
           className="object-cover object-[center_right] select-none"
         />
 
