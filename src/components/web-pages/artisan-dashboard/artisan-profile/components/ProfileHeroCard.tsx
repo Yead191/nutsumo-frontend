@@ -147,7 +147,9 @@ export function ProfileHeroCard({
             <p className="text-xs text-muted flex items-center gap-2">
               <span className="flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5 text-muted" />
-                {form.location || "Location not set"}
+                {form.location
+                  ? `${form.location}${form.postCode ? ` (${form.postCode})` : ""}`
+                  : form.postCode || "Location not set"}
               </span>
               {form.phone && (
                 <>
@@ -174,26 +176,24 @@ export function ProfileHeroCard({
                       key={status}
                       type="button"
                       onClick={() => onAvailabilityChange(status)}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                        isActive
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${isActive
                           ? status === "Available"
                             ? "bg-emerald-600 text-white shadow-2xs"
                             : status === "Booked"
                               ? "bg-amber-500 text-white shadow-2xs"
                               : "bg-rose-500 text-white shadow-2xs"
                           : "text-muted hover:text-title"
-                      }`}
+                        }`}
                     >
                       <span
-                        className={`h-2 w-2 rounded-full ${
-                          isActive
+                        className={`h-2 w-2 rounded-full ${isActive
                             ? "bg-white animate-pulse"
                             : status === "Available"
                               ? "bg-emerald-500"
                               : status === "Booked"
                                 ? "bg-amber-500"
                                 : "bg-rose-500"
-                        }`}
+                          }`}
                       />
                       {status}
                     </button>

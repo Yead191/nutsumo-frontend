@@ -65,11 +65,31 @@ export function ProfileDetailsForm({
           />
         </Field>
 
+        <Field label="Years of Experience">
+          <TextField
+            type="number"
+            min={0}
+            value={form.experienceYears}
+            onChange={(e) =>
+              onChange("experienceYears", Number(e.target.value) || 0)
+            }
+            placeholder="5"
+          />
+        </Field>
+
         <Field label="Service Location / Coverage Area">
           <TextField
             value={form.location}
             onChange={(e) => onChange("location", e.target.value)}
             placeholder="e.g. Austin, TX Metro"
+          />
+        </Field>
+
+        <Field label="Post Code">
+          <TextField
+            value={form.postCode}
+            onChange={(e) => onChange("postCode", e.target.value)}
+            placeholder="e.g. 78701 or SW1A 1AA"
           />
         </Field>
 
@@ -86,18 +106,6 @@ export function ProfileDetailsForm({
             value={form.email}
             disabled
             className="bg-slate-50 text-muted cursor-not-allowed"
-          />
-        </Field>
-
-        <Field label="Years of Experience">
-          <TextField
-            type="number"
-            min={0}
-            value={form.experienceYears}
-            onChange={(e) =>
-              onChange("experienceYears", Number(e.target.value) || 0)
-            }
-            placeholder="5"
           />
         </Field>
 

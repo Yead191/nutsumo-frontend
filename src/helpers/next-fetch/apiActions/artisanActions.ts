@@ -2,6 +2,7 @@
 
 import { nextFetch } from "../core/NextFetch";
 import { revalidateTags } from "../core/revalidateTags";
+import { revalidatePath } from "next/cache";
 
 // ============================================================================
 // Cache TTL Constants (Senior Frontend Architecture)
@@ -40,6 +41,7 @@ export async function updateArtisanProfile(
 
   if (result.success) {
     await revalidateTags(["user-profile"]);
+    revalidatePath("/pro/profile");
   }
 
   return result;

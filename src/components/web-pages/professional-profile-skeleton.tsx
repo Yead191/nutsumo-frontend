@@ -61,31 +61,37 @@ export function ProfessionalProfileSkeleton() {
             <div className="h-11 w-full rounded-xl bg-slate-100" />
           </div>
 
-          {/* Field 4: Location */}
-          <div className="space-y-2">
-            <div className="h-3.5 w-36 rounded bg-slate-200/70" />
-            <div className="h-11 w-full rounded-xl bg-slate-100" />
-          </div>
-
-          {/* Field 5: Phone */}
-          <div className="space-y-2">
-            <div className="h-3.5 w-28 rounded bg-slate-200/70" />
-            <div className="h-11 w-full rounded-xl bg-slate-100" />
-          </div>
-
-          {/* Field 6: Email */}
-          <div className="space-y-2">
-            <div className="h-3.5 w-28 rounded bg-slate-200/70" />
-            <div className="h-11 w-full rounded-xl bg-slate-100" />
-          </div>
-
-          {/* Field 7: Experience */}
+          {/* Field 4: Experience */}
           <div className="space-y-2">
             <div className="h-3.5 w-32 rounded bg-slate-200/70" />
             <div className="h-11 w-full rounded-xl bg-slate-100" />
           </div>
 
-          {/* Field 8: Bio (Span 2) */}
+          {/* Field 5: Location */}
+          <div className="space-y-2">
+            <div className="h-3.5 w-36 rounded bg-slate-200/70" />
+            <div className="h-11 w-full rounded-xl bg-slate-100" />
+          </div>
+
+          {/* Field 6: Post Code */}
+          <div className="space-y-2">
+            <div className="h-3.5 w-24 rounded bg-slate-200/70" />
+            <div className="h-11 w-full rounded-xl bg-slate-100" />
+          </div>
+
+          {/* Field 7: Phone */}
+          <div className="space-y-2">
+            <div className="h-3.5 w-28 rounded bg-slate-200/70" />
+            <div className="h-11 w-full rounded-xl bg-slate-100" />
+          </div>
+
+          {/* Field 8: Email */}
+          <div className="space-y-2">
+            <div className="h-3.5 w-28 rounded bg-slate-200/70" />
+            <div className="h-11 w-full rounded-xl bg-slate-100" />
+          </div>
+
+          {/* Field 9: Bio (Span 2) */}
           <div className="sm:col-span-2 space-y-2">
             <div className="h-3.5 w-40 rounded bg-slate-200/70" />
             <div className="h-28 w-full rounded-2xl bg-slate-100" />

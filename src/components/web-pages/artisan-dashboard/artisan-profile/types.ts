@@ -13,6 +13,7 @@ export interface ProfileFormState {
   businessName: string;
   trade: string;
   location: string;
+  postCode: string;
   phone: string;
   experienceYears: number;
   bio: string;

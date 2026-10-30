@@ -26,6 +26,7 @@ export function ProfessionalProfileManager({
     businessName: user?.businessName || user?.artisanProfile?.businessName || "",
     trade: user?.trade || user?.artisanProfile?.trade || "",
     location: user?.location || user?.artisanProfile?.location || "",
+    postCode: user?.postCode || user?.artisanProfile?.postCode || "",
     phone: user?.phone || "",
     experienceYears:
       user?.experienceYears ?? user?.artisanProfile?.experienceYears ?? 0,
@@ -52,6 +53,8 @@ export function ProfessionalProfileManager({
         trade: user?.trade ?? user?.artisanProfile?.trade ?? prev.trade,
         location:
           user?.location ?? user?.artisanProfile?.location ?? prev.location,
+        postCode:
+          user?.postCode ?? user?.artisanProfile?.postCode ?? prev.postCode,
         phone: user?.phone ?? prev.phone,
         experienceYears:
           user?.experienceYears ??
@@ -168,6 +171,7 @@ export function ProfessionalProfileManager({
         businessName: form.businessName.trim(),
         trade: form.trade.trim(),
         location: form.location.trim(),
+        postCode: form.postCode.trim(),
         phone: form.phone.trim(),
         experienceYears: Number(form.experienceYears) || 0,
         bio: form.bio.trim(),
@@ -182,8 +186,17 @@ export function ProfessionalProfileManager({
         toast.success("Professional profile saved successfully!");
 
         // If backend returned updated profile data with image path, update form state
-        if (res.data?.image) {
-          setForm((prev) => ({ ...prev, image: res.data.image }));
+        if (true) {
+          setForm((prev) => ({
+            ...prev,
+            postCode: profileData.postCode,
+            ...(res?.data?.image ? { image: res.data.image } : {}),
+            ...(res.data.postCode !== undefined
+              ? { postCode: res.data.postCode }
+              : res.data.artisanProfile?.postCode !== undefined
+                ? { postCode: res.data.artisanProfile.postCode }
+                : {}),
+          }));
         }
 
         // Clear local file and preview

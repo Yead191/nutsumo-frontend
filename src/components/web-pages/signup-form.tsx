@@ -225,7 +225,7 @@ export function SignupForm() {
             htmlFor="email"
             className="block text-xs font-bold text-slate-800 mb-1"
           >
-            Email address or Phone number *
+            Email address *
           </label>
           <input
             id="email"
@@ -233,7 +233,7 @@ export function SignupForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email or phone number"
+            placeholder="Enter your email"
             className="h-11 sm:h-12 w-full rounded-xl bg-[#FFF9FA]/60 border border-slate-200 px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-[#FE375D] focus:ring-2 focus:ring-[#FE375D]/15 transition-all outline-none"
           />
         </div>
