@@ -12,18 +12,13 @@ import {
 import { PortfolioCard } from "./components/PortfolioCard";
 import { EmptyPortfolioState } from "./components/EmptyPortfolioState";
 import { AddEditPortfolioModal } from "./components/AddEditPortfolioModal";
-import type {
-  ArtisanPortfolioManagerProps,
-  PortfolioItem,
-} from "./types";
+import type { ArtisanPortfolioManagerProps, PortfolioItem } from "./types";
+import { revalidateTags } from "@/helpers/next-fetch/core/revalidateTags";
 
 export function ArtisanPortfolioManager({
   initialPortfolio = [],
   categories = [],
 }: ArtisanPortfolioManagerProps) {
-  // STRICT: No mock data! Directly initialize from server props
-  const [portfolio, setPortfolio] = useState<PortfolioItem[]>(initialPortfolio);
-
   // Modal states
   const [isAddEditOpen, setIsAddEditOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
@@ -34,9 +29,6 @@ export function ArtisanPortfolioManager({
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Sync state if initialPortfolio prop updates
-  React.useEffect(() => {
-    setPortfolio(initialPortfolio);
-  }, [initialPortfolio]);
 
   // Open add modal
   const handleOpenAdd = () => {
@@ -62,11 +54,7 @@ export function ArtisanPortfolioManager({
         const res = await updatePortfolioItem(itemId, formData);
         if (res?.success) {
           toast.success("Portfolio project updated successfully!");
-          setPortfolio((prev) =>
-            prev.map((p) =>
-              p._id === itemId ? { ...p, ...(res.data || {}) } : p,
-            ),
-          );
+          revalidateTags(["artisan-portfolio"]);
           return true;
         } else {
           toast.error(res?.message || "Failed to update portfolio project");
@@ -77,9 +65,7 @@ export function ArtisanPortfolioManager({
         const res = await createPortfolioItem(formData);
         if (res?.success) {
           toast.success("New portfolio project published successfully!");
-          if (res.data) {
-            setPortfolio((prev) => [res.data, ...prev]);
-          }
+          revalidateTags(["artisan-portfolio"]);
           return true;
         } else {
           toast.error(res?.message || "Failed to publish portfolio project");
@@ -103,9 +89,7 @@ export function ArtisanPortfolioManager({
       const res = await deletePortfolioItem(deletingItem._id);
       if (res?.success) {
         toast.success("Project removed from your portfolio");
-        setPortfolio((prev) =>
-          prev.filter((p) => p._id !== deletingItem._id),
-        );
+        revalidateTags(["artisan-portfolio"]);
         setDeletingItem(null);
       } else {
         toast.error(res?.message || "Failed to delete project");
@@ -127,11 +111,12 @@ export function ArtisanPortfolioManager({
               Portfolio Showcase
             </h1>
             <span className="text-xs font-semibold text-muted bg-slate-100 rounded-full px-2.5 py-0.5">
-              {portfolio.length}
+              {initialPortfolio.length}
             </span>
           </div>
           <p className="text-xs text-muted">
-            Showcase your completed craftsmanship, before & after project transformations, and verified client work.
+            Showcase your completed craftsmanship, before & after project
+            transformations, and verified client work.
           </p>
         </div>
 
@@ -146,11 +131,11 @@ export function ArtisanPortfolioManager({
       </div>
 
       {/* Main Content: Grid 2 */}
-      {portfolio.length === 0 ? (
+      {initialPortfolio.length === 0 ? (
         <EmptyPortfolioState onOpenAdd={handleOpenAdd} />
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
-          {portfolio.map((item) => (
+          {initialPortfolio.map((item) => (
             <PortfolioCard
               key={item._id || item.title}
               item={item}
@@ -190,7 +175,8 @@ export function ArtisanPortfolioManager({
               <p className="text-xs text-muted leading-relaxed">
                 Are you sure you want to delete &ldquo;
                 <strong className="text-title">{deletingItem.title}</strong>
-                &rdquo;? All uploaded photos and project records will be permanently removed.
+                &rdquo;? All uploaded photos and project records will be
+                permanently removed.
               </p>
             </div>
 

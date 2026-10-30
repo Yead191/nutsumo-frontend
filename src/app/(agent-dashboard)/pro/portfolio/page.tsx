@@ -17,7 +17,7 @@ export default async function ProPortfolioPage() {
     getMyPortfolio(),
     getServiceCategories(),
   ]);
-
+  console.log(portfolioRes);
   let initialPortfolio: any[] = [];
   let categories: any[] = [];
 
