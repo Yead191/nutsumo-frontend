@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Modal } from "antd";
 import { Search, Loader2, X, Check, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TextField, TextArea } from "@/components/ui/field";
@@ -124,12 +125,29 @@ export function AddServiceModal({
     });
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-line space-y-5">
-        <div className="flex items-center justify-between border-b border-line pb-4">
+    <Modal
+      open={isOpen}
+      onCancel={onClose}
+      destroyOnClose
+      footer={null}
+      closable={false}
+      centered
+      width={560}
+      className="[&_.ant-modal-content]:!p-0 [&_.ant-modal-content]:!rounded-3xl [&_.ant-modal-content]:!overflow-hidden [&_.ant-modal-content]:!border [&_.ant-modal-content]:!border-line [&_.ant-modal-content]:!shadow-2xl"
+      styles={{
+        body: {
+          padding: 0,
+        },
+        mask: {
+          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+        },
+      }}
+    >
+      <div className="flex flex-col max-h-[85vh] bg-white">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between border-b border-line px-6 py-4 sm:px-7 shrink-0">
           <div>
             <h3 className="font-display text-lg font-bold text-title">
               Add Service from Catalog
@@ -141,13 +159,14 @@ export function AddServiceModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-muted hover:text-title hover:bg-slate-100"
+            className="p-1.5 rounded-lg text-muted hover:text-title hover:bg-slate-100 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="space-y-4">
+        {/* Scrollable Body */}
+        <div className="overflow-y-auto px-6 py-4 sm:px-7 space-y-4 flex-1">
           {/* Search Catalog */}
           <div>
             <label className="text-xs font-bold text-title block mb-1.5">
@@ -181,15 +200,15 @@ export function AddServiceModal({
             <div
               ref={scrollContainerRef}
               onScroll={handleScroll}
-              className="max-h-48 overflow-y-auto rounded-2xl border border-line p-2 space-y-1.5 bg-slate-50/50"
+              className="max-h-40 overflow-y-auto rounded-2xl border border-line p-2 space-y-1.5 bg-slate-50/50"
             >
               {isCatalogLoading && catalogServices.length === 0 ? (
-                <div className="py-8 text-center text-xs text-muted flex items-center justify-center gap-2">
+                <div className="py-6 text-center text-xs text-muted flex items-center justify-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   Loading catalog services...
                 </div>
               ) : catalogServices.length === 0 ? (
-                <div className="py-8 text-center text-xs text-muted">
+                <div className="py-6 text-center text-xs text-muted">
                   No matching services found in catalog.
                 </div>
               ) : (
@@ -204,13 +223,13 @@ export function AddServiceModal({
                     <div
                       key={service._id}
                       onClick={() => setSelectedService(service)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                      className={`p-2.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                         isSelected
                           ? "border-primary bg-primary/5 shadow-2xs"
                           : "border-line/70 hover:border-slate-300 bg-white"
                       }`}
                     >
-                      <div className="space-y-1 min-w-0">
+                      <div className="space-y-0.5 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-sm text-title truncate">
                             {service.name}
@@ -226,8 +245,8 @@ export function AddServiceModal({
                         )}
                       </div>
                       {isSelected && (
-                        <div className="h-6 w-6 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-2xs">
-                          <Check className="h-3.5 w-3.5" />
+                        <div className="h-5 w-5 rounded-full bg-primary text-white flex items-center justify-center shrink-0 shadow-2xs">
+                          <Check className="h-3 w-3" />
                         </div>
                       )}
                     </div>
@@ -246,9 +265,9 @@ export function AddServiceModal({
 
           {/* Selected Service Badge */}
           {selectedService && (
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 flex items-center justify-between">
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-2.5 flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-bold text-primary block uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-primary block uppercase tracking-wider">
                   Selected Service
                 </span>
                 <span className="text-sm font-bold text-title">
@@ -317,7 +336,7 @@ export function AddServiceModal({
               4. Scope & Details (Optional)
             </label>
             <TextArea
-              rows={3}
+              rows={2}
               value={addDescription}
               onChange={(e) => setAddDescription(e.target.value)}
               placeholder="e.g. Standard labor, diagnostic testing, and client inspection included. Parts quoted separately."
@@ -326,7 +345,8 @@ export function AddServiceModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-line">
+        {/* Fixed Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 sm:px-7 border-t border-line bg-white shrink-0">
           <Button
             type="button"
             variant="ghost"
@@ -345,6 +365,6 @@ export function AddServiceModal({
           </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
