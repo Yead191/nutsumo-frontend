@@ -12,10 +12,12 @@ import {
   Briefcase,
   LogOut,
   AlertTriangle,
+  Bell,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { toast } from "sonner";
 import { ProfileMenu } from "@/components/layout/profile-menu";
+import { TopbarNotifications } from "@/components/layout/Notification/TopbarNotifications";
 import { cn } from "@/lib/cn";
 import Image from "next/image";
 
@@ -242,6 +244,12 @@ export function Navbar({ user }: NavbarProps) {
                   </span>
                 </Link>
 
+                {/* Real-time Notifications */}
+                <TopbarNotifications
+                  userId={user._id || user.id}
+                  role={user.role}
+                />
+
                 {/* Profile Avatar & Menu */}
                 <ProfileMenu user={user} onLogout={handleLogout} />
               </>
@@ -266,8 +274,14 @@ export function Navbar({ user }: NavbarProps) {
             )}
           </div>
 
-          {/* Mobile Hamburger */}
+          {/* Mobile Hamburger & Notification */}
           <div className="flex md:hidden items-center gap-2">
+            {user && (user?._id || user?.id) && (
+              <TopbarNotifications
+                userId={user._id || user.id}
+                role={user.role}
+              />
+            )}
             <button
               type="button"
               onClick={() => setOpen(!open)}
@@ -312,6 +326,19 @@ export function Navbar({ user }: NavbarProps) {
                       {isArtisan ? "Artisan" : "Customer"}
                     </span>
                   </div>
+
+                  {/* Mobile Notifications link */}
+                  <Link
+                    href={isArtisan ? "/pro/notifications" : "/account/notifications"}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between px-3.5 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-[#FE375D] transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Bell className="h-4 w-4 text-[#FE375D]" />
+                      <span>Notifications</span>
+                    </div>
+                    <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
+                  </Link>
 
                   {/* Mobile Button 1: My Jobs */}
                   <Link

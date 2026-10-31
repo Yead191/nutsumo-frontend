@@ -6,6 +6,7 @@ const items = [
   { href: "/account", label: "Service Requests" },
   { href: "/account/post-job", label: "Post a request" },
   { href: "/account/messages", label: "Messages" },
+  { href: "/account/notifications", label: "Notifications" },
   { href: "/account/saved", label: "Saved pros" },
   { href: "/account/profile", label: "Profile" },
   { href: "/account/password", label: "Password" },
