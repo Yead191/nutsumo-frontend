@@ -24,7 +24,7 @@ import Image from "next/image";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/browse-jobs", label: "Job Seekerss", hasDropdown: true },
+  { href: "/jobs", label: "Find Jobs" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -102,8 +102,6 @@ export function Navbar({ user }: NavbarProps) {
   }, [pathname, isHome]);
 
   const isArtisan = Boolean(user?.role === "ARTISAN");
-  const myJobsHref = isArtisan ? "/pro/jobs" : "/account/bookings";
-  const postJobHref = "/account/post-job";
 
   const isArtisanUnverified =
     user &&
@@ -123,7 +121,7 @@ export function Navbar({ user }: NavbarProps) {
             <span className="truncate">
               {user?.identityStatus === "needs_update"
                 ? "Your ID verification needs correction. Please review admin feedback and resubmit."
-                : "Complete your Artisan National ID & Live Selfie verification to unlock full client bookings."}
+                : "Complete your Job Seeker ID verification to unlock client proposals and direct bookings."}
             </span>
             <Link
               href={
@@ -211,38 +209,61 @@ export function Navbar({ user }: NavbarProps) {
                     )}
                   >
                     <span>{link.label}</span>
-                    {link.hasDropdown && (
-                      <ChevronDown className="h-3.5 w-3.5 opacity-70" />
-                    )}
                   </Link>
                 );
               })}
             </div>
           </nav>
 
-          {/* Right CTA / Auth Controls */}
+          {/* Right CTA / Auth Controls (Role-based) */}
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
             {user && user?._id ? (
               <>
-                {/* Button 1: My Jobs */}
-                <Link
-                  href={myJobsHref}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-4 py-2 text-sm font-semibold text-slate-800 shadow-2xs hover:border-[#FE375D] hover:text-[#FE375D] transition-all"
-                >
-                  <Briefcase className="h-3.5 w-3.5 text-slate-500" />
-                  <span>My Jobs</span>
-                </Link>
+                {isArtisan ? (
+                  <>
+                    {/* Job Seeker: Find Jobs */}
+                    <Link
+                      href="/jobs"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-4 py-2 text-sm font-semibold text-slate-800 shadow-2xs hover:border-[#FE375D] hover:text-[#FE375D] transition-all"
+                    >
+                      <Briefcase className="h-3.5 w-3.5 text-slate-500" />
+                      <span>Find Jobs</span>
+                    </Link>
 
-                {/* Button 2: Post Job (Primary) */}
-                <Link
-                  href={postJobHref}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-sm font-semibold shadow-md transition-all group"
-                >
-                  <span>Post Job</span>
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
-                    <ArrowRight className="h-3 w-3 stroke-[2.5]" />
-                  </span>
-                </Link>
+                    {/* Job Seeker: My Jobs & Schedule */}
+                    <Link
+                      href="/pro/jobs"
+                      className="inline-flex items-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-sm font-semibold shadow-md transition-all group"
+                    >
+                      <span>My Schedule</span>
+                      <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
+                        <ArrowRight className="h-3 w-3 stroke-[2.5]" />
+                      </span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    {/* Customer: My Requests */}
+                    <Link
+                      href="/account"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-4 py-2 text-sm font-semibold text-slate-800 shadow-2xs hover:border-[#FE375D] hover:text-[#FE375D] transition-all"
+                    >
+                      <Briefcase className="h-3.5 w-3.5 text-slate-500" />
+                      <span>My Requests</span>
+                    </Link>
+
+                    {/* Customer: I Need Work Done (Post Request) */}
+                    <Link
+                      href="/account/post-job"
+                      className="inline-flex items-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-sm font-semibold shadow-md transition-all group"
+                    >
+                      <span>I Need Work Done</span>
+                      <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D] transition-transform group-hover:translate-x-0.5">
+                        <ArrowRight className="h-3 w-3 stroke-[2.5]" />
+                      </span>
+                    </Link>
+                  </>
+                )}
 
                 {/* Real-time Notifications */}
                 <TopbarNotifications
@@ -255,12 +276,22 @@ export function Navbar({ user }: NavbarProps) {
               </>
             ) : (
               <>
+                {/* Guest: Find Jobs & I Need Work Done */}
+                <Link
+                  href="/jobs"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/95 px-4 py-2 text-sm font-semibold text-slate-800 shadow-2xs hover:border-[#FE375D] hover:text-[#FE375D] transition-all"
+                >
+                  <Briefcase className="h-3.5 w-3.5 text-slate-500" />
+                  <span>Find Jobs</span>
+                </Link>
+
                 <Link
                   href="/login"
                   className="text-sm font-bold text-[#FE375D] hover:opacity-85 transition-opacity px-2"
                 >
                   Log in
                 </Link>
+
                 <Link
                   href="/signup"
                   className="inline-flex items-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2.5 text-sm font-semibold shadow-md transition-all group"
@@ -323,7 +354,7 @@ export function Navbar({ user }: NavbarProps) {
                       {user?.name || "My Account"}
                     </span>
                     <span className="text-[10px] uppercase font-bold text-[#FE375D] bg-[#FE375D]/10 px-2 py-0.5 rounded-full">
-                      {isArtisan ? "Artisan" : "Customer"}
+                      {isArtisan ? "Job Seeker" : "Customer"}
                     </span>
                   </div>
 
@@ -340,27 +371,55 @@ export function Navbar({ user }: NavbarProps) {
                     <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
                   </Link>
 
-                  {/* Mobile Button 1: My Jobs */}
-                  <Link
-                    href={myJobsHref}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-100 border border-slate-200/60"
-                  >
-                    <Briefcase className="h-4 w-4 text-slate-600" />
-                    <span>My Jobs</span>
-                  </Link>
+                  {isArtisan ? (
+                    <>
+                      {/* Job Seeker: Find Jobs */}
+                      <Link
+                        href="/jobs"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-100 border border-slate-200/60"
+                      >
+                        <Briefcase className="h-4 w-4 text-slate-600" />
+                        <span>Find Jobs</span>
+                      </Link>
 
-                  {/* Mobile Button 2: Post Job (Primary) */}
-                  <Link
-                    href={postJobHref}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-[#FE375D] text-white py-3 text-sm font-semibold shadow-md"
-                  >
-                    <span>Post Job</span>
-                    <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D]">
-                      <ArrowRight className="h-3 w-3 stroke-[2.5]" />
-                    </span>
-                  </Link>
+                      {/* Job Seeker: My Schedule */}
+                      <Link
+                        href="/pro/jobs"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-[#FE375D] text-white py-3 text-sm font-semibold shadow-md"
+                      >
+                        <span>My Schedule</span>
+                        <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D]">
+                          <ArrowRight className="h-3 w-3 stroke-[2.5]" />
+                        </span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      {/* Customer: My Requests */}
+                      <Link
+                        href="/account"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-100 border border-slate-200/60"
+                      >
+                        <Briefcase className="h-4 w-4 text-slate-600" />
+                        <span>My Requests</span>
+                      </Link>
+
+                      {/* Customer: I Need Work Done */}
+                      <Link
+                        href="/account/post-job"
+                        onClick={() => setOpen(false)}
+                        className="flex items-center justify-center gap-2 rounded-xl bg-[#FE375D] text-white py-3 text-sm font-semibold shadow-md"
+                      >
+                        <span>I Need Work Done</span>
+                        <span className="grid h-5 w-5 place-items-center rounded-full bg-white text-[#FE375D]">
+                          <ArrowRight className="h-3 w-3 stroke-[2.5]" />
+                        </span>
+                      </Link>
+                    </>
+                  )}
 
                   <button
                     type="button"
@@ -372,6 +431,14 @@ export function Navbar({ user }: NavbarProps) {
                 </div>
               ) : (
                 <div className="flex flex-col gap-2 pt-1">
+                  <Link
+                    href="/jobs"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-100 border border-slate-200/60"
+                  >
+                    <Briefcase className="h-4 w-4 text-slate-600" />
+                    <span>Find Jobs</span>
+                  </Link>
                   <Link
                     href="/login"
                     onClick={() => setOpen(false)}

@@ -1,104 +1,96 @@
 "use server";
 
 import { nextFetch, type FetchResponse } from "../core/NextFetch";
+import { revalidateTags } from "../core/revalidateTags";
+import { revalidatePath } from "next/cache";
 
-export interface IBookingSpeaker {
-  name: string;
-  role: string;
-  avatar?: string;
-}
+export type BookingStatus = "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+export type BookingPaymentStatus = "UNPAID" | "PAID" | "REFUNDED";
 
-export interface IBookingEvent {
+export interface IBookingJob {
   _id: string;
   title: string;
-  description?: string;
-  category?: "fundraiser" | "pitch-night" | "workshop" | "gala" | string;
-  type?: "physical" | "virtual" | "hybrid" | string;
-  pricingType?: "free" | "paid" | string;
-  price?: number;
-  capacity?: number;
-  startDate: string;
-  endDate?: string;
-  location?: string;
-  venueAddress?: string;
-  virtualLink?: string;
-  dressCode?: string;
-  image?: string;
-  speakers?: IBookingSpeaker[];
+  location: string;
+  budget?: number;
+  status: string;
+  category?: any;
+  service?: any;
+  images?: string[];
+  preferredDate?: string;
 }
 
-export interface IUserBooking {
+export interface IBookingUser {
   _id: string;
-  event: IBookingEvent;
-  customerName: string;
-  customerEmail: string;
-  customerPhone?: string;
-  ticketCode?: string;
-  qrCode?: string; // Base64 data URL
-  checkedIn: boolean;
-  checkedInAt?: string | null;
-  quantity: number;
-  price: number;
-  status: "pending" | "confirmed" | "cancelled" | "attended" | string;
-  paymentStatus: "pending" | "paid" | "free" | "failed" | "refunded" | string;
-  note?: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  image?: string;
+  location?: string;
+  verified?: boolean;
+}
+
+export interface IBookingQuotation {
+  _id: string;
+  proposedAmount: number;
+  rateType: "HOURLY" | "DAILY" | "FIXED";
+  estimatedDuration?: string;
+  message?: string;
+}
+
+export interface IBookingItem {
+  _id: string;
+  bookingNumber: string;
+  job: IBookingJob;
+  quotation?: IBookingQuotation;
+  customer: IBookingUser;
+  artisan: IBookingUser;
+  totalAmount: number;
+  rateType: "HOURLY" | "DAILY" | "FIXED";
+  status: BookingStatus;
+  paymentStatus: BookingPaymentStatus;
+  startDate?: string | null;
+  completionDate?: string | null;
+  notes?: string;
   createdAt: string;
   updatedAt?: string;
 }
 
-export interface GetMyBookingsParams {
+export interface IGetBookingsParams {
   page?: number;
   limit?: number;
-  searchTerm?: string;
   status?: string;
-  paymentStatus?: string;
+  searchTerm?: string;
 }
 
 /**
- * Fetch authenticated user's event bookings
+ * GET /bookings/my-bookings — Fetch authenticated user's confirmed bookings (Customer or Artisan)
  */
-export async function getMyBookings(
-  params?: GetMyBookingsParams,
-): Promise<FetchResponse<IUserBooking[]>> {
+export async function getMyBookingsAction(
+  params?: IGetBookingsParams,
+): Promise<FetchResponse<IBookingItem[]>> {
   const query = new URLSearchParams();
   if (params?.page) query.set("page", String(params.page));
   if (params?.limit) query.set("limit", String(params.limit));
-  if (params?.searchTerm?.trim())
-    query.set("searchTerm", params.searchTerm.trim());
-  if (params?.status && params.status !== "all")
-    query.set("status", params.status);
-  if (params?.paymentStatus && params.paymentStatus !== "all") {
-    query.set("paymentStatus", params.paymentStatus);
-  }
+  if (params?.status && params.status !== "ALL") query.set("status", params.status);
+  if (params?.searchTerm?.trim()) query.set("searchTerm", params.searchTerm.trim());
 
   const qs = query.toString();
   const path = qs ? `?${qs}` : "";
 
-  // Try /booking/my-bookings first, fallback to /booking
-  let res = await nextFetch<IUserBooking[]>(`/booking/my-bookings${path}`, {
+  return nextFetch<IBookingItem[]>(`/bookings/my-bookings${path}`, {
     method: "GET",
     cache: "no-store",
-    tags: ["bookings"],
+    tags: ["bookings", "my-bookings"],
   });
-
-  if (!res.success) {
-    res = await nextFetch<IUserBooking[]>(`/booking${path}`, {
-      method: "GET",
-      cache: "no-store",
-      tags: ["bookings"],
-    });
-  }
-
-  return res;
 }
 
 /**
- * Fetch a single booking record by ID with full populated event and attendee details
+ * GET /bookings/:id — Fetch single booking details
  */
-export async function getBookingDetails(
+export async function getBookingDetailsAction(
   id: string,
-): Promise<FetchResponse<IUserBooking>> {
-  return nextFetch<IUserBooking>(`/booking/${id}`, {
+): Promise<FetchResponse<IBookingItem>> {
+  return nextFetch<IBookingItem>(`/bookings/${id}`, {
     method: "GET",
     cache: "no-store",
     tags: ["bookings", `booking-${id}`],

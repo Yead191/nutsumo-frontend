@@ -160,7 +160,7 @@ export function ProfileMenu({ user, onLogout }: ProfileMenuProps) {
             {/* Role Badge & Identity Status */}
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FE375D]/10 text-[#FE375D]">
-                {isArtisan ? "Artisan" : "Customer"}
+                {isArtisan ? "Job Seeker" : "Customer"}
               </span>
 
               {isArtisan && (

@@ -55,9 +55,9 @@ export function DashboardSidebar({
   const pathname = usePathname();
 
   return (
-    <aside className="w-full shrink-0 self-start md:w-64 lg:w-72">
+    <aside className="w-full shrink-0 self-start md:w-64 lg:w-72 md:sticky md:top-24 z-20">
       <nav
-        className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:flex-col md:overflow-visible md:rounded-[20px] md:border md:border-line/70 md:bg-white md:p-2.5 md:shadow-xs"
+        className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 md:flex-col md:overflow-y-auto md:max-h-[calc(100vh-7.5rem)] md:rounded-[20px] md:border md:border-line/70 md:bg-white md:p-2.5 md:shadow-xs scrollbar-none"
         aria-label="Account"
       >
         {items.map((item) => {
