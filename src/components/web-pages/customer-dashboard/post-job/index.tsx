@@ -32,7 +32,10 @@ const STEPS = [
   { id: 4, title: "Review & Post", subtitle: "Confirm Details" },
 ];
 
-export function PostJobWizard({ categories }: PostJobWizardProps) {
+export function PostJobWizard({
+  categories,
+  initialServices = [],
+}: PostJobWizardProps) {
   const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -43,6 +46,7 @@ export function PostJobWizard({ categories }: PostJobWizardProps) {
     description: "",
     category: "",
     service: "",
+    serviceName: "",
     customServiceName: "",
     location: "",
     postCode: "",
@@ -101,6 +105,30 @@ export function PostJobWizard({ categories }: PostJobWizardProps) {
     setIsSubmitting(true);
     try {
       const dataPayload = new FormData();
+
+      // JSON payload for parseFormData middleware in backend
+      const jobJsonPayload: Record<string, any> = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        location: formData.location.trim(),
+        budget: Number(formData.budget),
+      };
+
+      if (formData.category) jobJsonPayload.category = formData.category;
+      if (formData.service && formData.service !== "CUSTOM") {
+        jobJsonPayload.service = formData.service;
+      }
+      if (formData.customServiceName) {
+        jobJsonPayload.customServiceName = formData.customServiceName.trim();
+      }
+      if (formData.postCode) jobJsonPayload.postCode = formData.postCode.trim();
+      if (formData.preferredDate) {
+        jobJsonPayload.preferredDate = new Date(formData.preferredDate).toISOString();
+      }
+
+      dataPayload.append("data", JSON.stringify(jobJsonPayload));
+
+      // Also append direct fields as fallback for standard multer parsing
       dataPayload.append("title", formData.title.trim());
       dataPayload.append("description", formData.description.trim());
       if (formData.category) dataPayload.append("category", formData.category);
@@ -225,21 +253,34 @@ export function PostJobWizard({ categories }: PostJobWizardProps) {
               />
             </div>
 
-            {/* Category Selector */}
+            {/* Category & Service Selector with Scroll Pagination */}
             <CategorySelector
-              categories={categories}
+              initialCategories={categories}
+              initialServices={initialServices}
               selectedCategory={formData.category}
               selectedService={formData.service}
+              selectedServiceName={formData.serviceName}
               customServiceName={formData.customServiceName}
-              onCategoryChange={(val) =>
-                setFormData({ ...formData, category: val })
-              }
-              onServiceChange={(val) =>
-                setFormData({ ...formData, service: val })
-              }
-              onCustomServiceChange={(val) =>
-                setFormData({ ...formData, customServiceName: val })
-              }
+              onSelectionChange={(selection) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  service: selection.serviceId,
+                  serviceName: selection.serviceName,
+                  category: selection.categoryId || prev.category,
+                }));
+              }}
+              onCategoryChange={(catId) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  category: catId,
+                }));
+              }}
+              onCustomServiceChange={(val) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  customServiceName: val,
+                }));
+              }}
             />
 
             {/* Description */}
@@ -406,7 +447,7 @@ export function PostJobWizard({ categories }: PostJobWizardProps) {
                 <div>
                   <span className="text-muted block">Service:</span>
                   <span className="font-bold text-title">
-                    {selectedServiceObj?.name || formData.customServiceName || "Standard"}
+                    {formData.serviceName || selectedServiceObj?.name || formData.customServiceName || "Standard / Custom"}
                   </span>
                 </div>
                 <div>

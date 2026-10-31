@@ -15,23 +15,21 @@ interface JobsPageProps {
     searchTerm?: string;
     category?: string;
     service?: string;
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
     page?: string;
   }>;
 }
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
   const resolvedParams = await searchParams;
+  const page = resolvedParams.page ? Number(resolvedParams.page) : 1;
 
   const [jobsRes, categoriesRes, profileRes] = await Promise.all([
     getActiveJobsMarketplaceAction({
       searchTerm: resolvedParams.searchTerm,
       category: resolvedParams.category,
       service: resolvedParams.service,
-      sortBy: resolvedParams.sortBy,
-      sortOrder: resolvedParams.sortOrder,
-      page: resolvedParams.page ? Number(resolvedParams.page) : 1,
+      page,
+      limit: 10,
     }),
     getServiceCategories(),
     getProfile(),
@@ -39,13 +37,13 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
 
   const jobs =
     jobsRes.success && Array.isArray(jobsRes.data) ? jobsRes.data : [];
-  console.log(jobs);
   const categories =
     categoriesRes.success && Array.isArray(categoriesRes.data)
       ? categoriesRes.data
       : [];
 
   const currentUserRole = profileRes?.data?.role || profileRes?.role || null;
+  const pagination = jobsRes.pagination || null;
 
   return (
     <div className="container-site py-8 sm:py-12">
@@ -53,10 +51,12 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
         initialJobs={jobs}
         categories={categories}
         totalJobs={jobs.length}
+        pagination={pagination}
         initialParams={{
           searchTerm: resolvedParams.searchTerm,
           category: resolvedParams.category,
-          sortBy: resolvedParams.sortBy,
+          service: resolvedParams.service,
+          page,
         }}
         currentUserRole={currentUserRole}
       />

@@ -49,9 +49,26 @@ export async function updateArtisanProfile(
 
 /**
  * GET /service-category — fetch admin service categories with predefined services
- * Admin taxonomy changes very rarely; cached for up to 7 days with on-demand tagging.
+ * Supports optional pagination & search; falls back to cached data when called without params.
  */
-export async function getServiceCategories() {
+export async function getServiceCategories(params?: {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+}) {
+  const searchParams = new URLSearchParams();
+  if (params?.page) searchParams.append("page", String(params.page));
+  if (params?.limit) searchParams.append("limit", String(params.limit));
+  if (params?.searchTerm) searchParams.append("searchTerm", params.searchTerm);
+
+  const query = searchParams.toString();
+  if (query) {
+    return nextFetch(`/service-category?${query}`, {
+      method: "GET",
+      cache: "no-store",
+    });
+  }
+
   return nextFetch("/service-category", {
     method: "GET",
     cache: "force-cache",

@@ -10,8 +10,16 @@ export interface IPostJobCategory {
   }[];
 }
 
+export interface IPostJobService {
+  _id: string;
+  name: string;
+  slug?: string;
+  category?: any;
+}
+
 export interface PostJobWizardProps {
   categories: IPostJobCategory[];
+  initialServices?: IPostJobService[];
 }
 
 export interface PostJobFormData {
@@ -19,6 +27,7 @@ export interface PostJobFormData {
   description: string;
   category: string;
   service: string;
+  serviceName?: string;
   customServiceName: string;
   location: string;
   postCode: string;

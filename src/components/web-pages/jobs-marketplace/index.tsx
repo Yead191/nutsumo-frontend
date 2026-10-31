@@ -8,12 +8,14 @@ import { JobsSearchHero } from "./components/JobsSearchHero";
 import { JobMarketplaceFilters } from "./components/JobMarketplaceFilters";
 import { JobMarketplaceCard } from "./components/JobMarketplaceCard";
 import { SendProposalModal } from "./components/SendProposalModal";
+import { Pagination } from "@/components/shared/Pagination";
 import type { IJobsMarketplaceProps, IJobItem } from "./types";
 
 export function JobsMarketplaceContainer({
   initialJobs,
   categories,
   totalJobs,
+  pagination,
   initialParams,
   currentUserRole,
 }: IJobsMarketplaceProps) {
@@ -27,11 +29,8 @@ export function JobsMarketplaceContainer({
   const [selectedCategory, setSelectedCategory] = useState(
     initialParams?.category || searchParams.get("category") || "",
   );
-  const [sortBy, setSortBy] = useState(
-    initialParams?.sortBy || searchParams.get("sortBy") || "createdAt",
-  );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
-    (searchParams.get("sortOrder") as "asc" | "desc") || "desc",
+  const [selectedService, setSelectedService] = useState(
+    initialParams?.service || searchParams.get("service") || "",
   );
 
   // Proposal modal state
@@ -41,8 +40,8 @@ export function JobsMarketplaceContainer({
   const applyUrlParams = (newParams: {
     searchTerm?: string;
     category?: string;
-    sortBy?: string;
-    sortOrder?: string;
+    service?: string;
+    page?: number;
   }) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -62,15 +61,23 @@ export function JobsMarketplaceContainer({
       }
     }
 
-    if (newParams.sortBy !== undefined) {
-      params.set("sortBy", newParams.sortBy);
+    if (newParams.service !== undefined) {
+      if (newParams.service) {
+        params.set("service", newParams.service);
+      } else {
+        params.delete("service");
+      }
     }
 
-    if (newParams.sortOrder !== undefined) {
-      params.set("sortOrder", newParams.sortOrder);
+    if (newParams.page !== undefined) {
+      if (newParams.page > 1) {
+        params.set("page", String(newParams.page));
+      } else {
+        params.delete("page");
+      }
+    } else {
+      params.delete("page");
     }
-
-    params.delete("page");
 
     startTransition(() => {
       router.push(`/jobs?${params.toString()}`);
@@ -82,70 +89,70 @@ export function JobsMarketplaceContainer({
     applyUrlParams({
       searchTerm: term,
       category: selectedCategory,
-      sortBy,
-      sortOrder,
+      service: selectedService,
     });
   };
 
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    applyUrlParams({ searchTerm, category: categoryId, sortBy, sortOrder });
+  const handleFilterChange = (selection: {
+    category?: string;
+    service?: string;
+    label?: string;
+  }) => {
+    const cat = selection.category || "";
+    const srv = selection.service || "";
+    setSelectedCategory(cat);
+    setSelectedService(srv);
+    applyUrlParams({
+      searchTerm,
+      category: cat,
+      service: srv,
+    });
   };
 
-  const handleSortChange = (
-    newSortBy: string,
-    newSortOrder: "asc" | "desc",
-  ) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
+  const handlePageChange = (newPage: number) => {
     applyUrlParams({
       searchTerm,
       category: selectedCategory,
-      sortBy: newSortBy,
-      sortOrder: newSortOrder,
+      service: selectedService,
+      page: newPage,
     });
   };
 
   const handleReset = () => {
     setSearchTerm("");
     setSelectedCategory("");
-    setSortBy("createdAt");
-    setSortOrder("desc");
+    setSelectedService("");
     startTransition(() => {
       router.push("/jobs");
     });
   };
-
-  // Filter jobs locally if needed for smooth client interactions
 
   return (
     <div className="space-y-8">
       {/* HERO SECTION */}
       <JobsSearchHero />
 
-      {/* FILTER BAR & CATEGORY PILLS */}
+      {/* FILTER BAR & SERVICE/CATEGORY MODAL */}
       <JobMarketplaceFilters
         categories={categories}
         selectedCategory={selectedCategory}
-        onSelectCategory={handleCategorySelect}
+        selectedService={selectedService}
+        onFilterChange={handleFilterChange}
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        sortBy={sortBy}
-        sortOrder={sortOrder}
-        onSortChange={handleSortChange}
         onReset={handleReset}
         totalResults={initialJobs.length}
       />
 
       {/* ACTIVE JOBS FEED */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h2 className="font-display text-xl sm:text-2xl font-bold text-title tracking-tight">
               Open Job Requests
             </h2>
             <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-700">
-              {initialJobs.length}
+              {pagination ? pagination.total : initialJobs.length}
             </span>
           </div>
 
@@ -196,6 +203,14 @@ export function JobsMarketplaceContainer({
               />
             ))}
           </div>
+        )}
+
+        {/* PAGINATION */}
+        {pagination && (
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+          />
         )}
       </div>
 

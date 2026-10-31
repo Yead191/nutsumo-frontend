@@ -1,23 +1,18 @@
 import type { IJobItem, IJobCategory } from "@/helpers/next-fetch/apiActions/jobActions";
+import type { IPaginationData } from "@/components/shared/Pagination";
 
-export type { IJobItem, IJobCategory };
-
-export interface IMarketplaceFilterState {
-  searchTerm: string;
-  category: string; // Category _id
-  sortBy: string;
-  sortOrder: "asc" | "desc";
-  page: number;
-}
+export type { IJobItem, IJobCategory, IPaginationData };
 
 export interface IJobsMarketplaceProps {
   initialJobs: IJobItem[];
   categories: IJobCategory[];
   totalJobs?: number;
+  pagination?: IPaginationData | null;
   initialParams?: {
+    page?: number;
     searchTerm?: string;
     category?: string;
-    sortBy?: string;
+    service?: string;
   };
   currentUserRole?: string | null;
 }

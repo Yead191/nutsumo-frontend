@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { SendProposalModal } from "./SendProposalModal";
 import type { IJobItem } from "../types";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 interface JobDetailsViewProps {
   job: IJobItem;
@@ -39,9 +40,7 @@ export function JobDetailsView({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const categoryName =
-    typeof job.category === "object" && job.category
-      ? job.category.name
-      : "";
+    typeof job.category === "object" && job.category ? job.category.name : "";
   const serviceName =
     typeof job.service === "object" && job.service
       ? job.service.name
@@ -131,7 +130,9 @@ export function JobDetailsView({
             <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-muted border-t border-line/70 pt-3">
               <div className="flex items-center gap-1.5 text-slate-700 font-medium">
                 <MapPin className="h-4 w-4 text-[#FE375D] shrink-0" />
-                <span>{job.location} {job.postCode ? `(${job.postCode})` : ""}</span>
+                <span>
+                  {job.location} {job.postCode ? `(${job.postCode})` : ""}
+                </span>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -157,7 +158,9 @@ export function JobDetailsView({
 
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-line">
                 <Image
-                  src={job.images[selectedImageIndex] || job.images[0]}
+                  src={
+                    getImageUrl(job.images[selectedImageIndex]) || job.images[0]
+                  }
                   alt="Job photo"
                   fill
                   className="object-cover"
@@ -178,7 +181,7 @@ export function JobDetailsView({
                       }`}
                     >
                       <Image
-                        src={img}
+                        src={getImageUrl(img) || ""}
                         alt={`Thumbnail ${idx + 1}`}
                         fill
                         className="object-cover"
@@ -207,7 +210,10 @@ export function JobDetailsView({
               <span>Nutsumo Client Protection & Quality Standards</span>
             </div>
             <p className="text-xs text-muted leading-relaxed">
-              Every job on Nutsumo is backed by our customer satisfaction protocol. As a verified Job Seeker, your quotes are delivered straight to the client without third-party markups. Upon acceptance, payments are processed with full transparency.
+              Every job on Nutsumo is backed by our customer satisfaction
+              protocol. As a verified Job Seeker, your quotes are delivered
+              straight to the client without third-party markups. Upon
+              acceptance, payments are processed with full transparency.
             </p>
           </div>
         </div>
@@ -233,7 +239,8 @@ export function JobDetailsView({
               <div className="rounded-2xl bg-amber-50 p-4 border border-amber-200 text-xs text-amber-900 space-y-2">
                 <p className="font-bold">You posted this job</p>
                 <p className="text-[11px]">
-                  You can review incoming quotations and manage this request in your client dashboard.
+                  You can review incoming quotations and manage this request in
+                  your client dashboard.
                 </p>
                 <Link
                   href={`/account/jobs/${job._id}`}
@@ -255,7 +262,8 @@ export function JobDetailsView({
               <div className="rounded-2xl bg-slate-100 p-4 border border-line text-xs text-slate-700 space-y-1 text-center">
                 <p className="font-semibold">Looking to submit a quote?</p>
                 <p className="text-[11px] text-muted">
-                  You are currently logged in as a Client. To submit proposals, register or switch to a Job Seeker account.
+                  You are currently logged in as a Client. To submit proposals,
+                  register or switch to a Job Seeker account.
                 </p>
               </div>
             ) : (
@@ -269,7 +277,10 @@ export function JobDetailsView({
                 </Link>
                 <p className="text-center text-[11px] text-muted">
                   Don't have an account?{" "}
-                  <Link href="/register" className="font-bold text-[#FE375D] hover:underline">
+                  <Link
+                    href="/register"
+                    className="font-bold text-[#FE375D] hover:underline"
+                  >
                     Sign up as Job Seeker
                   </Link>
                 </p>
@@ -301,9 +312,13 @@ export function JobDetailsView({
 
             <div className="flex items-center gap-3">
               <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-600 font-bold">
-                {typeof job.customer === "object" && job.customer?.name
-                  ? job.customer.name.slice(0, 2).toUpperCase()
-                  : "CL"}
+                <Image
+                  src={getImageUrl(job?.customer?.image ?? "") || ""}
+                  alt="Customer"
+                  height={40}
+                  width={40}
+                  className="object-cover"
+                />
               </div>
               <div>
                 <h4 className="font-display text-sm font-bold text-title">

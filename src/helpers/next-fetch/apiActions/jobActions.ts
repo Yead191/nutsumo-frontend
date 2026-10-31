@@ -35,7 +35,7 @@ export interface IJobCustomer {
 
 export interface IJobItem {
   _id: string;
-  customer?: IJobCustomer | string;
+  customer?: IJobCustomer;
   title: string;
   description: string;
   category?: IJobCategory | string;

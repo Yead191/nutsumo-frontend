@@ -1,17 +1,20 @@
 "use client";
 
-import { Search, Filter, RotateCcw, ArrowUpDown, Tag } from "lucide-react";
+import { useState } from "react";
+import { Search, Filter, RotateCcw, X, Tag } from "lucide-react";
+import {
+  ServiceCategoryFilterModal,
+  type FilterSelection,
+} from "@/components/shared/ServiceCategoryFilterModal";
 import type { IJobCategory } from "../types";
 
 interface JobMarketplaceFiltersProps {
   categories: IJobCategory[];
   selectedCategory: string;
-  onSelectCategory: (categoryId: string) => void;
+  selectedService: string;
+  onFilterChange: (selection: { category?: string; service?: string; label?: string }) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
-  sortBy: string;
-  sortOrder: "asc" | "desc";
-  onSortChange: (sort: string, order: "asc" | "desc") => void;
   onReset: () => void;
   totalResults: number;
 }
@@ -19,23 +22,44 @@ interface JobMarketplaceFiltersProps {
 export function JobMarketplaceFilters({
   categories,
   selectedCategory,
-  onSelectCategory,
+  selectedService,
+  onFilterChange,
   searchTerm,
   onSearchChange,
-  sortBy,
-  sortOrder,
-  onSortChange,
   onReset,
   totalResults,
 }: JobMarketplaceFiltersProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeFilterLabel, setActiveFilterLabel] = useState<string>("");
+
   const hasActiveFilters = Boolean(
-    searchTerm.trim() || selectedCategory || sortBy !== "createdAt",
+    searchTerm.trim() || selectedCategory || selectedService,
   );
 
+  const handleApplyModalFilter = (selection: FilterSelection) => {
+    const label = selection.serviceName
+      ? `${selection.serviceName} (Service)`
+      : selection.categoryName
+        ? `${selection.categoryName} (Category)`
+        : "";
+    setActiveFilterLabel(label);
+
+    onFilterChange({
+      category: selection.categoryId,
+      service: selection.serviceId,
+      label,
+    });
+  };
+
+  const handleClearCategoryService = () => {
+    setActiveFilterLabel("");
+    onFilterChange({ category: "", service: "" });
+  };
+
   return (
-    <div className="space-y-5">
-      {/* SEARCH BAR & QUICK SORT */}
-      <div className="rounded-3xl border border-line bg-white p-4 shadow-xs">
+    <div className="space-y-4">
+      {/* SEARCH BAR & FILTER MODAL BUTTON (SORT REMOVED) */}
+      <div className="rounded-3xl border border-line bg-white p-4 shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           {/* SEARCH INPUT */}
           <div className="relative flex-1">
@@ -44,28 +68,34 @@ export function JobMarketplaceFilters({
               type="text"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search active jobs (e.g. plumbing, wiring, roofing)..."
+              placeholder="Search active jobs (e.g. plumbing, wiring, garden bed)..."
               className="w-full rounded-2xl border border-line bg-smoke/50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-[#FE375D] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#FE375D] transition-colors"
             />
           </div>
 
-          {/* SORT SELECT */}
-          <div className="flex items-center gap-2 shrink-0">
-            <ArrowUpDown className="h-4 w-4 text-muted shrink-0 hidden sm:inline" />
-            <select
-              value={`${sortBy}:${sortOrder}`}
-              onChange={(e) => {
-                const [sb, so] = e.target.value.split(":");
-                onSortChange(sb, so as "asc" | "desc");
-              }}
-              className="w-full sm:w-auto rounded-2xl border border-line bg-smoke/50 px-3.5 py-2.5 text-xs font-semibold text-title focus:border-[#FE375D] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#FE375D] cursor-pointer"
+          {/* FILTER MODAL TRIGGER BUTTON */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                selectedCategory || selectedService
+                  ? "border-[#FE375D] bg-[#FE375D]/10 text-[#FE375D]"
+                  : "border-line bg-smoke/50 text-title hover:bg-white hover:border-title"
+              }`}
             >
-              <option value="createdAt:desc">Newest Jobs</option>
-              <option value="budget:desc">Highest Budget (GH₵)</option>
-              <option value="budget:asc">Lowest Budget (GH₵)</option>
-            </select>
+              <Filter className="h-3.5 w-3.5" />
+              <span>
+                {selectedCategory || selectedService
+                  ? "Filtered"
+                  : "Filter Category / Service"}
+              </span>
+              {(selectedCategory || selectedService) && (
+                <span className="h-2 w-2 rounded-full bg-[#FE375D]" />
+              )}
+            </button>
 
-            {hasActiveFilters ? (
+            {hasActiveFilters && (
               <button
                 type="button"
                 onClick={onReset}
@@ -74,32 +104,55 @@ export function JobMarketplaceFilters({
               >
                 <RotateCcw className="h-4 w-4" />
               </button>
-            ) : null}
+            )}
           </div>
         </div>
+
+        {/* ACTIVE FILTER LABEL CHIP */}
+        {(selectedCategory || selectedService) && (
+          <div className="flex items-center gap-2 pt-1 border-t border-line/60">
+            <span className="text-xs text-muted">Active Filter:</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-[#FE375D] border border-rose-200/60">
+              <span>{activeFilterLabel || "Category/Service Filter"}</span>
+              <button
+                type="button"
+                onClick={handleClearCategoryService}
+                className="hover:text-rose-950 cursor-pointer"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* CATEGORY FILTER PILLS */}
+      {/* QUICK CATEGORY PILLS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         <button
           type="button"
-          onClick={() => onSelectCategory("")}
+          onClick={() => {
+            setActiveFilterLabel("");
+            onFilterChange({ category: "", service: "" });
+          }}
           className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
-            !selectedCategory
+            !selectedCategory && !selectedService
               ? "bg-[#FE375D] text-white shadow-xs"
               : "border border-line bg-white text-muted hover:text-title hover:border-title"
           }`}
         >
-          All Categories ({totalResults})
+          All Requests
         </button>
 
-        {categories.map((cat) => {
+        {categories.slice(0, 10).map((cat) => {
           const isSelected = selectedCategory === cat._id;
           return (
             <button
               key={cat._id}
               type="button"
-              onClick={() => onSelectCategory(cat._id)}
+              onClick={() => {
+                setActiveFilterLabel(`${cat.name} (Category)`);
+                onFilterChange({ category: cat._id, service: "" });
+              }}
               className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                 isSelected
                   ? "bg-[#FE375D] text-white shadow-xs"
@@ -111,6 +164,15 @@ export function JobMarketplaceFilters({
           );
         })}
       </div>
+
+      {/* FILTER MODAL */}
+      <ServiceCategoryFilterModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onApply={handleApplyModalFilter}
+        initialCategoryId={selectedCategory}
+        initialServiceId={selectedService}
+      />
     </div>
   );
 }

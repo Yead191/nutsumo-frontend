@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Briefcase,
   FileText,
@@ -19,8 +20,27 @@ export function ArtisanJobsManager({
   initialQuotations = [],
   initialBookings = [],
   availableJobs = [],
+  pagination,
+  initialParams,
 }: ArtisanJobsManagerProps) {
-  const [activeTab, setActiveTab] = useState<ArtisanJobsTab>("proposals");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const tabParam = (searchParams.get("tab") as ArtisanJobsTab) || initialParams?.tab || "proposals";
+  const [activeTab, setActiveTab] = useState<ArtisanJobsTab>(tabParam);
+
+  useEffect(() => {
+    if (tabParam && tabParam !== activeTab) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: ArtisanJobsTab) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tab);
+    router.replace(`/pro/jobs?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="space-y-6">
@@ -56,7 +76,7 @@ export function ArtisanJobsManager({
         <div className="flex items-center gap-2 border-b border-line/70 overflow-x-auto pb-px scrollbar-none">
           <button
             type="button"
-            onClick={() => setActiveTab("proposals")}
+            onClick={() => handleTabChange("proposals")}
             className={`inline-flex items-center gap-2 border-b-2 px-4 py-3 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
               activeTab === "proposals"
                 ? "border-[#FE375D] text-[#FE375D]"
@@ -78,7 +98,7 @@ export function ArtisanJobsManager({
 
           <button
             type="button"
-            onClick={() => setActiveTab("bookings")}
+            onClick={() => handleTabChange("bookings")}
             className={`inline-flex items-center gap-2 border-b-2 px-4 py-3 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
               activeTab === "bookings"
                 ? "border-[#FE375D] text-[#FE375D]"
@@ -100,7 +120,7 @@ export function ArtisanJobsManager({
 
           <button
             type="button"
-            onClick={() => setActiveTab("leads")}
+            onClick={() => handleTabChange("leads")}
             className={`inline-flex items-center gap-2 border-b-2 px-4 py-3 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
               activeTab === "leads"
                 ? "border-[#FE375D] text-[#FE375D]"
@@ -116,7 +136,7 @@ export function ArtisanJobsManager({
                   : "bg-slate-100 text-slate-600"
               }`}
             >
-              {availableJobs.length}
+              {pagination?.total ?? availableJobs.length}
             </span>
           </button>
         </div>
@@ -132,7 +152,11 @@ export function ArtisanJobsManager({
           )}
 
           {activeTab === "leads" && (
-            <ArtisanJobsFeed availableJobs={availableJobs} />
+            <ArtisanJobsFeed
+              availableJobs={availableJobs}
+              pagination={pagination}
+              initialParams={initialParams}
+            />
           )}
         </div>
       </div>
