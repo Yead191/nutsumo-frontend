@@ -23,6 +23,8 @@ import {
   Mail,
   Loader2,
   Trash2,
+  PackageCheck,
+  Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -33,7 +35,11 @@ import type {
   RateType,
   IQuotationItem,
 } from "@/helpers/next-fetch/apiActions/quotationActions";
-import type { IBookingItem } from "@/helpers/next-fetch/apiActions/bookingActions";
+import {
+  startBookingWorkAction,
+  type IBookingItem,
+} from "@/helpers/next-fetch/apiActions/bookingActions";
+import { DeliverWorkModal } from "./DeliverWorkModal";
 import type { IJobItem } from "../types";
 
 interface ArtisanJobDetailViewProps {
@@ -58,7 +64,26 @@ export function ArtisanJobDetailView({
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isStartingWork, setIsStartingWork] = useState(false);
+  const [isDeliverModalOpen, setIsDeliverModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const handleStartWork = async (bookingId: string) => {
+    setIsStartingWork(true);
+    try {
+      const res = await startBookingWorkAction(bookingId);
+      if (res.success) {
+        toast.success("Work started! Status updated to IN_PROGRESS 🔨");
+        router.refresh();
+      } else {
+        toast.error(res.message || "Failed to start work");
+      }
+    } catch {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsStartingWork(false);
+    }
+  };
 
   const categoryName =
     typeof job.category === "object" && job.category ? job.category.name : "";
@@ -272,11 +297,32 @@ export function ArtisanJobDetailView({
           {/* CONFIRMED CONTRACT CARD (IF BOOKED WITH THIS ARTISAN) */}
           {booking ? (
             <div className="rounded-3xl border-2 border-emerald-500/30 bg-emerald-50/40 p-6 sm:p-7 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                <span>You are Hired for this Job!</span>
+              <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-3">
+                <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                  <span>You are Hired for this Job!</span>
+                </div>
+
+                <span
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                    booking.status === "AWAITING_PAYMENT"
+                      ? "bg-amber-100 text-amber-800"
+                      : booking.status === "CONFIRMED"
+                        ? "bg-blue-100 text-blue-800"
+                        : booking.status === "IN_PROGRESS"
+                          ? "bg-indigo-100 text-indigo-800"
+                          : booking.status === "DELIVERED"
+                            ? "bg-purple-100 text-purple-800"
+                            : "bg-emerald-100 text-emerald-800"
+                  }`}
+                >
+                  {booking.status === "AWAITING_PAYMENT"
+                    ? "Deposit Pending"
+                    : booking.status.replace(/_/g, " ")}
+                </span>
               </div>
 
+              {/* FINANCIAL BREAKDOWN */}
               <div className="rounded-2xl bg-white p-4 border border-emerald-200/60 text-xs space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted">Contract Total:</span>
@@ -284,21 +330,121 @@ export function ArtisanJobDetailView({
                     GH₵{booking.totalAmount?.toLocaleString()}
                   </strong>
                 </div>
+                {booking.artisanPayoutAmount !== undefined && (
+                  <div className="flex justify-between pt-1 border-t border-line/50">
+                    <span className="text-muted">Your Net Payout (90%):</span>
+                    <strong className="font-display text-sm text-emerald-700">
+                      GH₵{booking.artisanPayoutAmount.toLocaleString()}
+                    </strong>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted">Booking Reference:</span>
                   <span className="font-mono font-semibold text-title">
-                    #
-                    {booking.bookingNumber ||
-                      booking._id.slice(-8).toUpperCase()}
+                    #{booking.bookingNumber || booking._id.slice(-8).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted">Payment Security:</span>
                   <span className="font-semibold text-emerald-700">
-                    {booking.paymentStatus || "ESCROW HELD"}
+                    {booking.paymentStatus === "ESCROW_HELD"
+                      ? "ESCROW HELD 🔒"
+                      : booking.paymentStatus || "UNPAID"}
                   </span>
                 </div>
               </div>
+
+              {/* ESCROW STAGE NOTICE & INTERACTIVE ACTIONS */}
+              {booking.status === "AWAITING_PAYMENT" ? (
+                <div className="rounded-2xl bg-amber-50 p-3.5 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
+                  <Lock className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="leading-relaxed">
+                    <strong>Awaiting Client Escrow Deposit:</strong> The client has accepted your quote. Please wait until they complete the deposit on Stripe before beginning work.
+                  </p>
+                </div>
+              ) : booking.status === "CONFIRMED" ? (
+                <div className="space-y-3">
+                  <div className="rounded-2xl bg-blue-50 p-3.5 border border-blue-200 text-xs text-blue-950 flex items-start gap-2.5">
+                    <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                    <p className="leading-relaxed">
+                      <strong>Escrow Deposit Secured!</strong> Funds are held in platform escrow. You may now commence work on site.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={isStartingWork}
+                    onClick={() => handleStartWork(booking._id)}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
+                  >
+                    {isStartingWork ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Starting Work...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wrench className="h-4 w-4" />
+                        <span>Start Work (Begin Execution)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : booking.status === "IN_PROGRESS" ? (
+                <div className="space-y-3">
+                  <div className="rounded-2xl bg-indigo-50 p-3.5 border border-indigo-200 text-xs text-indigo-950 flex items-start gap-2.5">
+                    <Wrench className="h-4 w-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <p className="leading-relaxed">
+                      <strong>Job in Progress:</strong> You have active execution underway. When finished, submit your delivery notes and photo proof.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsDeliverModalOpen(true)}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.01] cursor-pointer"
+                  >
+                    <PackageCheck className="h-4 w-4" />
+                    <span>Deliver Completed Work</span>
+                  </button>
+                </div>
+              ) : booking.status === "DELIVERED" ? (
+                <div className="rounded-2xl bg-purple-50 p-3.5 border border-purple-200 text-xs text-purple-950 space-y-2">
+                  <div className="flex items-center gap-2 font-bold">
+                    <PackageCheck className="h-4 w-4 text-purple-600" />
+                    <span>Work Delivered!</span>
+                  </div>
+                  <p className="leading-relaxed text-slate-600">
+                    Your delivery notes have been submitted. The client has been prompted to inspect the work and approve escrow disbursement.
+                  </p>
+                  {booking.deliveryNotes && (
+                    <div className="rounded-xl bg-white p-2.5 text-xs text-copy italic border border-purple-100">
+                      &ldquo;{booking.deliveryNotes}&rdquo;
+                    </div>
+                  )}
+                </div>
+              ) : booking.status === "COMPLETED" ? (
+                <div className="rounded-2xl bg-emerald-50 p-3.5 border border-emerald-200 text-xs text-emerald-950 space-y-2">
+                  <div className="flex items-center gap-2 font-bold">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    <span>Contract Completed & Approved!</span>
+                  </div>
+                  <p className="leading-relaxed text-slate-600">
+                    Payout Status:{" "}
+                    <strong className="uppercase">{booking.payoutStatus || "PENDING"}</strong>.
+                    Net funds of GH₵{booking.artisanPayoutAmount?.toLocaleString()} are queued for transfer.
+                  </p>
+                  {booking.customerRating && (
+                    <div className="flex items-center gap-1.5 pt-1">
+                      <span className="text-muted font-medium">Client Rating:</span>
+                      <span className="font-bold text-amber-600">★ {booking.customerRating}/5</span>
+                    </div>
+                  )}
+                  {booking.customerFeedback && (
+                    <div className="rounded-xl bg-white p-2.5 text-xs text-copy italic border border-emerald-100">
+                      &ldquo;{booking.customerFeedback}&rdquo;
+                    </div>
+                  )}
+                </div>
+              ) : null}
 
               {/* CLIENT CONTACT INFO */}
               <div className="rounded-2xl bg-white p-4 border border-emerald-200/60 text-xs space-y-2">
@@ -332,6 +478,14 @@ export function ArtisanJobDetailView({
                   </div>
                 ) : null}
               </div>
+
+              {/* DELIVER WORK MODAL */}
+              <DeliverWorkModal
+                bookingId={booking._id}
+                isOpen={isDeliverModalOpen}
+                onClose={() => setIsDeliverModalOpen(false)}
+                onSuccess={() => router.refresh()}
+              />
             </div>
           ) : null}
 

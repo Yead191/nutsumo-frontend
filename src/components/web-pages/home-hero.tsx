@@ -38,7 +38,7 @@ export function HomeHero() {
           }}
         />
 
-        <div className="relative z-2 flex min-h-[640px] sm:min-h-[720px] lg:min-h-[780px] max-w-7xl mx-auto flex-col justify-center px-6 pt-28 pb-16 sm:px-8 sm:pt-36 sm:pb-20 ">
+        <div className="relative z-2 flex min-h-160 sm:min-h-180 lg:min-h-195 max-w-7xl mx-auto flex-col justify-center px-6 pt-28 pb-16 sm:px-8 sm:pt-36 sm:pb-20 ">
           <div className="max-w-2xl">
             <h1 className="font-display text-[44px] sm:text-[60px] lg:text-[72px] font-bold text-white leading-[1.05] tracking-tight">
               Trust is earned
@@ -48,7 +48,7 @@ export function HomeHero() {
               work.
             </h1>
 
-            <p className="mt-5 max-w-[500px] text-white/90 text-base sm:text-lg leading-relaxed font-normal">
+            <p className="mt-5 max-w-125 text-white/90 text-base sm:text-lg leading-relaxed font-normal">
               Find the right people for your jobs, or discover opportunities to
               put your skills to use.
             </p>
@@ -82,7 +82,7 @@ export function HomeHero() {
                 href={searchHref}
                 className="flex items-center justify-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] px-6 py-3 font-semibold text-white shadow-md transition-all shrink-0"
               >
-                <span>Sign Up</span>
+                <span>Find Job Seekers</span>
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-white text-[#FE375D]">
                   <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
                 </span>

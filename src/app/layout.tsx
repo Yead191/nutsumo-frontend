@@ -24,7 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${bricolage.variable} h-full`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${bricolage.variable} h-full`}
+    >
       <body className="min-h-full bg-background font-sans antialiased text-slate-800">
         <Providers>{children}</Providers>
       </body>

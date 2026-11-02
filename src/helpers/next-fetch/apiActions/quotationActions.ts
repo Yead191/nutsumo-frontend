@@ -45,6 +45,12 @@ export interface IQuotationItem {
   updatedAt?: string;
 }
 
+import type {
+  BookingStatus,
+  BookingPaymentStatus,
+  BookingPayoutStatus,
+} from "./bookingActions";
+
 export interface IAcceptQuotationResult {
   quotation: {
     _id: string;
@@ -62,8 +68,13 @@ export interface IAcceptQuotationResult {
     artisan: string;
     totalAmount: number;
     rateType: RateType;
-    status: "CONFIRMED";
-    paymentStatus: string;
+    platformCommissionRate?: number;
+    platformFee?: number;
+    artisanPayoutAmount?: number;
+    status: BookingStatus;
+    paymentStatus: BookingPaymentStatus;
+    payoutStatus?: BookingPayoutStatus;
+    stripeSessionId?: string;
     createdAt: string;
   };
   job: {
@@ -73,6 +84,7 @@ export interface IAcceptQuotationResult {
     selectedQuotation: string;
     selectedArtisan: string;
   };
+  checkoutUrl?: string | null;
 }
 
 /**

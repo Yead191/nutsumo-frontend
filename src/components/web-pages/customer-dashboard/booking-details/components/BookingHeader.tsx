@@ -65,23 +65,56 @@ export function BookingHeader({ booking }: BookingHeaderProps) {
         </div>
 
         {/* STATUS PILLS */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Payment Status */}
           <span
             className={cn(
-              "rounded-full px-3 py-1 text-xs font-bold border uppercase tracking-wider",
-              booking.paymentStatus === "PAID"
+              "inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold border uppercase tracking-wider",
+              booking.paymentStatus === "ESCROW_HELD"
                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-amber-50 text-amber-700 border-amber-200",
+                : booking.paymentStatus === "PAID"
+                  ? "bg-teal-50 text-teal-700 border-teal-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200",
             )}
           >
-            {booking.paymentStatus}
+            {booking.paymentStatus === "ESCROW_HELD" ? "Escrow Held 🔒" : booking.paymentStatus}
           </span>
 
           {/* Booking Status */}
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 px-3.5 py-1 text-xs font-bold border border-emerald-200">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>{booking.status}</span>
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold border",
+              booking.status === "AWAITING_PAYMENT"
+                ? "bg-amber-50 text-amber-700 border-amber-200"
+                : booking.status === "CONFIRMED"
+                  ? "bg-blue-50 text-blue-700 border-blue-200"
+                  : booking.status === "IN_PROGRESS"
+                    ? "bg-indigo-50 text-indigo-700 border-indigo-200"
+                    : booking.status === "DELIVERED"
+                      ? "bg-purple-50 text-purple-700 border-purple-200"
+                      : booking.status === "COMPLETED"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-slate-100 text-slate-700 border-slate-200",
+            )}
+          >
+            <span
+              className={cn(
+                "h-2 w-2 rounded-full",
+                booking.status === "IN_PROGRESS" || booking.status === "AWAITING_PAYMENT"
+                  ? "animate-pulse"
+                  : "",
+                booking.status === "AWAITING_PAYMENT"
+                  ? "bg-amber-500"
+                  : booking.status === "CONFIRMED"
+                    ? "bg-blue-500"
+                    : booking.status === "IN_PROGRESS"
+                      ? "bg-indigo-500"
+                      : booking.status === "DELIVERED"
+                        ? "bg-purple-500"
+                        : "bg-emerald-500",
+              )}
+            />
+            <span>{booking.status.replace(/_/g, " ")}</span>
           </span>
         </div>
       </div>

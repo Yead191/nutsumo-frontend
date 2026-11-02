@@ -4,8 +4,25 @@ import { nextFetch, type FetchResponse } from "../core/NextFetch";
 import { revalidateTags } from "../core/revalidateTags";
 import { revalidatePath } from "next/cache";
 
-export type BookingStatus = "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
-export type BookingPaymentStatus = "UNPAID" | "PAID" | "REFUNDED";
+export type BookingStatus =
+  | "AWAITING_PAYMENT"
+  | "CONFIRMED"
+  | "IN_PROGRESS"
+  | "DELIVERED"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export type BookingPaymentStatus =
+  | "UNPAID"
+  | "ESCROW_HELD"
+  | "PAID"
+  | "REFUNDED";
+
+export type BookingPayoutStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "RELEASED"
+  | "REJECTED";
 
 export interface IBookingJob {
   _id: string;
@@ -48,8 +65,22 @@ export interface IBookingItem {
   rateType: "HOURLY" | "DAILY" | "FIXED";
   status: BookingStatus;
   paymentStatus: BookingPaymentStatus;
+  platformCommissionRate?: number;
+  platformFee?: number;
+  artisanPayoutAmount?: number;
+  stripeSessionId?: string;
   startDate?: string | null;
   completionDate?: string | null;
+  deliveredAt?: string | null;
+  deliveryNotes?: string | null;
+  deliveryProof?: string[];
+  customerConfirmedAt?: string | null;
+  customerRating?: number | null;
+  customerFeedback?: string | null;
+  payoutStatus?: BookingPayoutStatus;
+  payoutApprovedAt?: string | null;
+  payoutReleasedAt?: string | null;
+  paidAt?: string | null;
   notes?: string;
   createdAt: string;
   updatedAt?: string;
@@ -63,7 +94,7 @@ export interface IGetBookingsParams {
 }
 
 /**
- * GET /bookings/my-bookings — Fetch authenticated user's confirmed bookings (Customer or Artisan)
+ * GET /booking/my-bookings — Fetch authenticated user's confirmed bookings (Customer or Artisan)
  */
 export async function getMyBookingsAction(
   params?: IGetBookingsParams,
@@ -77,7 +108,7 @@ export async function getMyBookingsAction(
   const qs = query.toString();
   const path = qs ? `?${qs}` : "";
 
-  return nextFetch<IBookingItem[]>(`/bookings/my-bookings${path}`, {
+  return nextFetch<IBookingItem[]>(`/booking/my-bookings${path}`, {
     method: "GET",
     cache: "no-store",
     tags: ["bookings", "my-bookings"],
@@ -85,14 +116,113 @@ export async function getMyBookingsAction(
 }
 
 /**
- * GET /bookings/:id — Fetch single booking details
+ * GET /booking/:id — Fetch single booking details
  */
 export async function getBookingDetailsAction(
   id: string,
 ): Promise<FetchResponse<IBookingItem>> {
-  return nextFetch<IBookingItem>(`/bookings/${id}`, {
+  return nextFetch<IBookingItem>(`/booking/${id}`, {
     method: "GET",
     cache: "no-store",
     tags: ["bookings", `booking-${id}`],
   });
+}
+
+/**
+ * POST /booking/:id/checkout-session — Customer initiates Stripe Escrow Checkout
+ */
+export async function createBookingCheckoutSessionAction(
+  bookingId: string,
+): Promise<FetchResponse<{ checkoutUrl: string; sessionId: string }>> {
+  return nextFetch<{ checkoutUrl: string; sessionId: string }>(
+    `/booking/${bookingId}/checkout-session`,
+    {
+      method: "POST",
+    },
+  );
+}
+
+/**
+ * GET /booking/verify-payment?session_id=... — Instant UI verification callback after Stripe redirect
+ */
+export async function verifyBookingPaymentAction(
+  sessionId: string,
+): Promise<FetchResponse<IBookingItem>> {
+  return nextFetch<IBookingItem>(
+    `/booking/verify-payment?session_id=${encodeURIComponent(sessionId)}`,
+    {
+      method: "GET",
+      cache: "no-store",
+    },
+  );
+}
+
+/**
+ * PATCH /booking/:id/start-work — Artisan starts work once escrow is held
+ */
+export async function startBookingWorkAction(
+  bookingId: string,
+): Promise<FetchResponse<IBookingItem>> {
+  const res = await nextFetch<IBookingItem>(`/booking/${bookingId}/start-work`, {
+    method: "PATCH",
+  });
+
+  if (res.success) {
+    await revalidateTags(["bookings", "my-bookings", `booking-${bookingId}`, "jobs", "my-jobs"]);
+    revalidatePath("/account/bookings");
+    revalidatePath(`/account/bookings/${bookingId}`);
+    revalidatePath("/pro/bookings");
+    revalidatePath("/pro/jobs");
+  }
+
+  return res;
+}
+
+/**
+ * PATCH /booking/:id/deliver — Artisan delivers completed work with proof notes & photos
+ */
+export async function deliverBookingWorkAction(
+  bookingId: string,
+  payload: { deliveryNotes: string; workImages?: string[] },
+): Promise<FetchResponse<IBookingItem>> {
+  const res = await nextFetch<IBookingItem>(`/booking/${bookingId}/deliver`, {
+    method: "PATCH",
+    body: payload,
+  });
+
+  if (res.success) {
+    await revalidateTags(["bookings", "my-bookings", `booking-${bookingId}`, "jobs", "my-jobs"]);
+    revalidatePath("/account/bookings");
+    revalidatePath(`/account/bookings/${bookingId}`);
+    revalidatePath("/pro/bookings");
+    revalidatePath("/pro/jobs");
+  }
+
+  return res;
+}
+
+/**
+ * PATCH /booking/:id/confirm-completion — Customer inspects and approves completed work
+ */
+export async function confirmBookingCompletionAction(
+  bookingId: string,
+  payload: { rating?: number; feedback?: string },
+): Promise<FetchResponse<IBookingItem>> {
+  const res = await nextFetch<IBookingItem>(
+    `/booking/${bookingId}/confirm-completion`,
+    {
+      method: "PATCH",
+      body: payload,
+    },
+  );
+
+  if (res.success) {
+    await revalidateTags(["bookings", "my-bookings", `booking-${bookingId}`, "jobs", "my-jobs"]);
+    revalidatePath("/account/bookings");
+    revalidatePath(`/account/bookings/${bookingId}`);
+    revalidatePath("/pro/bookings");
+    revalidatePath("/pro/jobs");
+  }
+
+  return res;
 }

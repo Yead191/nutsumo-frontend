@@ -35,8 +35,16 @@ export function AcceptProposalModal({
     try {
       const res = await acceptQuotationAction(proposal._id, jobId);
       if (res.success && res.data) {
-        toast.success("Offer accepted! Your booking has been confirmed 🎉");
+        const checkoutUrl = res.data.checkoutUrl;
         const bookingId = res.data.booking?._id;
+
+        if (checkoutUrl) {
+          toast.success("Offer accepted! Redirecting to secure Stripe Escrow Checkout... 🔒");
+          window.location.href = checkoutUrl;
+          return;
+        }
+
+        toast.success("Offer accepted! Booking created awaiting escrow payment 🎉");
         onSuccess(bookingId);
       } else {
         toast.error(res.message || "Failed to accept proposal");
@@ -73,10 +81,10 @@ export function AcceptProposalModal({
           </div>
           <div>
             <h3 className="font-display text-lg font-bold text-title">
-              Accept Proposal & Hire Artisan
+              Accept Proposal & Fund Escrow
             </h3>
             <p className="text-xs text-muted">
-              Confirm your booking with this verified professional.
+              Secure your booking with Nutsumo&apos;s Escrow Guarantee.
             </p>
           </div>
         </div>
@@ -137,12 +145,12 @@ export function AcceptProposalModal({
         <div className="space-y-2 text-xs text-muted mb-6 bg-blue-50/60 p-3.5 rounded-xl border border-blue-100">
           <p className="font-semibold text-blue-950 flex items-center gap-1.5">
             <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0" />
-            <span>Nutsumo Booking Protection:</span>
+            <span>100% Escrow Protection Guarantee:</span>
           </p>
           <ul className="list-disc pl-5 space-y-1 text-slate-600">
-            <li>Your job status will transition to <strong>Booked</strong>.</li>
-            <li>All other pending proposals for this job will be automatically declined.</li>
-            <li>A confirmed work order with booking reference will be generated.</li>
+            <li>Your payment is deposited safely into <strong>Nutsumo Escrow</strong> via Stripe.</li>
+            <li>Artisan begins work only after escrow is confirmed.</li>
+            <li>Funds are released to the artisan only after you inspect and approve completion.</li>
           </ul>
         </div>
 
@@ -165,10 +173,13 @@ export function AcceptProposalModal({
             {isSubmitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Confirming Booking...</span>
+                <span>Redirecting to Escrow...</span>
               </>
             ) : (
-              <span>Confirm & Hire Artisan</span>
+              <>
+                <ShieldCheck className="h-4 w-4" />
+                <span>Accept & Fund Escrow</span>
+              </>
             )}
           </button>
         </div>

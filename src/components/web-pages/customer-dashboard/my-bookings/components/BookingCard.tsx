@@ -22,23 +22,35 @@ interface BookingCardProps {
 
 function getBookingStatusBadge(status: BookingStatus) {
   switch (status) {
+    case "AWAITING_PAYMENT":
+      return {
+        label: "Awaiting Payment",
+        dotColor: "bg-amber-500",
+        classes: "bg-amber-50 text-amber-700 border-amber-200",
+      };
     case "CONFIRMED":
       return {
-        label: "Confirmed",
-        dotColor: "bg-emerald-500",
-        classes: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        label: "Confirmed / Ready",
+        dotColor: "bg-blue-500",
+        classes: "bg-blue-50 text-blue-700 border-blue-200",
       };
     case "IN_PROGRESS":
       return {
         label: "In Progress",
-        dotColor: "bg-amber-500",
-        classes: "bg-amber-50 text-amber-700 border-amber-200",
+        dotColor: "bg-indigo-500",
+        classes: "bg-indigo-50 text-indigo-700 border-indigo-200",
+      };
+    case "DELIVERED":
+      return {
+        label: "Delivered (Review)",
+        dotColor: "bg-purple-500",
+        classes: "bg-purple-50 text-purple-700 border-purple-200",
       };
     case "COMPLETED":
       return {
         label: "Completed",
-        dotColor: "bg-teal-500",
-        classes: "bg-teal-50 text-teal-700 border-teal-200",
+        dotColor: "bg-emerald-500",
+        classes: "bg-emerald-50 text-emerald-700 border-emerald-200",
       };
     case "CANCELLED":
       return {
@@ -48,7 +60,7 @@ function getBookingStatusBadge(status: BookingStatus) {
       };
     default:
       return {
-        label: status,
+        label: String(status).replace(/_/g, " "),
         dotColor: "bg-slate-400",
         classes: "bg-slate-100 text-slate-700 border-slate-200",
       };
@@ -91,12 +103,14 @@ export function BookingCard({ booking }: BookingCardProps) {
           <span
             className={cn(
               "rounded-full px-2.5 py-0.5 text-[10px] font-bold border uppercase tracking-wider",
-              booking.paymentStatus === "PAID"
+              booking.paymentStatus === "ESCROW_HELD"
                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-amber-50 text-amber-700 border-amber-200",
+                : booking.paymentStatus === "PAID"
+                  ? "bg-teal-50 text-teal-700 border-teal-200"
+                  : "bg-amber-50 text-amber-700 border-amber-200",
             )}
           >
-            {booking.paymentStatus}
+            {booking.paymentStatus === "ESCROW_HELD" ? "Escrow Held 🔒" : booking.paymentStatus}
           </span>
 
           {/* Booking Status Pill */}

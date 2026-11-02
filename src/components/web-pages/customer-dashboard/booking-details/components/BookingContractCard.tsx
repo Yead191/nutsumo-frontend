@@ -47,11 +47,19 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
           </div>
 
           <div className="rounded-2xl border border-line bg-smoke/70 p-3.5">
-            <span className="text-[11px] text-muted block">Payment Status</span>
+            <span className="text-[11px] text-muted block">Payment Security</span>
             <span className="font-display text-base font-bold text-title mt-0.5 block uppercase">
-              {booking.paymentStatus}
+              {booking.paymentStatus === "ESCROW_HELD"
+                ? "ESCROW HELD 🔒"
+                : booking.paymentStatus}
             </span>
-            <span className="text-[10px] text-muted">Pay after service completion</span>
+            <span className="text-[10px] text-muted">
+              {booking.paymentStatus === "ESCROW_HELD"
+                ? "Protected until you approve delivery"
+                : booking.paymentStatus === "PAID"
+                  ? "Milestone completed & released"
+                  : "Deposit required before work"}
+            </span>
           </div>
 
           {quote?.estimatedDuration && (
