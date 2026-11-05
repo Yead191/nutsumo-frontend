@@ -225,3 +225,32 @@ export async function withdrawQuotationAction(
 
   return result;
 }
+
+/**
+ * PATCH /quotations/:id — Artisan updates their pending proposal
+ */
+export async function updateQuotationAction(
+  quotationId: string,
+  payload: {
+    proposedAmount?: number;
+    rateType?: RateType;
+    estimatedDuration?: string;
+    message?: string;
+  },
+  jobId?: string,
+): Promise<FetchResponse<IQuotationItem>> {
+  const result = await nextFetch<IQuotationItem>(`/quotations/${quotationId}`, {
+    method: "PATCH",
+    body: payload,
+  });
+
+  if (result.success) {
+    const tagsToInvalidate = ["quotations", "my-quotations"];
+    if (jobId) tagsToInvalidate.push(`job-quotations-${jobId}`, `job-${jobId}`);
+    await revalidateTags(tagsToInvalidate);
+    if (jobId) revalidatePath(`/pro/jobs/${jobId}`);
+    revalidatePath("/pro/jobs");
+  }
+
+  return result;
+}

@@ -25,10 +25,12 @@ import {
   Trash2,
   PackageCheck,
   Lock,
+  Edit3,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
   submitQuotationAction,
+  updateQuotationAction,
   withdrawQuotationAction,
 } from "@/helpers/next-fetch/apiActions/quotationActions";
 import type {
@@ -40,7 +42,9 @@ import {
   type IBookingItem,
 } from "@/helpers/next-fetch/apiActions/bookingActions";
 import { DeliverWorkModal } from "./DeliverWorkModal";
+import { WithdrawProposalModal } from "./WithdrawProposalModal";
 import type { IJobItem } from "../types";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 interface ArtisanJobDetailViewProps {
   job: IJobItem;
@@ -63,10 +67,69 @@ export function ArtisanJobDetailView({
   const [estimatedDuration, setEstimatedDuration] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isStartingWork, setIsStartingWork] = useState(false);
   const [isDeliverModalOpen, setIsDeliverModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Proposal Edit & Withdraw state
+  const [isEditingProposal, setIsEditingProposal] = useState(false);
+  const [isUpdatingProposal, setIsUpdatingProposal] = useState(false);
+  const [editAmount, setEditAmount] = useState<string>("");
+  const [editRateType, setEditRateType] = useState<RateType>("FIXED");
+  const [editDuration, setEditDuration] = useState("");
+  const [editMessage, setEditMessage] = useState("");
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+
+  const handleOpenEdit = () => {
+    if (!existingQuotation) return;
+    setEditAmount(String(existingQuotation.proposedAmount));
+    setEditRateType(existingQuotation.rateType);
+    setEditDuration(existingQuotation.estimatedDuration || "");
+    setEditMessage(existingQuotation.message || "");
+    setIsEditingProposal(true);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!existingQuotation) return;
+
+    const amountNum = Number(editAmount);
+    if (!editAmount || Number.isNaN(amountNum) || amountNum <= 0) {
+      toast.error("Please enter a valid quotation amount in GH₵");
+      return;
+    }
+
+    if (!editMessage.trim() || editMessage.trim().length < 10) {
+      toast.error("Please enter a proposal message of at least 10 characters");
+      return;
+    }
+
+    setIsUpdatingProposal(true);
+    try {
+      const res = await updateQuotationAction(
+        existingQuotation._id,
+        {
+          proposedAmount: amountNum,
+          rateType: editRateType,
+          estimatedDuration: editDuration.trim() || undefined,
+          message: editMessage.trim(),
+        },
+        job._id,
+      );
+
+      if (res.success) {
+        toast.success("Proposal updated successfully! 🎉");
+        setIsEditingProposal(false);
+        router.refresh();
+      } else {
+        toast.error(res.message || "Failed to update proposal");
+      }
+    } catch {
+      toast.error("An error occurred while updating proposal");
+    } finally {
+      setIsUpdatingProposal(false);
+    }
+  };
 
   const handleStartWork = async (bookingId: string) => {
     setIsStartingWork(true);
@@ -137,25 +200,6 @@ export function ArtisanJobDetailView({
       toast.error("An error occurred while submitting proposal.");
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleWithdraw = async (quotationId: string) => {
-    if (!confirm("Are you sure you want to withdraw your proposal?")) return;
-
-    setIsWithdrawing(true);
-    try {
-      const res = await withdrawQuotationAction(quotationId, job._id);
-      if (res.success) {
-        toast.success("Proposal withdrawn successfully.");
-        router.refresh();
-      } else {
-        toast.error(res.message || "Failed to withdraw proposal.");
-      }
-    } catch {
-      toast.error("An error occurred while withdrawing proposal.");
-    } finally {
-      setIsWithdrawing(false);
     }
   };
 
@@ -248,7 +292,11 @@ export function ArtisanJobDetailView({
 
               <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-line">
                 <Image
-                  src={job.images[selectedImageIndex] || job.images[0]}
+                  src={
+                    getImageUrl(
+                      job.images[selectedImageIndex] || job.images[0],
+                    ) || ""
+                  }
                   alt="Job photo"
                   fill
                   className="object-cover"
@@ -269,7 +317,7 @@ export function ArtisanJobDetailView({
                       }`}
                     >
                       <Image
-                        src={img}
+                        src={getImageUrl(img) || ""}
                         alt={`Thumbnail ${idx + 1}`}
                         fill
                         className="object-cover"
@@ -341,7 +389,9 @@ export function ArtisanJobDetailView({
                 <div className="flex justify-between">
                   <span className="text-muted">Booking Reference:</span>
                   <span className="font-mono font-semibold text-title">
-                    #{booking.bookingNumber || booking._id.slice(-8).toUpperCase()}
+                    #
+                    {booking.bookingNumber ||
+                      booking._id.slice(-8).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -359,7 +409,9 @@ export function ArtisanJobDetailView({
                 <div className="rounded-2xl bg-amber-50 p-3.5 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
                   <Lock className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
-                    <strong>Awaiting Client Escrow Deposit:</strong> The client has accepted your quote. Please wait until they complete the deposit on Stripe before beginning work.
+                    <strong>Awaiting Client Escrow Deposit:</strong> The client
+                    has accepted your quote. Please wait until they complete the
+                    deposit on Stripe before beginning work.
                   </p>
                 </div>
               ) : booking.status === "CONFIRMED" ? (
@@ -367,7 +419,8 @@ export function ArtisanJobDetailView({
                   <div className="rounded-2xl bg-blue-50 p-3.5 border border-blue-200 text-xs text-blue-950 flex items-start gap-2.5">
                     <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
                     <p className="leading-relaxed">
-                      <strong>Escrow Deposit Secured!</strong> Funds are held in platform escrow. You may now commence work on site.
+                      <strong>Escrow Deposit Secured!</strong> Funds are held in
+                      platform escrow. You may now commence work on site.
                     </p>
                   </div>
                   <button
@@ -394,7 +447,9 @@ export function ArtisanJobDetailView({
                   <div className="rounded-2xl bg-indigo-50 p-3.5 border border-indigo-200 text-xs text-indigo-950 flex items-start gap-2.5">
                     <Wrench className="h-4 w-4 text-indigo-600 shrink-0 mt-0.5" />
                     <p className="leading-relaxed">
-                      <strong>Job in Progress:</strong> You have active execution underway. When finished, submit your delivery notes and photo proof.
+                      <strong>Job in Progress:</strong> You have active
+                      execution underway. When finished, submit your delivery
+                      notes and photo proof.
                     </p>
                   </div>
                   <button
@@ -413,7 +468,9 @@ export function ArtisanJobDetailView({
                     <span>Work Delivered!</span>
                   </div>
                   <p className="leading-relaxed text-slate-600">
-                    Your delivery notes have been submitted. The client has been prompted to inspect the work and approve escrow disbursement.
+                    Your delivery notes have been submitted. The client has been
+                    prompted to inspect the work and approve escrow
+                    disbursement.
                   </p>
                   {booking.deliveryNotes && (
                     <div className="rounded-xl bg-white p-2.5 text-xs text-copy italic border border-purple-100">
@@ -429,13 +486,21 @@ export function ArtisanJobDetailView({
                   </div>
                   <p className="leading-relaxed text-slate-600">
                     Payout Status:{" "}
-                    <strong className="uppercase">{booking.payoutStatus || "PENDING"}</strong>.
-                    Net funds of GH₵{booking.artisanPayoutAmount?.toLocaleString()} are queued for transfer.
+                    <strong className="uppercase">
+                      {booking.payoutStatus || "PENDING"}
+                    </strong>
+                    . Net funds of GH₵
+                    {booking.artisanPayoutAmount?.toLocaleString()} are queued
+                    for transfer.
                   </p>
                   {booking.customerRating && (
                     <div className="flex items-center gap-1.5 pt-1">
-                      <span className="text-muted font-medium">Client Rating:</span>
-                      <span className="font-bold text-amber-600">★ {booking.customerRating}/5</span>
+                      <span className="text-muted font-medium">
+                        Client Rating:
+                      </span>
+                      <span className="font-bold text-amber-600">
+                        ★ {booking.customerRating}/5
+                      </span>
                     </div>
                   )}
                   {booking.customerFeedback && (
@@ -510,52 +575,159 @@ export function ArtisanJobDetailView({
                 </span>
               </div>
 
-              <div>
-                <span className="text-[10px] uppercase font-bold text-muted block">
-                  Proposed Amount
-                </span>
-                <div className="font-display text-2xl font-bold text-[#FE375D] mt-0.5">
-                  GH₵{existingQuotation.proposedAmount?.toLocaleString()}
-                  <span className="text-xs font-normal text-muted ml-1">
-                    ({existingQuotation.rateType})
-                  </span>
-                </div>
-              </div>
+              {isEditingProposal ? (
+                /* INLINE EDIT PROPOSAL FORM */
+                <form onSubmit={handleSaveEdit} className="space-y-3.5 pt-1">
+                  <div>
+                    <label className="block text-xs font-semibold text-title mb-1">
+                      Proposed Price (GH₵){" "}
+                      <span className="text-[#FE375D]">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-display text-xs font-bold text-muted">
+                        GH₵
+                      </span>
+                      <input
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                        value={editAmount}
+                        onChange={(e) => setEditAmount(e.target.value)}
+                        className="w-full rounded-xl border border-line bg-white pl-12 pr-3 py-2 text-xs sm:text-sm font-bold text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                      />
+                    </div>
+                  </div>
 
-              {existingQuotation.estimatedDuration ? (
-                <div className="flex items-center gap-2 text-xs text-slate-700">
-                  <Clock className="h-4 w-4 text-muted" />
-                  <span>
-                    Turnaround:{" "}
-                    <strong>{existingQuotation.estimatedDuration}</strong>
-                  </span>
-                </div>
-              ) : null}
+                  <div>
+                    <label className="block text-xs font-semibold text-title mb-1">
+                      Rate Type
+                    </label>
+                    <select
+                      value={editRateType}
+                      onChange={(e) =>
+                        setEditRateType(e.target.value as RateType)
+                      }
+                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs font-medium text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                    >
+                      <option value="FIXED">Fixed Total Price</option>
+                      <option value="HOURLY">Hourly Rate</option>
+                      <option value="DAILY">Daily Rate</option>
+                    </select>
+                  </div>
 
-              <div className="rounded-2xl bg-smoke/60 p-3.5 border border-line/60 text-xs text-copy leading-relaxed whitespace-pre-line">
-                {existingQuotation.message}
-              </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-title mb-1">
+                      Estimated Duration
+                    </label>
+                    <input
+                      type="text"
+                      value={editDuration}
+                      onChange={(e) => setEditDuration(e.target.value)}
+                      placeholder="e.g. 2 days, 4 hours"
+                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                    />
+                  </div>
 
-              {existingQuotation.status === "PENDING" ? (
-                <button
-                  type="button"
-                  disabled={isWithdrawing}
-                  onClick={() => handleWithdraw(existingQuotation._id)}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100/60 text-rose-700 py-2.5 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
-                >
-                  {isWithdrawing ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Withdrawing Proposal...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span>Withdraw This Proposal</span>
-                    </>
-                  )}
-                </button>
-              ) : null}
+                  <div>
+                    <label className="block text-xs font-semibold text-title mb-1">
+                      Proposal Message <span className="text-[#FE375D]">*</span>
+                    </label>
+                    <textarea
+                      rows={3}
+                      required
+                      value={editMessage}
+                      onChange={(e) => setEditMessage(e.target.value)}
+                      className="w-full rounded-xl border border-line bg-white p-3 text-xs text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2 pt-2">
+                    <button
+                      type="button"
+                      disabled={isUpdatingProposal}
+                      onClick={() => setIsEditingProposal(false)}
+                      className="rounded-full border border-line bg-white px-4 py-2 text-xs font-semibold text-muted hover:text-title cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isUpdatingProposal}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {isUpdatingProposal ? (
+                        <>
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <span>Save Changes</span>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* READ-ONLY DISPLAY WITH EDIT & WITHDRAW BUTTONS */
+                <>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-muted block">
+                      Proposed Amount
+                    </span>
+                    <div className="font-display text-2xl font-bold text-[#FE375D] mt-0.5">
+                      GH₵{existingQuotation.proposedAmount?.toLocaleString()}
+                      <span className="text-xs font-normal text-muted ml-1">
+                        ({existingQuotation.rateType})
+                      </span>
+                    </div>
+                  </div>
+
+                  {existingQuotation.estimatedDuration ? (
+                    <div className="flex items-center gap-2 text-xs text-slate-700">
+                      <Clock className="h-4 w-4 text-muted" />
+                      <span>
+                        Turnaround:{" "}
+                        <strong>{existingQuotation.estimatedDuration}</strong>
+                      </span>
+                    </div>
+                  ) : null}
+
+                  <div className="rounded-2xl bg-smoke/60 p-3.5 border border-line/60 text-xs text-copy leading-relaxed whitespace-pre-line">
+                    {existingQuotation.message}
+                  </div>
+
+                  {existingQuotation.status === "PENDING" ? (
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleOpenEdit}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-line bg-white hover:bg-slate-50 py-2.5 text-xs font-semibold text-title transition-colors cursor-pointer"
+                      >
+                        <Edit3 className="h-3.5 w-3.5 text-muted" />
+                        <span>Edit Offer</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsWithdrawModalOpen(true)}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-rose-200 bg-rose-50/50 hover:bg-rose-100/60 text-rose-700 py-2.5 text-xs font-semibold transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span>Withdraw Offer</span>
+                      </button>
+                    </div>
+                  ) : null}
+                </>
+              )}
+
+              {/* WITHDRAW CONFIRMATION MODAL */}
+              <WithdrawProposalModal
+                quotationId={existingQuotation._id}
+                jobId={job._id}
+                isOpen={isWithdrawModalOpen}
+                onClose={() => setIsWithdrawModalOpen(false)}
+                onSuccess={() => router.refresh()}
+              />
             </div>
           ) : null}
 

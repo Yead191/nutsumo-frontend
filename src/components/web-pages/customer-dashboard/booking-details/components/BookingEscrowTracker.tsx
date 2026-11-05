@@ -2,14 +2,18 @@
 
 import { Check, Lock, Play, PackageCheck, Award } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type { IBookingItem, BookingStatus } from "@/helpers/next-fetch/apiActions/bookingActions";
+import type {
+  IBookingItem,
+  BookingStatus,
+} from "@/helpers/next-fetch/apiActions/bookingActions";
 
 interface BookingEscrowTrackerProps {
   booking: IBookingItem;
 }
 
 export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
-  const isPaid = booking.paymentStatus === "ESCROW_HELD" || booking.paymentStatus === "PAID";
+  const isPaid =
+    booking.paymentStatus === "ESCROW_HELD" || booking.paymentStatus === "PAID";
   const status = booking.status;
 
   const steps = [
@@ -26,13 +30,18 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
       title: "2. Artisan Scheduled",
       description: isPaid ? "Assigned & Ready" : "Pending Deposit",
       icon: Check,
-      isCompleted: ["CONFIRMED", "IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(status) && isPaid,
+      isCompleted:
+        ["CONFIRMED", "IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(
+          status,
+        ) && isPaid,
       isCurrent: status === "CONFIRMED" && isPaid,
     },
     {
       id: "in_progress",
       title: "3. In Progress",
-      description: ["IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(status) ? "Artisan Working" : "Pending Start",
+      description: ["IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(status)
+        ? "Artisan Working"
+        : "Pending Start",
       icon: Play,
       isCompleted: ["IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(status),
       isCurrent: status === "IN_PROGRESS",
@@ -40,7 +49,9 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
     {
       id: "delivered",
       title: "4. Delivered",
-      description: ["DELIVERED", "COMPLETED"].includes(status) ? "Work Submitted" : "Awaiting Work",
+      description: ["DELIVERED", "COMPLETED"].includes(status)
+        ? "Work Submitted"
+        : "Awaiting Work",
       icon: PackageCheck,
       isCompleted: ["DELIVERED", "COMPLETED"].includes(status),
       isCurrent: status === "DELIVERED",
@@ -60,12 +71,12 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-display text-sm font-bold text-title flex items-center gap-2">
           <span>Escrow Protection Lifecycle</span>
-          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider">
-            Upwork / Fiverr Assured
-          </span>
         </h3>
         <span className="text-xs text-muted">
-          Current Stage: <strong className="text-title font-semibold">{status.replace(/_/g, " ")}</strong>
+          Current Stage:{" "}
+          <strong className="text-title font-semibold">
+            {status.replace(/_/g, " ")}
+          </strong>
         </span>
       </div>
 
