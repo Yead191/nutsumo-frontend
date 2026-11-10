@@ -1,11 +1,8 @@
 "use client";
 
-import { Check, Lock, Play, PackageCheck, Award } from "lucide-react";
+import { Check, Lock, Play, PackageCheck, Award, RefreshCw, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type {
-  IBookingItem,
-  BookingStatus,
-} from "@/helpers/next-fetch/apiActions/bookingActions";
+import type { IBookingItem } from "@/helpers/next-fetch/apiActions/bookingActions";
 
 interface BookingEscrowTrackerProps {
   booking: IBookingItem;
@@ -15,6 +12,9 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
   const isPaid =
     booking.paymentStatus === "ESCROW_HELD" || booking.paymentStatus === "PAID";
   const status = booking.status;
+
+  const isRevision = status === "REVISION_REQUESTED";
+  const isDispute = status === "DISPUTED";
 
   const steps = [
     {
@@ -31,27 +31,52 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
       description: isPaid ? "Assigned & Ready" : "Pending Deposit",
       icon: Check,
       isCompleted:
-        ["CONFIRMED", "IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(
-          status,
-        ) && isPaid,
+        [
+          "CONFIRMED",
+          "IN_PROGRESS",
+          "DELIVERED",
+          "REVISION_REQUESTED",
+          "COMPLETED",
+          "DISPUTED",
+        ].includes(status) && isPaid,
       isCurrent: status === "CONFIRMED" && isPaid,
     },
     {
       id: "in_progress",
       title: "3. In Progress",
-      description: ["IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(status)
-        ? "Artisan Working"
-        : "Pending Start",
-      icon: Play,
-      isCompleted: ["IN_PROGRESS", "DELIVERED", "COMPLETED"].includes(status),
-      isCurrent: status === "IN_PROGRESS",
+      description:
+        isRevision
+          ? "Revising Work"
+          : [
+                "IN_PROGRESS",
+                "DELIVERED",
+                "REVISION_REQUESTED",
+                "COMPLETED",
+                "DISPUTED",
+              ].includes(status)
+            ? "Artisan Working"
+            : "Pending Start",
+      icon: isRevision ? RefreshCw : Play,
+      isCompleted: [
+        "IN_PROGRESS",
+        "DELIVERED",
+        "REVISION_REQUESTED",
+        "COMPLETED",
+        "DISPUTED",
+      ].includes(status),
+      isCurrent: status === "IN_PROGRESS" || isRevision,
     },
     {
       id: "delivered",
       title: "4. Delivered",
-      description: ["DELIVERED", "COMPLETED"].includes(status)
-        ? "Work Submitted"
-        : "Awaiting Work",
+      description:
+        status === "DELIVERED"
+          ? "Inspection Needed"
+          : isRevision
+            ? "Re-delivery Due"
+            : status === "COMPLETED"
+              ? "Approved"
+              : "Awaiting Work",
       icon: PackageCheck,
       isCompleted: ["DELIVERED", "COMPLETED"].includes(status),
       isCurrent: status === "DELIVERED",
@@ -59,10 +84,15 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
     {
       id: "completed",
       title: "5. Completed",
-      description: status === "COMPLETED" ? "Funds Released" : "Final Review",
-      icon: Award,
+      description:
+        status === "COMPLETED"
+          ? "Funds Released"
+          : isDispute
+            ? "Admin Mediation"
+            : "Final Review",
+      icon: isDispute ? AlertTriangle : Award,
       isCompleted: status === "COMPLETED",
-      isCurrent: false,
+      isCurrent: isDispute,
     },
   ];
 
@@ -72,12 +102,24 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
         <h3 className="font-display text-sm font-bold text-title flex items-center gap-2">
           <span>Escrow Protection Lifecycle</span>
         </h3>
-        <span className="text-xs text-muted">
-          Current Stage:{" "}
-          <strong className="text-title font-semibold">
-            {status.replace(/_/g, " ")}
-          </strong>
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted">
+            Current Stage:{" "}
+            <strong className="text-title font-semibold">
+              {status.replace(/_/g, " ")}
+            </strong>
+          </span>
+          {isDispute && (
+            <span className="rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold px-2.5 py-0.5">
+              Disputed
+            </span>
+          )}
+          {isRevision && (
+            <span className="rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5">
+              Revision Active
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
@@ -91,7 +133,7 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
                 step.isCompleted
                   ? "border-emerald-200 bg-emerald-50/50 text-emerald-950"
                   : step.isCurrent
-                    ? "border-[#FE375D] bg-rose-50/40 text-title ring-1 ring-[#FE375D]/30"
+                    ? "border-primary bg-primary/5 text-title ring-1 ring-primary/30"
                     : "border-line bg-smoke/40 text-muted opacity-80",
               )}
             >
@@ -102,7 +144,7 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
                     step.isCompleted
                       ? "bg-emerald-600 text-white"
                       : step.isCurrent
-                        ? "bg-[#FE375D] text-white animate-pulse"
+                        ? "bg-primary text-white"
                         : "bg-slate-200 text-slate-600",
                   )}
                 >

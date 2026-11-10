@@ -33,6 +33,7 @@ import {
 import { loginHref } from "@/lib/role-access";
 import { useRoleAccess } from "@/hooks/use-role-access";
 import { seedReviews as mockSeedReviews, defaultProProfile } from "@/Mockdata";
+import { getArtisanReviewsAction } from "@/helpers/next-fetch/apiActions/reviewActions";
 import type { Professional } from "@/types";
 import { cn } from "@/lib/cn";
 import {
@@ -70,6 +71,35 @@ export function ProProfileContent({ pro }: { pro: Professional }) {
   const [activePhotoIndex, setActivePhotoIndex] = useState<number | null>(null);
   const [bioExpanded, setBioExpanded] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [liveReviews, setLiveReviews] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadLiveReviews() {
+      if (!pro?.id) return;
+      try {
+        const res = await getArtisanReviewsAction(pro.id);
+        if (res.success && res.data?.reviews && Array.isArray(res.data.reviews)) {
+          const mapped = res.data.reviews.map((r: any) => ({
+            id: r._id,
+            author: (r.customer as any)?.name || "Homeowner",
+            location: `${pro.city}, ${pro.state}`,
+            date: new Date(r.createdAt).toLocaleDateString(),
+            rating: r.rating,
+            tag: (r.qualityRating && r.qualityRating >= 5
+              ? "clean-work"
+              : "fair-price") as "clean-work" | "fair-price" | "punctual",
+            project: (r.job as any)?.title || `${pro.trade} Service`,
+            text: r.comment,
+            reply: r.reply?.comment || undefined,
+          }));
+          setLiveReviews(mapped);
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    }
+    loadLiveReviews();
+  }, [pro.id, pro.city, pro.state, pro.trade]);
 
   const proProfile = defaultProProfile;
   const isDemoPro = pro.id === "pro-1";
@@ -220,8 +250,8 @@ export function ProProfileContent({ pro }: { pro: Professional }) {
       reply: r.reply ?? undefined,
     }));
 
-    // Merge so seedReviews (e.g. Elena Ruiz) are first, followed by verified default reviews
-    const combined: ReviewEntry[] = [...userMapped];
+    // Merge live reviews first, then seedReviews, followed by verified default reviews
+    const combined: ReviewEntry[] = [...liveReviews, ...userMapped];
     for (const def of defaultReviews) {
       if (!combined.some((item) => item.text.trim() === def.text.trim() || item.id === def.id)) {
         combined.push({
@@ -231,7 +261,7 @@ export function ProProfileContent({ pro }: { pro: Professional }) {
       }
     }
     return combined;
-  }, [seedReviews, defaultReviews, pro.city, pro.state, pro.trade]);
+  }, [liveReviews, seedReviews, defaultReviews, pro.city, pro.state, pro.trade]);
 
   const dynamicRating = useMemo(() => {
     if (!allReviews.length) return pro.rating;

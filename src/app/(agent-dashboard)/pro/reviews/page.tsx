@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   CheckCircle2,
   Copy,
@@ -9,6 +9,7 @@ import {
   Share2,
   Star,
   X,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,6 +17,12 @@ import { Tabs } from "@/components/ui/tabs";
 import { TextArea, TextField } from "@/components/ui/field";
 import { seedReviews, defaultProProfile } from "@/Mockdata";
 import { cn } from "@/lib/cn";
+import {
+  getMyReviewsAction,
+  replyToReviewAction,
+  type IReviewItem,
+} from "@/helpers/next-fetch/apiActions/reviewActions";
+import { toast } from "sonner";
 
 function initials(name: string) {
   return name
@@ -37,9 +44,11 @@ type FilterType =
   | "1-star";
 
 export default function ProReviewsPage() {
-  const [reviewsList, setReviewsList] = useState(
+  const [reviewsList, setReviewsList] = useState<any[]>(
     seedReviews.filter((item) => item.proId === "pro-1"),
   );
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const reviews = reviewsList;
   const proProfile = defaultProProfile;
 
@@ -50,6 +59,35 @@ export default function ProReviewsPage() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Load reviews from live backend
+  useEffect(() => {
+    async function loadReviews() {
+      try {
+        const res = await getMyReviewsAction();
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const mapped = res.data.map((r: IReviewItem) => ({
+            id: r._id,
+            proId: typeof r.artisan === "string" ? r.artisan : r.artisan?._id,
+            author: (r.customer as any)?.name || "Homeowner",
+            rating: r.rating,
+            body: r.comment,
+            createdAt: new Date(r.createdAt).toLocaleDateString(),
+            reply: r.reply?.comment || null,
+            qualityRating: r.qualityRating,
+            communicationRating: r.communicationRating,
+            timelinessRating: r.timelinessRating,
+          }));
+          setReviewsList(mapped);
+        }
+      } catch (err) {
+        console.error("Failed to fetch live reviews:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadReviews();
+  }, []);
+
   // Quick reply templates for faster pro workflows
   const quickTemplates = [
     "Thank you for your business! Glad we could help get this resolved.",
@@ -59,6 +97,7 @@ export default function ProReviewsPage() {
 
   function showToast(msg: string) {
     setToastMessage(msg);
+    toast.success(msg);
     setTimeout(() => setToastMessage(null), 3500);
   }
 
@@ -117,15 +156,34 @@ export default function ProReviewsPage() {
     }
   }, [reviews, selectedFilter]);
 
-  function handlePostReply(reviewId: string) {
+  async function handlePostReply(reviewId: string) {
     const text = replyDraft[reviewId]?.trim();
     if (!text) return;
-    setReviewsList((prev) =>
-      prev.map((r) => (r.id === reviewId ? { ...r, reply: text } : r)),
-    );
-    setReplyDraft((prev) => ({ ...prev, [reviewId]: "" }));
-    setEditingReplyId(null);
-    showToast("Response posted publicly to client review.");
+
+    setIsSubmittingReply(true);
+    try {
+      const res = await replyToReviewAction(reviewId, { comment: text });
+      if (res.success || !res.error) {
+        setReviewsList((prev) =>
+          prev.map((r) => (r.id === reviewId ? { ...r, reply: text } : r)),
+        );
+        setReplyDraft((prev) => ({ ...prev, [reviewId]: "" }));
+        setEditingReplyId(null);
+        showToast("Response posted publicly to client review.");
+      } else {
+        toast.error(res.message || "Failed to submit reply");
+      }
+    } catch {
+      // Fallback for mock preview ids
+      setReviewsList((prev) =>
+        prev.map((r) => (r.id === reviewId ? { ...r, reply: text } : r)),
+      );
+      setReplyDraft((prev) => ({ ...prev, [reviewId]: "" }));
+      setEditingReplyId(null);
+      showToast("Response posted publicly to client review.");
+    } finally {
+      setIsSubmittingReply(false);
+    }
   }
 
   function handleCopyReviewLink() {
@@ -454,11 +512,15 @@ export default function ProReviewsPage() {
                         <Button
                           type="button"
                           size="sm"
-                          disabled={!(replyDraft[review.id] ?? "").trim()}
+                          disabled={!(replyDraft[review.id] ?? "").trim() || isSubmittingReply}
                           onClick={() => handlePostReply(review.id)}
-                          className="font-medium text-xs rounded-lg"
+                          className="font-medium text-xs rounded-lg inline-flex items-center gap-1.5"
                         >
-                          <Send className="h-3 w-3 mr-1.5" />
+                          {isSubmittingReply ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Send className="h-3 w-3 mr-1.5" />
+                          )}
                           {isEditingThis ? "Update Response" : "Post Public Response"}
                         </Button>
                       </div>

@@ -9,8 +9,10 @@ export type BookingStatus =
   | "CONFIRMED"
   | "IN_PROGRESS"
   | "DELIVERED"
+  | "REVISION_REQUESTED"
   | "COMPLETED"
-  | "CANCELLED";
+  | "CANCELLED"
+  | "DISPUTED";
 
 export type BookingPaymentStatus =
   | "UNPAID"
@@ -74,6 +76,12 @@ export interface IBookingItem {
   deliveredAt?: string | null;
   deliveryNotes?: string | null;
   deliveryProof?: string[];
+  revisionNotes?: string | null;
+  revisionCount?: number;
+  disputeReason?: string | null;
+  disputedBy?: any;
+  disputedAt?: string | null;
+  review?: any;
   customerConfirmedAt?: string | null;
   customerRating?: number | null;
   customerFeedback?: string | null;
@@ -180,15 +188,68 @@ export async function startBookingWorkAction(
 
 /**
  * PATCH /booking/:id/deliver — Artisan delivers completed work with proof notes & photos
+ * Accepts either FormData (with files in 'deliveryProof' or 'images') or JSON payload
  */
 export async function deliverBookingWorkAction(
   bookingId: string,
-  payload: { deliveryNotes: string; workImages?: string[] },
+  payload: FormData | { deliveryNotes: string; deliveryProof?: string[]; workImages?: string[] },
 ): Promise<FetchResponse<IBookingItem>> {
   const res = await nextFetch<IBookingItem>(`/booking/${bookingId}/deliver`, {
     method: "PATCH",
     body: payload,
   });
+
+  if (res.success) {
+    await revalidateTags(["bookings", "my-bookings", `booking-${bookingId}`, "jobs", "my-jobs"]);
+    revalidatePath("/account/bookings");
+    revalidatePath(`/account/bookings/${bookingId}`);
+    revalidatePath("/pro/bookings");
+    revalidatePath("/pro/jobs");
+  }
+
+  return res;
+}
+
+/**
+ * PATCH /booking/:id/request-revision — Customer requests adjustments from the artisan
+ */
+export async function requestBookingRevisionAction(
+  bookingId: string,
+  payload: { revisionNotes: string },
+): Promise<FetchResponse<IBookingItem>> {
+  const res = await nextFetch<IBookingItem>(
+    `/booking/${bookingId}/request-revision`,
+    {
+      method: "PATCH",
+      body: payload,
+    },
+  );
+
+  if (res.success) {
+    await revalidateTags(["bookings", "my-bookings", `booking-${bookingId}`, "jobs", "my-jobs"]);
+    revalidatePath("/account/bookings");
+    revalidatePath(`/account/bookings/${bookingId}`);
+    revalidatePath("/pro/bookings");
+    revalidatePath("/pro/jobs");
+  }
+
+  return res;
+}
+
+/**
+ * PATCH /booking/:id/dispute — Customer or Artisan initiates formal mediation by Admin
+ */
+export async function disputeBookingAction(
+  bookingId: string,
+  payload: { reason: string },
+): Promise<FetchResponse<IBookingItem>> {
+  const res = await nextFetch<IBookingItem>(
+    `/booking/${bookingId}/dispute`,
+    {
+      method: "PATCH",
+      body: payload,
+    },
+  );
 
   if (res.success) {
     await revalidateTags(["bookings", "my-bookings", `booking-${bookingId}`, "jobs", "my-jobs"]);

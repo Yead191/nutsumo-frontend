@@ -1,7 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { PackageCheck, X, Loader2, ImagePlus, ShieldCheck, Trash2 } from "lucide-react";
+import { useState, useRef } from "react";
+import Image from "next/image";
+import {
+  PackageCheck,
+  X,
+  Loader2,
+  UploadCloud,
+  ShieldCheck,
+  Trash2,
+  FileImage,
+  Plus,
+} from "lucide-react";
 import { toast } from "sonner";
 import { deliverBookingWorkAction } from "@/helpers/next-fetch/apiActions/bookingActions";
 
@@ -19,25 +29,39 @@ export function DeliverWorkModal({
   onSuccess,
 }: DeliverWorkModalProps) {
   const [deliveryNotes, setDeliveryNotes] = useState("");
-  const [imageUrlInput, setImageUrlInput] = useState("");
-  const [workImages, setWorkImages] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [filePreviews, setFilePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
-  const handleAddImage = () => {
-    if (!imageUrlInput.trim()) return;
-    try {
-      new URL(imageUrlInput.trim());
-      setWorkImages((prev) => [...prev, imageUrlInput.trim()]);
-      setImageUrlInput("");
-    } catch {
-      toast.error("Please enter a valid image URL");
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+
+    // Limit to max 10 images total
+    const totalCount = selectedFiles.length + filesArray.length;
+    if (totalCount > 10) {
+      toast.error("You can upload a maximum of 10 proof photos.");
+      return;
     }
+
+    const newPreviews = filesArray.map((file) => URL.createObjectURL(file));
+    setSelectedFiles((prev) => [...prev, ...filesArray]);
+    setFilePreviews((prev) => [...prev, ...newPreviews]);
+
+    // reset input
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleRemoveImage = (index: number) => {
-    setWorkImages((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveFile = (index: number) => {
+    // Revoke preview object url
+    if (filePreviews[index]) {
+      URL.revokeObjectURL(filePreviews[index]);
+    }
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setFilePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,10 +74,19 @@ export function DeliverWorkModal({
 
     setIsSubmitting(true);
     try {
-      const res = await deliverBookingWorkAction(bookingId, {
-        deliveryNotes: deliveryNotes.trim(),
-        workImages: workImages.length > 0 ? workImages : undefined,
-      });
+      let res;
+      if (selectedFiles.length > 0) {
+        const formData = new FormData();
+        formData.append("deliveryNotes", deliveryNotes.trim());
+        selectedFiles.forEach((file) => {
+          formData.append("deliveryProof", file);
+        });
+        res = await deliverBookingWorkAction(bookingId, formData);
+      } else {
+        res = await deliverBookingWorkAction(bookingId, {
+          deliveryNotes: deliveryNotes.trim(),
+        });
+      }
 
       if (res.success) {
         toast.success("Work delivered successfully! Customer notified for review 🎉");
@@ -63,7 +96,7 @@ export function DeliverWorkModal({
         toast.error(res.message || "Failed to deliver work");
       }
     } catch {
-      toast.error("An unexpected error occurred");
+      toast.error("An unexpected error occurred during delivery submission");
     } finally {
       setIsSubmitting(false);
     }
@@ -78,7 +111,7 @@ export function DeliverWorkModal({
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-line z-10 animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-line z-10 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
         <button
           type="button"
           disabled={isSubmitting}
@@ -89,7 +122,7 @@ export function DeliverWorkModal({
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary border border-primary/20">
             <PackageCheck className="h-6 w-6 stroke-[2]" />
           </div>
           <div>
@@ -97,7 +130,7 @@ export function DeliverWorkModal({
               Deliver Completed Work
             </h3>
             <p className="text-xs text-muted">
-              Submit your work handover notes and proof for client sign-off.
+              Submit your handover report and completion photos for client review.
             </p>
           </div>
         </div>
@@ -106,55 +139,72 @@ export function DeliverWorkModal({
           {/* DELIVERY NOTES */}
           <div>
             <label className="block text-xs font-semibold text-title mb-1.5">
-              Work Delivery Notes <span className="text-[#FE375D]">*</span>
+              Work Delivery Notes <span className="text-rose-500">*</span>
             </label>
             <textarea
               required
               rows={4}
               value={deliveryNotes}
               onChange={(e) => setDeliveryNotes(e.target.value)}
-              placeholder="Explain the work done, replacements made, test results, and any maintenance advice for the client..."
-              className="w-full rounded-2xl border border-line bg-smoke/40 p-3 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+              placeholder="Detail the work done, replacements made, water/pressure test results, and any maintenance advice for the homeowner..."
+              className="w-full rounded-2xl border border-line bg-smoke/40 p-3 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
 
-          {/* PROOF IMAGES INPUT */}
+          {/* PROOF IMAGES FILE UPLOAD */}
           <div>
-            <label className="block text-xs font-semibold text-title mb-1.5">
-              Completion Photo Proof (Optional URLs)
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={imageUrlInput}
-                onChange={(e) => setImageUrlInput(e.target.value)}
-                placeholder="https://example.com/photo.jpg"
-                className="flex-1 rounded-xl border border-line bg-white px-3 py-2 text-xs text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                className="inline-flex items-center gap-1 rounded-xl bg-slate-900 text-white px-4 py-2 text-xs font-semibold hover:bg-slate-800 transition-colors cursor-pointer"
-              >
-                <ImagePlus className="h-3.5 w-3.5" />
-                <span>Add</span>
-              </button>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-semibold text-title">
+                Completion Proof Photos{" "}
+                <span className="text-muted font-normal">(Up to 10 photos)</span>
+              </label>
+              <span className="text-[11px] font-mono text-muted">
+                {selectedFiles.length}/10 selected
+              </span>
             </div>
 
-            {workImages.length > 0 && (
-              <div className="mt-2.5 flex flex-wrap gap-2">
-                {workImages.map((img, idx) => (
+            {/* DROPZONE / PICKER */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed border-line hover:border-primary rounded-2xl p-4 text-center cursor-pointer transition-colors bg-smoke/30 hover:bg-primary/5 flex flex-col items-center justify-center gap-1.5"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-white shadow-2xs border border-line text-primary">
+                <UploadCloud className="h-5 w-5" />
+              </div>
+              <span className="text-xs font-bold text-title">
+                Click to browse or take photos
+              </span>
+              <span className="text-[11px] text-muted">
+                PNG, JPG, WEBP up to 10MB each
+              </span>
+            </div>
+
+            {/* PREVIEWS */}
+            {filePreviews.length > 0 && (
+              <div className="mt-3 grid grid-cols-4 gap-2.5">
+                {filePreviews.map((preview, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-1.5 rounded-lg bg-smoke px-2.5 py-1 text-xs border border-line"
+                    className="relative aspect-square rounded-xl overflow-hidden border border-line group bg-slate-100"
                   >
-                    <span className="max-w-[150px] truncate font-mono text-[11px] text-muted">
-                      {img}
-                    </span>
+                    <Image
+                      src={preview}
+                      alt={`Proof thumbnail ${idx + 1}`}
+                      fill
+                      className="object-cover"
+                    />
                     <button
                       type="button"
-                      onClick={() => handleRemoveImage(idx)}
-                      className="text-muted hover:text-rose-600 transition-colors"
+                      onClick={() => handleRemoveFile(idx)}
+                      className="absolute top-1 right-1 grid h-6 w-6 place-items-center rounded-full bg-black/60 text-white hover:bg-rose-600 transition-colors cursor-pointer"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
@@ -168,7 +218,7 @@ export function DeliverWorkModal({
           <div className="rounded-2xl bg-blue-50/70 p-3.5 border border-blue-100 text-xs text-blue-950 flex items-start gap-2.5">
             <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Once delivered, the customer will receive an alert to inspect the job and authorize payout.
+              Once submitted, the homeowner is alerted to inspect the job. Escrow funds remain safely secured and will be disbursed once the client approves.
             </p>
           </div>
 
@@ -185,15 +235,18 @@ export function DeliverWorkModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-6 py-2.5 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover text-white px-6 py-2.5 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Submitting Delivery...</span>
+                  <span>Delivering Work...</span>
                 </>
               ) : (
-                <span>Submit & Deliver Work</span>
+                <>
+                  <PackageCheck className="h-4 w-4" />
+                  <span>Submit & Deliver Work</span>
+                </>
               )}
             </button>
           </div>

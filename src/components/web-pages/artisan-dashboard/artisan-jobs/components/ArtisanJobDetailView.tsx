@@ -209,7 +209,7 @@ export function ArtisanJobDetailView({
       <div className="border-b border-line/70 pb-4">
         <Link
           href="/pro/jobs"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-[#FE375D] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to Jobs & Proposals</span>
@@ -245,7 +245,7 @@ export function ArtisanJobDetailView({
               ) : null}
 
               {serviceName ? (
-                <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-[#FE375D]">
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                   {serviceName}
                 </span>
               ) : null}
@@ -257,7 +257,7 @@ export function ArtisanJobDetailView({
 
             <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-muted border-t border-line/70 pt-3">
               <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                <MapPin className="h-4 w-4 text-[#FE375D] shrink-0" />
+                <MapPin className="h-4 w-4 text-primary shrink-0" />
                 <span>
                   {job.location} {job.postCode ? `(${job.postCode})` : ""}
                 </span>
@@ -312,7 +312,7 @@ export function ArtisanJobDetailView({
                       onClick={() => setSelectedImageIndex(idx)}
                       className={`relative h-16 w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                         selectedImageIndex === idx
-                          ? "border-[#FE375D] ring-2 ring-[#FE375D]/30"
+                          ? "border-primary ring-2 ring-primary/30"
                           : "border-transparent opacity-70 hover:opacity-100"
                       }`}
                     >
@@ -361,7 +361,11 @@ export function ArtisanJobDetailView({
                           ? "bg-indigo-100 text-indigo-800"
                           : booking.status === "DELIVERED"
                             ? "bg-purple-100 text-purple-800"
-                            : "bg-emerald-100 text-emerald-800"
+                            : booking.status === "REVISION_REQUESTED"
+                              ? "bg-amber-100 text-amber-800"
+                              : booking.status === "DISPUTED"
+                                ? "bg-rose-100 text-rose-800"
+                                : "bg-emerald-100 text-emerald-800"
                   }`}
                 >
                   {booking.status === "AWAITING_PAYMENT"
@@ -374,7 +378,7 @@ export function ArtisanJobDetailView({
               <div className="rounded-2xl bg-white p-4 border border-emerald-200/60 text-xs space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted">Contract Total:</span>
-                  <strong className="font-display text-sm text-[#FE375D]">
+                  <strong className="font-display text-sm text-primary">
                     GH₵{booking.totalAmount?.toLocaleString()}
                   </strong>
                 </div>
@@ -427,7 +431,7 @@ export function ArtisanJobDetailView({
                     type="button"
                     disabled={isStartingWork}
                     onClick={() => handleStartWork(booking._id)}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
                   >
                     {isStartingWork ? (
                       <>
@@ -478,6 +482,46 @@ export function ArtisanJobDetailView({
                     </div>
                   )}
                 </div>
+              ) : booking.status === "REVISION_REQUESTED" ? (
+                <div className="space-y-3">
+                  <div className="rounded-2xl bg-amber-50 p-4 border border-amber-200 text-xs text-amber-950 space-y-2">
+                    <div className="flex items-center gap-2 font-bold text-amber-900">
+                      <AlertCircle className="h-4 w-4 text-amber-600" />
+                      <span>Revisions Requested by Client</span>
+                    </div>
+                    <p className="leading-relaxed">
+                      The homeowner reviewed your delivery and requested the following modifications before releasing funds:
+                    </p>
+                    {booking.revisionNotes && (
+                      <div className="rounded-xl bg-white p-3 text-xs text-copy italic border border-amber-200 whitespace-pre-line">
+                        &ldquo;{booking.revisionNotes}&rdquo;
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsDeliverModalOpen(true)}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-600 hover:bg-amber-700 text-white py-3 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.01] cursor-pointer"
+                  >
+                    <PackageCheck className="h-4 w-4" />
+                    <span>Submit Updated / Revised Delivery</span>
+                  </button>
+                </div>
+              ) : booking.status === "DISPUTED" ? (
+                <div className="rounded-2xl bg-rose-50 p-4 border border-rose-200 text-xs text-rose-950 space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-rose-900">
+                    <AlertCircle className="h-4 w-4 text-rose-600" />
+                    <span>Dispute Under Admin Review</span>
+                  </div>
+                  <p className="leading-relaxed">
+                    A formal dispute has been logged for this contract. Platform escrow funds are frozen while mediation reviews the case.
+                  </p>
+                  {booking.disputeReason && (
+                    <div className="rounded-xl bg-white p-3 text-xs text-copy border border-rose-200 whitespace-pre-line">
+                      <strong>Reported Reason:</strong> &ldquo;{booking.disputeReason}&rdquo;
+                    </div>
+                  )}
+                </div>
               ) : booking.status === "COMPLETED" ? (
                 <div className="rounded-2xl bg-emerald-50 p-3.5 border border-emerald-200 text-xs text-emerald-950 space-y-2">
                   <div className="flex items-center gap-2 font-bold">
@@ -525,7 +569,7 @@ export function ArtisanJobDetailView({
                     <Phone className="h-4 w-4 text-muted" />
                     <a
                       href={`tel:${booking.customer.phone}`}
-                      className="hover:text-[#FE375D]"
+                      className="hover:text-primary"
                     >
                       {booking.customer.phone}
                     </a>
@@ -536,7 +580,7 @@ export function ArtisanJobDetailView({
                     <Mail className="h-4 w-4 text-muted" />
                     <a
                       href={`mailto:${booking.customer.email}`}
-                      className="hover:text-[#FE375D]"
+                      className="hover:text-primary"
                     >
                       {booking.customer.email}
                     </a>
@@ -581,7 +625,7 @@ export function ArtisanJobDetailView({
                   <div>
                     <label className="block text-xs font-semibold text-title mb-1">
                       Proposed Price (GH₵){" "}
-                      <span className="text-[#FE375D]">*</span>
+                      <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
                       <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-display text-xs font-bold text-muted">
@@ -594,7 +638,7 @@ export function ArtisanJobDetailView({
                         required
                         value={editAmount}
                         onChange={(e) => setEditAmount(e.target.value)}
-                        className="w-full rounded-xl border border-line bg-white pl-12 pr-3 py-2 text-xs sm:text-sm font-bold text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                        className="w-full rounded-xl border border-line bg-white pl-12 pr-3 py-2 text-xs sm:text-sm font-bold text-title focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                       />
                     </div>
                   </div>
@@ -608,7 +652,7 @@ export function ArtisanJobDetailView({
                       onChange={(e) =>
                         setEditRateType(e.target.value as RateType)
                       }
-                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs font-medium text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs font-medium text-title focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                     >
                       <option value="FIXED">Fixed Total Price</option>
                       <option value="HOURLY">Hourly Rate</option>
@@ -625,20 +669,20 @@ export function ArtisanJobDetailView({
                       value={editDuration}
                       onChange={(e) => setEditDuration(e.target.value)}
                       placeholder="e.g. 2 days, 4 hours"
-                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-title mb-1">
-                      Proposal Message <span className="text-[#FE375D]">*</span>
+                      Proposal Message <span className="text-rose-500">*</span>
                     </label>
                     <textarea
                       rows={3}
                       required
                       value={editMessage}
                       onChange={(e) => setEditMessage(e.target.value)}
-                      className="w-full rounded-xl border border-line bg-white p-3 text-xs text-title focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                      className="w-full rounded-xl border border-line bg-white p-3 text-xs text-title focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
 
@@ -654,7 +698,7 @@ export function ArtisanJobDetailView({
                     <button
                       type="submit"
                       disabled={isUpdatingProposal}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-primary hover:bg-primary-hover text-white px-5 py-2 text-xs font-bold shadow-xs cursor-pointer disabled:opacity-50"
                     >
                       {isUpdatingProposal ? (
                         <>
@@ -674,7 +718,7 @@ export function ArtisanJobDetailView({
                     <span className="text-[10px] uppercase font-bold text-muted block">
                       Proposed Amount
                     </span>
-                    <div className="font-display text-2xl font-bold text-[#FE375D] mt-0.5">
+                    <div className="font-display text-2xl font-bold text-primary mt-0.5">
                       GH₵{existingQuotation.proposedAmount?.toLocaleString()}
                       <span className="text-xs font-normal text-muted ml-1">
                         ({existingQuotation.rateType})
@@ -738,7 +782,7 @@ export function ArtisanJobDetailView({
                 <span className="block text-[11px] font-bold uppercase tracking-wider text-muted">
                   Client Target Budget
                 </span>
-                <div className="font-display text-3xl font-black text-[#FE375D] mt-0.5">
+                <div className="font-display text-3xl font-black text-primary mt-0.5">
                   GH₵{job.budget?.toLocaleString() || "Open / Quote"}
                 </div>
               </div>
@@ -750,7 +794,7 @@ export function ArtisanJobDetailView({
                 <div>
                   <label className="block text-xs font-semibold text-title mb-1">
                     Your Proposed Price (GH₵){" "}
-                    <span className="text-[#FE375D]">*</span>
+                    <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-display text-xs font-bold text-muted">
@@ -764,10 +808,34 @@ export function ArtisanJobDetailView({
                       value={proposedAmount}
                       onChange={(e) => setProposedAmount(e.target.value)}
                       placeholder="e.g. 150"
-                      className="w-full rounded-xl border border-line bg-white pl-12 pr-3 py-2 text-xs sm:text-sm font-bold text-title  focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                      className="w-full rounded-xl border border-line bg-white pl-12 pr-3 py-2 text-xs sm:text-sm font-bold text-title focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                     />
                   </div>
                 </div>
+
+                {/* LIVE COMMISSION BREAKDOWN */}
+                {Number(proposedAmount) > 0 && (
+                  <div className="rounded-xl bg-smoke/60 p-3 border border-line/70 text-xs space-y-1.5 animate-in fade-in duration-200">
+                    <div className="flex justify-between text-muted">
+                      <span>Proposed Bid:</span>
+                      <span className="font-semibold text-title">
+                        GH₵ {Number(proposedAmount).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-muted">
+                      <span>Platform Fee (10%):</span>
+                      <span className="font-semibold text-rose-600">
+                        -GH₵ {(Number(proposedAmount) * 0.1).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-line/60 font-bold text-title">
+                      <span>Estimated Net Payout:</span>
+                      <span className="text-emerald-700 font-display">
+                        GH₵ {(Number(proposedAmount) * 0.9).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-semibold text-title mb-1">
@@ -776,7 +844,7 @@ export function ArtisanJobDetailView({
                   <select
                     value={rateType}
                     onChange={(e) => setRateType(e.target.value as RateType)}
-                    className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title  focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                    className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                   >
                     <option value="FIXED">Fixed Total Price</option>
                     <option value="HOURLY">Hourly Rate</option>
@@ -793,14 +861,14 @@ export function ArtisanJobDetailView({
                     value={estimatedDuration}
                     onChange={(e) => setEstimatedDuration(e.target.value)}
                     placeholder="e.g. 2 hours, 1 day"
-                    className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title placeholder:text-muted focus:border-[#FE375D] focus:outline-none focus:ring-1 focus:ring-[#FE375D]"
+                    className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs text-title placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-title mb-1">
                     Proposal Pitch & Details{" "}
-                    <span className="text-[#FE375D]">*</span>
+                    <span className="text-rose-500">*</span>
                   </label>
                   <textarea
                     required
@@ -808,14 +876,14 @@ export function ArtisanJobDetailView({
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Explain your approach, tools included, and relevant experience..."
-                    className="w-full rounded-xl border border-line bg-white p-3 text-xs text-title placeholder:text-muted focus:border-[#FE375D] focus:outline-none focus:ring-1 focus:ring-[#FE375D] resize-none"
+                    className="w-full rounded-xl border border-line bg-white p-3 text-xs text-title placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-3 px-4 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3 px-4 text-xs sm:text-sm font-bold shadow-md transition-all hover:scale-[1.02] cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
@@ -837,11 +905,12 @@ export function ArtisanJobDetailView({
           <div className="rounded-3xl border border-line bg-smoke/60 p-5 text-xs text-muted space-y-2">
             <div className="flex items-center gap-1.5 font-bold text-title">
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              <span>0% Commission Guarantee</span>
+              <span>Nutsumo Escrow & Payout Protection</span>
             </div>
             <p className="text-[11px] leading-relaxed">
-              Nutsumo does not deduct commission fees from your submitted
-              proposal amount. What you quote is what you receive.
+              Your payment is 100% held in secure platform escrow before you begin
+              work. Upon customer completion sign-off, net funds are immediately
+              disbursed to your account.
             </p>
           </div>
         </div>
