@@ -51,7 +51,7 @@ export function PhotoUploader({
       {files.length < maxFiles && (
         <div
           onClick={() => inputRef.current?.click()}
-          className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-line bg-smoke/60 p-6 text-center hover:border-[#FE375D] hover:bg-smoke transition-colors cursor-pointer"
+          className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-line bg-smoke/60 p-6 text-center hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
         >
           <input
             ref={inputRef}
@@ -61,7 +61,7 @@ export function PhotoUploader({
             className="hidden"
             onChange={handleFileSelect}
           />
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-white text-[#FE375D] shadow-2xs mb-2">
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-white text-primary shadow-2xs mb-2">
             <UploadCloud className="h-5 w-5" />
           </div>
           <p className="font-display text-xs font-bold text-title">
@@ -92,7 +92,7 @@ export function PhotoUploader({
                 <button
                   type="button"
                   onClick={() => handleRemove(idx)}
-                  className="absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full bg-black/70 text-white hover:bg-[#FE375D] transition-colors cursor-pointer"
+                  className="absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-full bg-black/70 text-white hover:bg-rose-600 transition-colors cursor-pointer"
                   title="Remove image"
                 >
                   <X className="h-3.5 w-3.5" />
