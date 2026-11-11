@@ -13,7 +13,6 @@ const items = [
   { href: "/pro/messages", label: "Messages" },
   { href: "/pro/notifications", label: "Notifications" },
   { href: "/pro/reviews", label: "Reviews" },
-  { href: "/pro/pricing", label: "Subscription" },
   { href: "/pro/password", label: "Password" },
 ];
 

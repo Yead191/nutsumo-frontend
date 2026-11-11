@@ -20,7 +20,7 @@ const getProfile = async (): Promise<any | null> => {
       cache: "force-cache",
       next: {
         tags: ["user-profile"],
-        revalidate: 30,
+        revalidate: 60 * 5,
       },
     });
 

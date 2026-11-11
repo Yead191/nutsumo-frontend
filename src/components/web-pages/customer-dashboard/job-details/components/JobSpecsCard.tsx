@@ -2,16 +2,17 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Layers, Image as ImageIcon, X, Maximize2 } from "lucide-react";
+import { Layers, Image as ImageIcon, Maximize2 } from "lucide-react";
 import { getImageUrl } from "@/lib/getImageUrl";
 import type { IJobItem } from "@/helpers/next-fetch/apiActions/jobActions";
+import { ImageLightboxModal } from "@/components/shared/ImageLightboxModal";
 
 interface JobSpecsCardProps {
   job: IJobItem;
 }
 
 export function JobSpecsCard({ job }: JobSpecsCardProps) {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
 
   const categoryName =
     typeof job.category === "object" && job.category?.name
@@ -34,7 +35,7 @@ export function JobSpecsCard({ job }: JobSpecsCardProps) {
         <div className="flex flex-wrap items-center gap-2">
           {categoryName && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-smoke px-3.5 py-1.5 text-xs font-bold text-title border border-line">
-              <Layers className="h-3.5 w-3.5 text-[#FE375D]" />
+              <Layers className="h-3.5 w-3.5 text-primary" />
               <span>{categoryName}</span>
             </span>
           )}
@@ -61,9 +62,14 @@ export function JobSpecsCard({ job }: JobSpecsCardProps) {
       {/* 3. Photo Gallery */}
       {images.length > 0 && (
         <div>
-          <h3 className="font-display text-sm font-bold text-title mb-3 flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-[#FE375D]" />
-            <span>Attached Photos ({images.length})</span>
+          <h3 className="font-display text-sm font-bold text-title mb-3 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-primary" />
+              <span>Attached Photos ({images.length})</span>
+            </span>
+            <span className="text-[11px] text-muted font-normal">
+              Click to view full screen
+            </span>
           </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -71,10 +77,12 @@ export function JobSpecsCard({ job }: JobSpecsCardProps) {
               const fullUrl = getImageUrl(img);
               if (!fullUrl) return null;
               return (
-                <div
+                <button
                   key={idx}
-                  onClick={() => setSelectedPhoto(fullUrl)}
-                  className="group relative h-28 sm:h-32 rounded-2xl overflow-hidden border border-line bg-smoke shadow-2xs cursor-pointer hover:border-[#FE375D] transition-colors"
+                  type="button"
+                  onClick={() => setSelectedPhotoIndex(idx)}
+                  className="group relative h-28 sm:h-32 rounded-2xl overflow-hidden border border-line bg-smoke shadow-2xs cursor-pointer hover:border-primary transition-colors text-left focus:outline-none focus:ring-2 focus:ring-primary/60"
+                  title="Click to view full screen"
                 >
                   <Image
                     src={fullUrl}
@@ -83,42 +91,25 @@ export function JobSpecsCard({ job }: JobSpecsCardProps) {
                     className="object-cover transition-transform group-hover:scale-105"
                     sizes="200px"
                   />
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                    <Maximize2 className="h-5 w-5" />
+                  <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <Maximize2 className="h-5 w-5 drop-shadow-md" />
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
       )}
 
-      {/* Photo Lightbox Modal */}
-      {selectedPhoto && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setSelectedPhoto(null)}
-          />
-          <div className="relative max-w-3xl max-h-[85vh] w-full z-10 flex flex-col items-center">
-            <button
-              type="button"
-              onClick={() => setSelectedPhoto(null)}
-              className="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full bg-white/20 text-white hover:bg-white/40 transition cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <div className="relative w-full h-[60vh] sm:h-[70vh] rounded-2xl overflow-hidden">
-              <Image
-                src={selectedPhoto}
-                alt="Enlarged photo"
-                fill
-                className="object-contain"
-                sizes="1000px"
-              />
-            </div>
-          </div>
-        </div>
+      {/* Modern Lightbox Modal */}
+      {images.length > 0 && (
+        <ImageLightboxModal
+          images={images}
+          initialIndex={selectedPhotoIndex ?? 0}
+          isOpen={selectedPhotoIndex !== null}
+          onClose={() => setSelectedPhotoIndex(null)}
+          title={`Job Attachments · ${job.title}`}
+        />
       )}
     </div>
   );

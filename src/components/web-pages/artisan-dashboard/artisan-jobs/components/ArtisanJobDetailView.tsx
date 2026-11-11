@@ -26,6 +26,7 @@ import {
   PackageCheck,
   Lock,
   Edit3,
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -45,6 +46,7 @@ import { DeliverWorkModal } from "./DeliverWorkModal";
 import { WithdrawProposalModal } from "./WithdrawProposalModal";
 import type { IJobItem } from "../types";
 import { getImageUrl } from "@/lib/getImageUrl";
+import { ImageLightboxModal } from "@/components/shared/ImageLightboxModal";
 
 interface ArtisanJobDetailViewProps {
   job: IJobItem;
@@ -70,6 +72,9 @@ export function ArtisanJobDetailView({
   const [isStartingWork, setIsStartingWork] = useState(false);
   const [isDeliverModalOpen, setIsDeliverModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isJobLightboxOpen, setIsJobLightboxOpen] = useState(false);
+  const [isDeliveryLightboxOpen, setIsDeliveryLightboxOpen] = useState(false);
+  const [deliveryLightboxIndex, setDeliveryLightboxIndex] = useState(0);
 
   // Proposal Edit & Withdraw state
   const [isEditingProposal, setIsEditingProposal] = useState(false);
@@ -290,7 +295,11 @@ export function ArtisanJobDetailView({
                 Job Attachments ({job.images.length})
               </h2>
 
-              <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-line">
+              <div
+                onClick={() => setIsJobLightboxOpen(true)}
+                className="group relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 border border-line cursor-pointer"
+                title="Click to view full screen"
+              >
                 <Image
                   src={
                     getImageUrl(
@@ -299,8 +308,14 @@ export function ArtisanJobDetailView({
                   }
                   alt="Job photo"
                   fill
-                  className="object-cover"
+                  className="object-cover group-hover:scale-102 transition-transform duration-300"
                 />
+                <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                  <div className="flex items-center gap-1.5 bg-black/60 px-3.5 py-1.5 rounded-full text-xs font-semibold backdrop-blur-xs shadow-md">
+                    <Maximize2 className="h-4 w-4" />
+                    <span>View Fullscreen</span>
+                  </div>
+                </div>
               </div>
 
               {job.images.length > 1 ? (
@@ -479,6 +494,37 @@ export function ArtisanJobDetailView({
                   {booking.deliveryNotes && (
                     <div className="rounded-xl bg-white p-2.5 text-xs text-copy italic border border-purple-100">
                       &ldquo;{booking.deliveryNotes}&rdquo;
+                    </div>
+                  )}
+                  {booking.deliveryProof && booking.deliveryProof.length > 0 && (
+                    <div className="space-y-1.5 pt-2 border-t border-purple-200/60">
+                      <span className="text-[10px] font-bold uppercase text-purple-900 block tracking-wider">
+                        Submitted Proof Photos ({booking.deliveryProof.length})
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {booking.deliveryProof.map((img, idx) => (
+                          <button
+                            key={img}
+                            type="button"
+                            onClick={() => {
+                              setDeliveryLightboxIndex(idx);
+                              setIsDeliveryLightboxOpen(true);
+                            }}
+                            className="relative h-14 w-18 rounded-xl overflow-hidden border border-purple-200 bg-white group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-purple-400"
+                            title="Click to view full screen"
+                          >
+                            <Image
+                              src={getImageUrl(img) || img}
+                              alt={`Proof ${idx + 1}`}
+                              fill
+                              className="object-cover group-hover:scale-105 transition-transform"
+                            />
+                            <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                              <Maximize2 className="h-3.5 w-3.5" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -915,6 +961,28 @@ export function ArtisanJobDetailView({
           </div>
         </div>
       </div>
+
+      {/* JOB PHOTOS LIGHTBOX */}
+      {job.images && job.images.length > 0 && (
+        <ImageLightboxModal
+          images={job.images}
+          initialIndex={selectedImageIndex}
+          isOpen={isJobLightboxOpen}
+          onClose={() => setIsJobLightboxOpen(false)}
+          title={`Job Attachments · ${job.title}`}
+        />
+      )}
+
+      {/* DELIVERY PROOF LIGHTBOX */}
+      {booking?.deliveryProof && booking.deliveryProof.length > 0 && (
+        <ImageLightboxModal
+          images={booking.deliveryProof}
+          initialIndex={deliveryLightboxIndex}
+          isOpen={isDeliveryLightboxOpen}
+          onClose={() => setIsDeliveryLightboxOpen(false)}
+          title={`Delivered Proof · Booking #${booking.bookingNumber || ""}`}
+        />
+      )}
     </div>
   );
 }

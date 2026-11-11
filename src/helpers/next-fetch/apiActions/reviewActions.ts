@@ -9,31 +9,49 @@ export interface IReviewReply {
   repliedAt: string;
 }
 
+export interface IReviewArtisan {
+  _id: string;
+  name: string;
+  image?: string;
+  verified?: boolean;
+  location?: string;
+}
+
+export interface IReviewBooking {
+  _id: string;
+  bookingNumber: string;
+  totalAmount?: number;
+  completionDate?: string;
+}
+
 export interface IReviewCustomer {
   _id: string;
   name: string;
   email?: string;
   image?: string;
+  verified?: boolean;
 }
 
 export interface IReviewJob {
   _id: string;
   title: string;
+  category?: string;
+  service?: string;
   budget?: number;
   location?: string;
 }
 
 export interface IReviewItem {
   _id: string;
-  booking: string | { _id: string; bookingNumber: string };
+  booking: string | IReviewBooking;
   job?: IReviewJob;
   customer?: IReviewCustomer;
-  artisan: string | { _id: string; name: string; image?: string };
+  artisan: string | IReviewArtisan;
   rating: number;
   comment: string;
-  qualityRating?: number;
-  communicationRating?: number;
-  timelinessRating?: number;
+  qualityRating?: number | null;
+  communicationRating?: number | null;
+  timelinessRating?: number | null;
   reply?: IReviewReply | null;
   isPublic: boolean;
   status: "ACTIVE" | "FLAGGED" | "HIDDEN";
@@ -113,7 +131,10 @@ export async function getMyReviewsAction(
   const qs = query.toString();
   return nextFetch<IReviewItem[]>(`/review/my-reviews${qs ? `?${qs}` : ""}`, {
     method: "GET",
-    cache: "no-store",
+    cache: "force-cache",
+    next: {
+      revalidate: 60 * 10,
+    },
     tags: ["reviews", "my-reviews"],
   });
 }

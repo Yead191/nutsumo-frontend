@@ -14,6 +14,7 @@ import {
   RefreshCw,
   AlertTriangle,
   Scale,
+  Maximize2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { createBookingCheckoutSessionAction } from "@/helpers/next-fetch/apiActions/bookingActions";
@@ -21,6 +22,8 @@ import type { IBookingItem } from "@/helpers/next-fetch/apiActions/bookingAction
 import { ConfirmCompletionModal } from "./ConfirmCompletionModal";
 import { RequestRevisionModal } from "./RequestRevisionModal";
 import { DisputeBookingModal } from "./DisputeBookingModal";
+import { ImageLightboxModal } from "@/components/shared/ImageLightboxModal";
+import { getImageUrl } from "@/lib/getImageUrl";
 
 interface CustomerEscrowActionCardProps {
   booking: IBookingItem;
@@ -35,6 +38,7 @@ export function CustomerEscrowActionCard({
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState(false);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const isAwaitingPayment =
     booking.status === "AWAITING_PAYMENT" || booking.paymentStatus === "UNPAID";
@@ -85,7 +89,9 @@ export function CustomerEscrowActionCard({
           </div>
 
           <div className="text-right">
-            <span className="text-[11px] text-muted block uppercase font-bold">Total Due</span>
+            <span className="text-[11px] text-muted block uppercase font-bold">
+              Total Due
+            </span>
             <span className="font-display text-2xl font-black text-primary">
               GH₵ {booking.totalAmount?.toLocaleString()}
             </span>
@@ -96,7 +102,10 @@ export function CustomerEscrowActionCard({
           <div className="flex items-start gap-2.5">
             <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong>Nutsumo 100% Escrow Guarantee:</strong> Your deposit is held securely in platform escrow. The artisan does NOT receive the payout until you inspect the delivered work and confirm satisfaction.
+              <strong>Nutsumo 100% Escrow Guarantee:</strong> Your deposit is
+              held securely in platform escrow. The artisan does NOT receive the
+              payout until you inspect the delivered work and confirm
+              satisfaction.
             </p>
           </div>
         </div>
@@ -121,7 +130,10 @@ export function CustomerEscrowActionCard({
             ) : (
               <>
                 <ShieldCheck className="h-4 w-4" />
-                <span>Pay Escrow Deposit (GH₵ {booking.totalAmount?.toLocaleString()})</span>
+                <span>
+                  Pay Escrow Deposit (GH₵{" "}
+                  {booking.totalAmount?.toLocaleString()})
+                </span>
               </>
             )}
           </button>
@@ -168,29 +180,37 @@ export function CustomerEscrowActionCard({
 
         {/* PROOF IMAGES */}
         {booking.deliveryProof && booking.deliveryProof.length > 0 && (
-          <div className="rounded-2xl bg-white p-4 border border-line space-y-2">
-            <span className="text-[10px] font-bold uppercase text-muted block">
-              Completion Proof Photos ({booking.deliveryProof.length})
-            </span>
+          <div className="rounded-2xl bg-white p-4 border border-line space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase text-muted block tracking-wider">
+                Completion Proof Photos ({booking.deliveryProof.length})
+              </span>
+              <span className="text-[11px] text-muted hidden sm:inline">
+                Click any photo to view full screen
+              </span>
+            </div>
             <div className="flex flex-wrap gap-2.5">
               {booking.deliveryProof.map((img, idx) => (
-                <a
+                <button
                   key={img}
-                  href={img}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative h-20 w-24 rounded-xl overflow-hidden border border-line bg-slate-100 group"
+                  type="button"
+                  onClick={() => setLightboxIndex(idx)}
+                  className="relative h-20 w-24 rounded-xl overflow-hidden border border-line bg-slate-100 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all text-left"
+                  title="Click to view full screen"
                 >
                   <Image
-                    src={img}
+                    src={getImageUrl(img) || img}
                     alt={`Proof ${idx + 1}`}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                    <ExternalLink className="h-4 w-4" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white transition-opacity gap-1">
+                    <Maximize2 className="h-4 w-4 drop-shadow-md" />
+                    <span className="text-[10px] font-semibold tracking-wide drop-shadow-sm">
+                      View
+                    </span>
                   </div>
-                </a>
+                </button>
               ))}
             </div>
           </div>
@@ -247,6 +267,17 @@ export function CustomerEscrowActionCard({
           onClose={() => setIsDisputeModalOpen(false)}
           onSuccess={handleActionSuccess}
         />
+
+        {/* FULLSCREEN IMAGE LIGHTBOX */}
+        {booking.deliveryProof && booking.deliveryProof.length > 0 && (
+          <ImageLightboxModal
+            images={booking.deliveryProof}
+            initialIndex={lightboxIndex ?? 0}
+            isOpen={lightboxIndex !== null}
+            onClose={() => setLightboxIndex(null)}
+            title={`Completion Proof · Booking #${booking.bookingNumber || ""}`}
+          />
+        )}
       </div>
     );
   }
@@ -303,6 +334,17 @@ export function CustomerEscrowActionCard({
           onClose={() => setIsDisputeModalOpen(false)}
           onSuccess={handleActionSuccess}
         />
+
+        {/* FULLSCREEN IMAGE LIGHTBOX */}
+        {booking.deliveryProof && booking.deliveryProof.length > 0 && (
+          <ImageLightboxModal
+            images={booking.deliveryProof}
+            initialIndex={lightboxIndex ?? 0}
+            isOpen={lightboxIndex !== null}
+            onClose={() => setLightboxIndex(null)}
+            title={`Completion Proof · Booking #${booking.bookingNumber || ""}`}
+          />
+        )}
       </div>
     );
   }
@@ -343,7 +385,8 @@ export function CustomerEscrowActionCard({
         )}
 
         <p className="text-xs text-slate-600 leading-relaxed">
-          Both parties will be contacted via email/messages. Neither payment payout nor refund can proceed without admin resolution.
+          Both parties will be contacted via email/messages. Neither payment
+          payout nor refund can proceed without admin resolution.
         </p>
       </div>
     );
@@ -394,6 +437,46 @@ export function CustomerEscrowActionCard({
             &ldquo;{booking.customerFeedback}&rdquo;
           </p>
         )}
+
+        {booking.deliveryProof && booking.deliveryProof.length > 0 && (
+          <div className="pt-2 border-t border-emerald-200/60 space-y-2">
+            <span className="text-[10px] font-bold uppercase text-muted block tracking-wider">
+              Completed Work Photos ({booking.deliveryProof.length})
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {booking.deliveryProof.map((img, idx) => (
+                <button
+                  key={img}
+                  type="button"
+                  onClick={() => setLightboxIndex(idx)}
+                  className="relative h-14 w-18 rounded-xl overflow-hidden border border-emerald-200 bg-white group cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-left"
+                  title="Click to view full screen"
+                >
+                  <Image
+                    src={getImageUrl(img) || img}
+                    alt={`Proof ${idx + 1}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform"
+                  />
+                  <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                    <Maximize2 className="h-3.5 w-3.5" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* FULLSCREEN IMAGE LIGHTBOX */}
+        {booking.deliveryProof && booking.deliveryProof.length > 0 && (
+          <ImageLightboxModal
+            images={booking.deliveryProof}
+            initialIndex={lightboxIndex ?? 0}
+            isOpen={lightboxIndex !== null}
+            onClose={() => setLightboxIndex(null)}
+            title={`Completed Work · Booking #${booking.bookingNumber || ""}`}
+          />
+        )}
       </div>
     );
   }
@@ -406,7 +489,10 @@ export function CustomerEscrowActionCard({
         <span>Escrow Deposit Protected · Work in Execution</span>
       </div>
       <p className="text-xs text-copy leading-relaxed">
-        Your payment of GH₵ {booking.totalAmount?.toLocaleString()} is securely held in platform escrow. The artisan has been notified to execute the project scope. You will be prompted to review and authorize release once the artisan delivers.
+        Your payment of GH₵ {booking.totalAmount?.toLocaleString()} is securely
+        held in platform escrow. The artisan has been notified to execute the
+        project scope. You will be prompted to review and authorize release once
+        the artisan delivers.
       </p>
     </div>
   );
