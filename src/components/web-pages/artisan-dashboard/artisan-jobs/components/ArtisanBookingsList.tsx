@@ -34,7 +34,7 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
         </p>
         <Link
           href="/jobs"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
+          className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary hover:bg-primary-hover text-white px-5 py-2.5 text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
         >
           <span>Browse Available Jobs &rarr;</span>
         </Link>
@@ -69,7 +69,7 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
         return (
           <div
             key={booking._id}
-            className="rounded-3xl border border-line bg-white p-5 sm:p-6 shadow-xs hover:border-[#FE375D]/40 transition-all space-y-4"
+            className="rounded-3xl border border-line bg-white p-5 sm:p-6 shadow-xs hover:border-slate-300 transition-all space-y-4"
           >
             {/* TOP ROW */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/60 pb-3">
@@ -102,7 +102,7 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
               </div>
 
               <div className="text-right">
-                <div className="font-display text-lg font-bold text-[#FE375D]">
+                <div className="font-display text-lg font-bold text-title">
                   GH₵{booking.totalAmount?.toLocaleString()}
                   <span className="text-[10px] text-muted font-normal ml-1">
                     ({booking.rateType || "FIXED"})
@@ -147,7 +147,7 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
                 {clientPhone ? (
                   <div className="flex items-center gap-2 text-slate-700">
                     <Phone className="h-3.5 w-3.5 text-muted" />
-                    <a href={`tel:${clientPhone}`} className="hover:text-[#FE375D]">
+                    <a href={`tel:${clientPhone}`} className="hover:text-primary transition-colors">
                       {clientPhone}
                     </a>
                   </div>
@@ -155,7 +155,7 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
                 {clientEmail ? (
                   <div className="flex items-center gap-2 text-slate-700">
                     <Mail className="h-3.5 w-3.5 text-muted" />
-                    <a href={`mailto:${clientEmail}`} className="hover:text-[#FE375D]">
+                    <a href={`mailto:${clientEmail}`} className="hover:text-primary transition-colors">
                       {clientEmail}
                     </a>
                   </div>
@@ -175,7 +175,7 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
               {booking.job?._id ? (
                 <Link
                   href={`/pro/jobs/${booking.job._id}`}
-                  className="inline-flex items-center gap-1 font-bold text-[#FE375D] hover:underline"
+                  className="inline-flex items-center gap-1 font-bold text-primary hover:underline"
                 >
                   <span>View Contract Details</span>
                   <ArrowRight className="h-3.5 w-3.5" />

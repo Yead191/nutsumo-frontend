@@ -77,11 +77,11 @@ export function ArtisanJobsMetrics({
       <div className="rounded-2xl border border-line bg-white p-4 sm:p-5 shadow-2xs">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted">Booked Value</span>
-          <span className="grid h-8 w-8 place-items-center rounded-xl bg-rose-50 text-[#FE375D]">
+          <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 text-primary">
             <TrendingUp className="h-4 w-4" />
           </span>
         </div>
-        <div className="mt-2 font-display text-2xl font-bold text-[#FE375D]">
+        <div className="mt-2 font-display text-2xl font-bold text-title">
           GH₵{totalBookedValue.toLocaleString()}
         </div>
         <p className="mt-1 text-[11px] text-muted">Total contracts volume</p>

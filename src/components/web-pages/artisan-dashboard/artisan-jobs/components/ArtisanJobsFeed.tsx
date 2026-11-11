@@ -172,7 +172,7 @@ export function ArtisanJobsFeed({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search available jobs (e.g. plumbing, wiring, garden bed)..."
-              className="w-full rounded-2xl border border-line bg-smoke/50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-[#FE375D] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#FE375D] transition-colors"
+              className="w-full rounded-2xl border border-line bg-smoke/50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
             />
           </form>
 
@@ -183,7 +183,7 @@ export function ArtisanJobsFeed({
               onClick={() => setIsFilterModalOpen(true)}
               className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
                 activeCategory || activeService
-                  ? "border-[#FE375D] bg-[#FE375D]/10 text-[#FE375D]"
+                  ? "border-primary bg-primary/10 text-primary"
                   : "border-line bg-smoke/50 text-title hover:bg-white hover:border-title"
               }`}
             >
@@ -194,7 +194,7 @@ export function ArtisanJobsFeed({
                   : "Filter Category / Service"}
               </span>
               {(activeCategory || activeService) && (
-                <span className="h-2 w-2 rounded-full bg-[#FE375D]" />
+                <span className="h-2 w-2 rounded-full bg-primary" />
               )}
             </button>
 
@@ -203,7 +203,7 @@ export function ArtisanJobsFeed({
                 type="button"
                 onClick={handleResetAll}
                 title="Reset filters"
-                className="grid h-10 w-10 place-items-center rounded-2xl border border-line bg-white text-muted hover:text-[#FE375D] hover:border-[#FE375D] transition-colors shrink-0 cursor-pointer"
+                className="grid h-10 w-10 place-items-center rounded-2xl border border-line bg-white text-muted hover:text-primary hover:border-primary transition-colors shrink-0 cursor-pointer"
               >
                 <RotateCcw className="h-4 w-4" />
               </button>
@@ -215,7 +215,7 @@ export function ArtisanJobsFeed({
         {(activeCategory || activeService) && (
           <div className="flex items-center gap-2 pt-1 border-t border-line/60">
             <span className="text-xs text-muted">Active Filter:</span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-[#FE375D] border border-rose-200/60">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary border border-primary/20">
               <span>{filterLabel || "Selected Category/Service"}</span>
               <button
                 type="button"
@@ -241,13 +241,13 @@ export function ArtisanJobsFeed({
 
         <div className="flex items-center gap-3">
           {isPending && (
-            <span className="text-xs font-semibold text-[#FE375D] animate-pulse">
+            <span className="text-xs font-semibold text-primary animate-pulse">
               Updating...
             </span>
           )}
           <Link
             href="/jobs"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-[#FE375D] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
           >
             <span>Marketplace</span>
             <ExternalLink className="h-3 w-3" />
@@ -258,7 +258,7 @@ export function ArtisanJobsFeed({
       {/* JOBS LIST OR EMPTY STATE */}
       {availableJobs.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-line bg-smoke/40 p-12 text-center">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-rose-50 text-[#FE375D] mb-4">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 text-primary mb-4">
             <Briefcase className="h-7 w-7" />
           </div>
           <h3 className="font-display text-lg font-bold text-title">
@@ -280,7 +280,7 @@ export function ArtisanJobsFeed({
           ) : (
             <Link
               href="/jobs"
-              className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-5 py-2 text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
+              className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary hover:bg-primary-hover text-white px-5 py-2 text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
             >
               <span>Explore All Jobs &rarr;</span>
             </Link>
@@ -308,22 +308,22 @@ export function ArtisanJobsFeed({
             return (
               <div
                 key={job._id}
-                className="rounded-3xl border border-line bg-white p-5 shadow-xs hover:border-[#FE375D]/40 transition-all flex flex-col justify-between"
+                className="rounded-3xl border border-line bg-white p-5 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-[#FE375D]">
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold text-primary">
                       {serviceName || categoryName || "Service Request"}
                     </span>
 
-                    <span className="font-display text-sm font-black text-[#FE375D]">
+                    <span className="font-display text-sm font-black text-title">
                       GH₵{job.budget?.toLocaleString() || "Open"}
                     </span>
                   </div>
 
                   <Link
                     href={`/pro/jobs/${job._id}`}
-                    className="font-display text-base font-bold text-title hover:text-[#FE375D] transition-colors line-clamp-1"
+                    className="font-display text-base font-bold text-title hover:text-primary transition-colors line-clamp-1"
                   >
                     {job.title}
                   </Link>
@@ -355,7 +355,7 @@ export function ArtisanJobsFeed({
                   <button
                     type="button"
                     onClick={() => setSelectedJobForProposal(job)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-3.5 py-1.5 text-xs font-semibold shadow-2xs transition-all hover:scale-[1.02] cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-primary hover:bg-primary-hover text-white px-3.5 py-1.5 text-xs font-semibold shadow-2xs transition-all hover:scale-[1.02] cursor-pointer"
                   >
                     <Sparkles className="h-3 w-3" />
                     <span>Send Proposal</span>
