@@ -1,64 +1,65 @@
 import type { Metadata } from "next";
-import { PageBanner } from "@/components/layout/page-banner";
 import { LegalSections, type LegalSection } from "@/components/web-pages/legal-sections";
-import { photos } from "@/lib/media";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions — LocalHomeFix",
-  description: "Review our Terms of Service governing homeowner requests, contractor agreements, and marketplace policies.",
+  title: "Terms & Conditions — Nutsumo Marketplace",
+  description:
+    "Review our Terms of Service governing client quote requests, verified artisan contracts, escrow payment policies, and statutory compliance in Ghana.",
 };
 
 const sections: LegalSection[] = [
   {
-    title: "Marketplace role",
-    body: "LocalHomeFix provides a marketplace where homeowners describe projects and independent professionals offer services. It is not the employer, contractor, agent, or insurer of either party.",
-    note: "LocalHomeFix is an independent marketplace connecting homeowners with local pros. Contracts and warranties are agreed upon directly between homeowner and contractor.",
+    title: "1. The Nutsumo Marketplace Role",
+    body: "Nutsumo provides a verified online platform connecting clients (homeowners, property developers, and businesses) with independent, vetted skilled artisans and contractors. Nutsumo facilitates discovery, direct custom quote submissions, identity auditing, and secure escrow payment mediation under Ghanaian law.",
+    note: "Nutsumo provides the trust and escrow framework. Independent trade artisans perform the work according to agreed-upon scopes and milestones.",
   },
   {
-    title: "Accounts",
-    body: "Provide accurate information and use the service only for lawful purposes. Provider claims are not verified until LocalHomeFix confirms them.",
-    note: "All users must provide genuine contact details. Misrepresentation or fraudulent claims will result in immediate account suspension.",
+    title: "2. 100% Escrow Financial Protection",
+    body: "All project bookings on Nutsumo are mediated through our secure Escrow Payment System. Clients fund escrow upon quotation acceptance. Funds remain locked in escrow until the client reviews the completed work and triggers a milestone release or final sign-off.",
+    note: "Escrow Protection Guarantee: Artisans do not receive client payout until work is signed off. Direct off-platform cash transactions void all escrow warranties.",
   },
   {
-    title: "Projects, quotes, and payment",
-    body: "Homeowners review terms and select a provider. Professionals own their quotes, permits, taxes, and workmanship. LocalHomeFix does not process project payments.",
-    note: "Zero Middleman Markup: Homeowners pay contractors directly via cash, card, or check. LocalHomeFix never holds customer funds or adds payment processing surcharges.",
+    title: "3. Direct Custom Quotations & Statutory Deductions",
+    body: "Artisans submit transparent quotations specifying proposed labor, materials, and timeframes. In compliance with Ghanaian fiscal statutory regulations, all completed orders incorporate a 20% statutory and platform breakdown (15% Ghana VAT, 2.5% NHIL, and 2.5% GETFund). Artisans receive 80% net take-home earnings.",
+    note: "Statutory Transparency: Both client and artisan receive a fully itemized receipt detailing statutory levies upon payment completion.",
   },
   {
-    title: "Background screening",
-    body: "Provider participation may require a Checkr hosted screening. Do not send SSN, date of birth, government ID, or report contents to LocalHomeFix.",
-    note: "Screening Security: All identity and background screening records are encrypted and hosted directly by Checkr. Never send sensitive identity numbers via message.",
+    title: "4. Artisan Auditing & Biometric Verification",
+    body: "All participating artisans must pass biometric verification against the National Ghana Card registry, criminal background audits, and practical trade skill reviews before earning the 'Verified Pro' badge.",
+    note: "Identity Integrity: Nutsumo strictly prohibits account sharing or substituting unvetted personnel on client job sites.",
   },
   {
-    title: "Acceptable use",
-    body: "Do not misuse personal information, evade marketplace rules, impersonate others, or submit deceptive content.",
-    note: "We enforce zero tolerance for harassment, contact scraping, or deceptive bidding practices.",
+    title: "5. Dispute Resolution & Customer Protection",
+    body: "In the event of incomplete or substandard workmanship, clients or artisans may escalate the matter to the Nutsumo Dispute Desk prior to funds release. Our arbitration officers examine submitted milestones, photos, and project communication to issue binding resolutions, rework orders, or full escrow refunds.",
+    note: "Zero Risk Policy: If an artisan abandons a project or fails to meet the agreed scope, client escrow funds are refunded in full.",
   },
   {
-    title: "Changes",
-    body: "Material changes are posted with a new effective date. Questions go through the Contact page.",
-    note: "Substantial updates are timestamped and communicated on this page. Direct inquiries to our customer support team.",
+    title: "6. Platform Code of Conduct",
+    body: "Users agree to maintain professional communication, honor agreed project dates, and provide accurate job specifications. Circumventing escrow to conduct cash deals off-platform results in immediate permanent account termination.",
+    note: "Community Safety: Maintaining off-platform deals deprives you of escrow protection and violates our service terms.",
   },
 ];
 
 export default function TermsPage() {
   return (
-    <>
-      <PageBanner
-        title="Terms & Conditions"
-        description="Rules and service standards for homeowners and independent trade professionals."
-        image={photos.banners.legal}
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Terms & Conditions" },
-        ]}
-      />
-      <LegalSections
-        documentType="terms"
-        effectiveDate="October 20, 2026"
-        version="2.1"
-        sections={sections}
-      />
-    </>
+    <div className="bg-white min-h-screen pb-24">
+      <section className="bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-20 border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-primary font-display">
+            Legal & Compliance
+          </span>
+          <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-title tracking-tight">
+            Terms & Conditions of Service
+          </h1>
+          <p className="text-sm sm:text-base text-muted max-w-2xl mx-auto">
+            Operating standards, escrow warranties, and responsibilities governing clients and artisans on Nutsumo.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <LegalSections sections={sections} />
+      </section>
+    </div>
   );
 }

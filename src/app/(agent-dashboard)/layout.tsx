@@ -34,7 +34,7 @@ export default async function AgentDashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-surface pt-20">
+    <div className="flex min-h-screen flex-col bg-surface pt-20 sm:pt-24">
       <NavServer />
       <div className="container-site flex flex-1 flex-col items-stretch gap-6 pt-6 pb-12 md:flex-row md:items-start md:gap-8 md:pt-8 md:pb-16">
         <DashboardSidebar items={items} />

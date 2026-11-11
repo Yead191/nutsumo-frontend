@@ -5,223 +5,274 @@ import {
   Mail,
   MapPin,
   Phone,
-  ArrowUpRight,
+  ArrowRight,
   CheckCircle2,
+  Sparkles,
+  ShieldCheck,
+  Send,
+  Loader2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Field, TextArea, TextField } from "@/components/ui/field";
-import { PageBanner } from "@/components/layout/page-banner";
-import { photos } from "@/lib/media";
-
-const socialLinks = [
-  {
-    href: "https://www.facebook.com/localhomefix",
-    label: "Facebook",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-        <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.49 0-1.953.93-1.953 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
-      </svg>
-    ),
-  },
-  {
-    href: "https://www.instagram.com/localhomefix",
-    label: "Instagram",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current stroke-2" aria-hidden="true">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-      </svg>
-    ),
-  },
-  {
-    href: "https://www.linkedin.com/company/localhomefix",
-    label: "LinkedIn",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
-        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-      </svg>
-    ),
-  },
-  {
-    href: "https://x.com/localhomefix",
-    label: "X",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-current" aria-hidden="true">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-      </svg>
-    ),
-  },
-];
+import { toast } from "sonner";
 
 export default function ContactPage() {
-  const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSent(true);
-  }
+  // Form fields
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [subject, setSubject] = useState("General Support Inquiry");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      toast.success("Message received! Our Accra support desk will reply within 2 hours.");
+    }, 800);
+  };
 
   return (
-    <>
-      <PageBanner
-        eyebrow="Contact"
-        title="Contact Us"
-        description="Have questions or need assistance? Reach out to our Austin support team anytime."
-        image={photos.banners.contact}
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Contact Us" },
-        ]}
-      />
+    <div className="bg-white min-h-screen pb-24">
+      {/* 1. HERO BANNER */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>24/7 Dedicated Support & Dispute Desk</span>
+          </div>
 
-      <section className="bg-surface/50 py-12 md:py-20 border-b border-line/60">
-        <div className="container-site grid items-stretch gap-8 lg:grid-cols-12 lg:gap-10">
-          {/* ========================================================= */}
-          {/* LEFT COLUMN: GET IN TOUCH CARD                            */}
-          {/* ========================================================= */}
-          <div className="lg:col-span-6 flex flex-col justify-between rounded-[28px] border border-line/80 bg-white p-6 sm:p-8 md:p-9 shadow-xs">
-            <div className="space-y-6 sm:space-y-7">
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-title tracking-tight max-w-3xl mx-auto">
+            We’re Here to Help You Succeed
+          </h1>
+
+          <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
+            Have questions about an escrow payment, artisan verification, or need assistance with a job? Contact our Accra team anytime.
+          </p>
+        </div>
+      </section>
+
+      {/* 2. CONTACT GRID */}
+      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Direct Channels & Office Info */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
               <div>
-                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-title tracking-tight">
-                  Get in Touch
+                <h2 className="font-display text-xl font-bold text-title">
+                  Direct Support Channels
                 </h2>
-                <p className="mt-2 text-sm sm:text-[15px] leading-relaxed text-muted">
-                  Have questions or need help with a request? Reach out to us directly.
+                <p className="text-xs sm:text-sm text-muted mt-1 leading-relaxed">
+                  Reach our dedicated trust officers and dispute resolution team directly.
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <a
-                  href="mailto:admin@localhomefix.com"
-                  className="group flex items-center justify-between gap-4 rounded-2xl border border-line/70 bg-white p-4 transition-all duration-200 hover:border-primary/60 hover:shadow-xs"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-primary border border-blue-100 transition-colors group-hover:bg-primary group-hover:text-white">
-                      <Mail className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        Email
-                      </h3>
-                      <p className="text-sm font-semibold text-title group-hover:text-primary transition-colors">
-                        admin@localhomefix.com
-                      </p>
-                    </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary shrink-0">
+                    <Mail className="h-5 w-5" />
                   </div>
-                  <ArrowUpRight className="h-4 w-4 text-muted shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
-                </a>
-
-                <a
-                  href="tel:5125550140"
-                  className="group flex items-center justify-between gap-4 rounded-2xl border border-line/70 bg-white p-4 transition-all duration-200 hover:border-primary/60 hover:shadow-xs"
-                >
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-primary border border-blue-100 transition-colors group-hover:bg-primary group-hover:text-white">
-                      <Phone className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">
-                        Phone
-                      </h3>
-                      <p className="text-sm font-semibold text-title group-hover:text-primary transition-colors">
-                        (512) 555-0140
-                      </p>
-                    </div>
-                  </div>
-                  <ArrowUpRight className="h-4 w-4 text-muted shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
-                </a>
-
-                <div className="group flex items-center gap-3.5 rounded-2xl border border-line/70 bg-white p-4 transition-all duration-200 hover:border-primary/60 hover:shadow-xs">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-primary border border-blue-100 transition-colors group-hover:bg-primary group-hover:text-white">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-0.5">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">
-                      Service Area
-                    </h3>
-                    <p className="text-sm font-semibold text-title group-hover:text-primary transition-colors">
-                      Austin, TX &amp; surrounding areas
-                    </p>
+                  <div>
+                    <span className="text-xs font-bold text-title block">Email Support</span>
+                    <a
+                      href="mailto:support@nutsumo.com"
+                      className="text-xs sm:text-sm font-semibold text-primary hover:underline"
+                    >
+                      support@nutsumo.com
+                    </a>
+                    <span className="text-[11px] text-muted block mt-0.5">
+                      Average response time: &lt; 2 hours
+                    </span>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="mt-8 border-t border-line/60 pt-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted">Follow us</p>
-              <div className="mt-3 flex items-center gap-2.5">
-                {socialLinks.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={item.label}
-                    className="grid h-9 w-9 place-items-center rounded-full border border-line/80 bg-white text-muted shadow-2xs transition-all hover:border-primary/50 hover:bg-smoke hover:text-primary hover:scale-105"
-                  >
-                    {item.icon}
-                  </a>
-                ))}
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shrink-0">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-title block">Escrow Dispute Desk</span>
+                    <a
+                      href="mailto:disputes@nutsumo.com"
+                      className="text-xs sm:text-sm font-semibold text-emerald-700 hover:underline"
+                    >
+                      disputes@nutsumo.com
+                    </a>
+                    <span className="text-[11px] text-muted block mt-0.5">
+                      Fast resolution for escrow & milestone disputes
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-title block">Telephone / WhatsApp</span>
+                    <span className="text-xs sm:text-sm font-semibold text-title">
+                      +233 (0) 55 000 0000
+                    </span>
+                    <span className="text-[11px] text-muted block mt-0.5">
+                      Monday to Saturday: 8:00 AM – 6:00 PM GMT
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 shrink-0">
+                    <MapPin className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-title block">Accra Headquarters</span>
+                    <span className="text-xs sm:text-sm text-copy block">
+                      Airport Residential Area, Accra, Ghana
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ========================================================= */}
-          {/* RIGHT COLUMN: SEND MESSAGE FORM                           */}
-          {/* ========================================================= */}
-          <div className="lg:col-span-6 flex flex-col justify-between rounded-[28px] border border-line/80 bg-white p-6 sm:p-8 md:p-9 shadow-xs space-y-6">
-            <div>
-              <h2 className="font-display text-2xl sm:text-3xl font-semibold text-title tracking-tight">
-                Send a Message
-              </h2>
-              <p className="mt-2 text-sm sm:text-[15px] leading-relaxed text-muted">
-                Drop us a note below and a representative will reply to your email promptly.
-              </p>
-            </div>
-
-            {sent ? (
-              <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6 sm:p-7 text-center space-y-3">
-                <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-emerald-600 text-white shadow-xs">
-                  <CheckCircle2 className="h-6 w-6" />
-                </div>
-                <h3 className="font-display text-lg font-bold text-title">Message Successfully Sent</h3>
-                <p className="text-sm text-copy/90 max-w-sm mx-auto leading-relaxed">
-                  Thank you for reaching out. We have received your inquiry and will follow up shortly at your provided email.
+          {/* Right Column: Send a Message Form */}
+          <div className="lg:col-span-7">
+            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-10 shadow-sm space-y-6">
+              <div>
+                <h2 className="font-display text-xl sm:text-2xl font-bold text-title">
+                  Send Us a Direct Message
+                </h2>
+                <p className="text-xs sm:text-sm text-muted mt-1 leading-relaxed">
+                  Fill out the form below and an agent will contact you promptly.
                 </p>
-                <div className="pt-2">
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setSent(false)} className="rounded-full text-xs">
-                    Send another message
-                  </Button>
-                </div>
               </div>
-            ) : (
-              <form className="space-y-4" onSubmit={submit}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Full Name">
-                    <TextField required name="name" placeholder="Luis Ortega" />
-                  </Field>
-                  <Field label="Email Address">
-                    <TextField required name="email" type="email" placeholder="you@example.com" />
-                  </Field>
+
+              {submitted ? (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-8 text-center space-y-3">
+                  <div className="grid h-12 w-12 place-items-center rounded-full bg-emerald-100 text-emerald-700 mx-auto">
+                    <CheckCircle2 className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-display text-lg font-bold text-emerald-900">
+                    Message Successfully Sent!
+                  </h3>
+                  <p className="text-xs sm:text-sm text-emerald-800 max-w-sm mx-auto">
+                    Thank you for reaching out. A Nutsumo customer care officer will get back to you via email or phone within 2 hours.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSubmitted(false);
+                      setMessage("");
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2 text-xs font-bold shadow-xs cursor-pointer transition-colors"
+                  >
+                    <span>Send Another Message</span>
+                  </button>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-title uppercase font-display">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g. Kwame Mensah"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                      />
+                    </div>
 
-                <Field label="Subject">
-                  <TextField required name="subject" placeholder="Contractor verification, quote question, etc." />
-                </Field>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-title uppercase font-display">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="kwame@example.com"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                      />
+                    </div>
+                  </div>
 
-                <Field label="Your Message">
-                  <TextArea required name="message" placeholder="Provide as much detail as possible..." className="min-h-32" />
-                </Field>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-title uppercase font-display">
+                        Phone Number (Optional)
+                      </label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+233 24 000 0000"
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                      />
+                    </div>
 
-                <Button type="submit" size="lg" className="w-full justify-center rounded-full shadow-xs">
-                  Send Message ↗
-                </Button>
-              </form>
-            )}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-title uppercase font-display">
+                        Inquiry Topic *
+                      </label>
+                      <select
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                      >
+                        <option value="General Support Inquiry">General Support Inquiry</option>
+                        <option value="Escrow & Payment Question">Escrow & Payment Question</option>
+                        <option value="Artisan Verification & Application">Artisan Verification & Application</option>
+                        <option value="Dispute Resolution Desk">Dispute Resolution Desk</option>
+                        <option value="Partnership / Corporate Request">Partnership / Corporate Request</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-title uppercase font-display">
+                      Message Details *
+                    </label>
+                    <textarea
+                      required
+                      rows={5}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Please describe how we can assist you..."
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3.5 text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Sending Message...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-4 w-4" />
+                        <span>Submit Message to Support Desk</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

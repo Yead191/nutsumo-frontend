@@ -2,18 +2,38 @@ import { Suspense } from "react";
 import { PageBanner } from "@/components/layout/page-banner";
 import { photos } from "@/lib/media";
 import { BrowseProsClient } from "./browse-pros-client";
+import {
+  getMarketplaceCategories,
+  getFeaturedArtisans,
+} from "@/helpers/next-fetch/apiActions/marketplaceActions";
 
-export default function BrowseProsPage() {
+export const revalidate = 300; // 5 minutes ISR
+
+export default async function BrowseProsPage() {
+  const [categoriesRes, artisansRes] = await Promise.all([
+    getMarketplaceCategories(),
+    getFeaturedArtisans(50),
+  ]);
+
+  const categories = categoriesRes?.data || [];
+  const artisans = artisansRes?.data || [];
+
   return (
     <>
       <PageBanner
-        eyebrow="Find a Pro"
-        title="Browse professionals"
-        description="Browse professionals or post a job. You hire only after you accept a quotation. Pay the professional directly — HomeFix charges homeowners nothing."
+        eyebrow="Marketplace Directory"
+        title="Find &amp; Hire Verified Trade Pros"
+        description="Search screened craftsmen, compare custom proposals, and hire with 100% Escrow Milestone Protection."
         image={photos.banners.pros}
       />
-      <Suspense fallback={<div className="container-site py-16 text-sm text-muted">Loading pros…</div>}>
-        <BrowseProsClient />
+      <Suspense
+        fallback={
+          <div className="max-w-7xl mx-auto px-4 py-16 text-sm text-muted text-center">
+            Loading verified professionals…
+          </div>
+        }
+      >
+        <BrowseProsClient initialArtisans={artisans} categories={categories} />
       </Suspense>
     </>
   );
