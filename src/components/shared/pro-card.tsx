@@ -25,7 +25,7 @@ export function ProCard({
   const [saved, setSaved] = useState(false);
   const isOwner = false;
   const image = photos.services[pro.categorySlug] || photos.banner;
-  const href = `/browse-pros/${pro.id}`;
+  const href = `/job-seeker/${pro.id}`;
 
   function onSave(event: React.MouseEvent) {
     event.preventDefault();

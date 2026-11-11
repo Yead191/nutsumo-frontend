@@ -62,7 +62,7 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
             const completedJobs = Number(artisan.completedJobs) || 0;
             const rate = artisan.startingRate || artisan.hourlyRate || 35;
             const isAvailable = artisan.availabilityStatus !== "Booked";
-            const profileUrl = `/pro/${user._id || artisan._id}`;
+            const profileUrl = `/job-seeker/${user._id || artisan._id}`;
 
             return (
               <div

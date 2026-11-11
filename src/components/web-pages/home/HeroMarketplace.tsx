@@ -49,12 +49,12 @@ export function HeroMarketplace({
       : defaultPopular;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 pt-8 pb-16 sm:pt-14 sm:pb-24 border-b border-slate-200/70">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 pt-8 pb-16 sm:pt-14  sm:pb-24 border-b border-slate-200/70">
       {/* Background Subtle Gradient Blobs */}
       <div className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
       <div className="pointer-events-none absolute top-1/2 -left-32 h-80 w-80 rounded-full bg-[#00A1DE]/5 blur-3xl" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
         <div className="text-center max-w-3xl mx-auto space-y-5">
           {/* Top Trust Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary shadow-2xs">
@@ -128,10 +128,10 @@ export function HeroMarketplace({
           {/* Popular Category Chips */}
           <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs">
             <span className="text-muted font-semibold">Popular:</span>
-            {chips.map((cat) => (
+            {chips.map((cat: any) => (
               <Link
-                key={cat.slug}
-                href={`/browse-pros?category=${cat.slug}`}
+                key={cat._id || cat.slug}
+                href={`/categories/${cat._id || cat.slug}`}
                 className="rounded-full bg-white border border-slate-200/90 px-3 py-1 text-copy font-medium hover:border-primary hover:text-primary hover:bg-primary/5 transition-all shadow-2xs"
               >
                 {cat.name}

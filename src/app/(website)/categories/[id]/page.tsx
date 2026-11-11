@@ -181,10 +181,10 @@ export default async function CategoryServicesPage({
 
                   <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
                     <Link
-                      href={`/browse-pros?service=${service._id}&trade=${encodeURIComponent(category.name)}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-primary group-hover:underline"
+                      href={`/services/${service._id}/pros`}
+                      className="w-full inline-flex items-center justify-between gap-1.5 text-xs font-bold text-primary group-hover:underline py-1"
                     >
-                      <span>Find Pros for this Service</span>
+                      <span>Browse {service.name} Artisans</span>
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>

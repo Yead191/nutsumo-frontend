@@ -77,7 +77,7 @@ export function Artisan360PublicProfile({
   const startingRate = profile.startingRate || profile.hourlyRate || 50;
 
   return (
-    <div className="bg-slate-50/60 min-h-screen pb-24">
+    <div className="bg-slate-50/60 min-h-screen pb-24 pt-20.5">
       {/* Container with max width and comfortable padding */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
         {/* 1. HERO IDENTITY CARD */}
@@ -236,24 +236,38 @@ export function Artisan360PublicProfile({
                 <div className="flex items-start gap-2.5">
                   <Lock className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-title block">100% Escrow Protection</strong>
-                    <span>Funds held safely until you sign off the completed job.</span>
+                    <strong className="text-title block">
+                      100% Escrow Protection
+                    </strong>
+                    <span>
+                      Funds held safely until you sign off the completed job.
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2.5">
                   <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-title block">No Direct Cash Risk</strong>
-                    <span>Payment released to artisan only upon your explicit approval.</span>
+                    <strong className="text-title block">
+                      No Direct Cash Risk
+                    </strong>
+                    <span>
+                      Payment released to artisan only upon your explicit
+                      approval.
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2.5">
                   <Clock className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-title block">Fast Response Time</strong>
-                    <span>Artisans typically respond with itemized bids in 15–30 mins.</span>
+                    <strong className="text-title block">
+                      Fast Response Time
+                    </strong>
+                    <span>
+                      Artisans typically respond with itemized bids in 15–30
+                      mins.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -265,7 +279,8 @@ export function Artisan360PublicProfile({
                 Have questions about hiring this pro?
               </span>
               <p className="text-[11px] text-muted">
-                Our Accra customer dispute and trust team is on standby to help you anytime.
+                Our Accra customer dispute and trust team is on standby to help
+                you anytime.
               </p>
               <Link
                 href="/contact"

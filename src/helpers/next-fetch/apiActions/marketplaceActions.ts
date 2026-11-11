@@ -89,12 +89,22 @@ export interface IArtisanServiceItem {
   createdAt?: string;
 }
 
+export interface IPortfolioImageItem {
+  url: string;
+  type?: "before" | "after" | "work" | string;
+}
+
 export interface IPortfolioItem {
   _id: string;
   artisan: string;
   title: string;
   description?: string;
-  images: string[];
+  category?: {
+    _id: string;
+    slug?: string;
+    name?: string;
+  } | string;
+  images: Array<string | IPortfolioImageItem>;
   beforeImage?: string;
   afterImage?: string;
   completedAt?: string;
@@ -210,6 +220,65 @@ export async function getServicesByCategory(categoryId: string): Promise<FetchRe
 }
 
 /**
+ * GET /service/:id
+ */
+export async function getServiceById(id: string): Promise<FetchResponse<IServiceItem | null>> {
+  try {
+    let res = await nextFetch<IServiceItem>(`/service/${id}`, {
+      method: "GET",
+      cache: "force-cache",
+      next: { revalidate: 3600 },
+      tags: [`service-${id}`],
+    });
+
+    if (!res.success || !res.data) {
+      // Fallback search by slug or name
+      const searchRes = await nextFetch<any>(`/service?slug=${id}`, {
+        method: "GET",
+        cache: "force-cache",
+        next: { revalidate: 3600 },
+      });
+      const services = Array.isArray(searchRes.data?.services)
+        ? searchRes.data.services
+        : Array.isArray(searchRes.data)
+          ? searchRes.data
+          : [];
+      if (services.length > 0) {
+        return { success: true, data: services[0] };
+      }
+    }
+
+    return res;
+  } catch (error: any) {
+    return { success: false, data: null };
+  }
+}
+
+/**
+ * GET /artisan-service?service=:serviceId&isActive=true
+ * Fetches all verified artisans providing a specific service
+ */
+export async function getArtisansByService(
+  serviceId: string,
+  extraParams?: Record<string, string>,
+): Promise<FetchResponse<IArtisanServiceItem[]>> {
+  try {
+    const q = new URLSearchParams({ service: serviceId, isActive: "true" });
+    if (extraParams) {
+      Object.entries(extraParams).forEach(([k, v]) => {
+        if (v) q.append(k, v);
+      });
+    }
+    return await nextFetch<IArtisanServiceItem[]>(`/artisan-service?${q.toString()}`, {
+      method: "GET",
+      cache: "no-store",
+    });
+  } catch (error: any) {
+    return { success: false, data: [] };
+  }
+}
+
+/**
  * GET /service?isActive=true
  */
 export async function getAllServices(): Promise<FetchResponse<IServiceItem[]>> {
@@ -259,6 +328,7 @@ export async function searchArtisansAction(params?: {
   category?: string;
   trade?: string;
   location?: string;
+  availabilityStatus?: string;
   sort?: string;
   page?: number;
   limit?: number;
@@ -268,6 +338,7 @@ export async function searchArtisansAction(params?: {
     if (params?.searchTerm) q.append("searchTerm", params.searchTerm);
     if (params?.trade) q.append("trade", params.trade);
     if (params?.location) q.append("location", params.location);
+    if (params?.availabilityStatus) q.append("availabilityStatus", params.availabilityStatus);
     if (params?.sort) q.append("sort", params.sort);
     if (params?.page) q.append("page", String(params.page));
     if (params?.limit) q.append("limit", String(params.limit || 20));

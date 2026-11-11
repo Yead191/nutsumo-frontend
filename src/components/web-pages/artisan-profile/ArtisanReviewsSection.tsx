@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getImageUrl } from "@/lib/getImageUrl";
 import type { IArtisanReviewData } from "@/helpers/next-fetch/apiActions/marketplaceActions";
+import { formatDate } from "@/hooks/formatDate";
 
 interface ArtisanReviewsSectionProps {
   reviewData?: IArtisanReviewData;
@@ -133,10 +134,10 @@ export function ArtisanReviewsSection({
                 : null;
               const customerName = rev.customer?.name || "Verified Client";
               const jobTitle = rev.job?.title;
-              const formattedDate = new Date(rev.createdAt).toLocaleDateString(
-                undefined,
-                { month: "short", day: "numeric", year: "numeric" },
-              );
+              // const formattedDate = new Date(rev.createdAt).toLocaleDateString(
+              //   undefined,
+              //   { month: "short", day: "numeric", year: "numeric" },
+              // );
 
               return (
                 <div
@@ -175,7 +176,7 @@ export function ArtisanReviewsSection({
                           )}
                         </div>
                         <span className="text-[11px] text-muted">
-                          {formattedDate}
+                          {formatDate(rev.createdAt)}
                         </span>
                       </div>
                     </div>
@@ -216,15 +217,7 @@ export function ArtisanReviewsSection({
                         <span>Response from {artisanName}</span>
                         {rev.reply.repliedAt && (
                           <span className="text-[10px] text-muted font-normal">
-                            •{" "}
-                            {new Date(rev.reply.repliedAt).toLocaleDateString(
-                              undefined,
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              },
-                            )}
+                            • {formatDate(rev.reply.repliedAt)}
                           </span>
                         )}
                       </div>

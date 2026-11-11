@@ -9,7 +9,7 @@ export default function WebsiteLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <NavServer />
-      <main className="flex-1 pt-20 sm:pt-24">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );
