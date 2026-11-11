@@ -13,8 +13,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
-import { io, type Socket } from "socket.io-client";
+import { subscribeToNotificationSocket } from "@/components/layout/Notification/notificationSocketManager";
 
 import { JobHeroHeader } from "./components/JobHeroHeader";
 import { JobSpecsCard } from "./components/JobSpecsCard";
@@ -57,7 +56,7 @@ export function JobDetailsManager({
     } catch {}
   };
 
-  // Real-time socket updates for new quotations
+  // Real-time socket updates for new quotations (via shared singleton manager)
   useEffect(() => {
     let userId: string | undefined;
     try {
@@ -70,33 +69,15 @@ export function JobDetailsManager({
 
     if (!userId) return;
 
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL ||
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      "http://10.10.26.173:5005";
-
-    const token = Cookies.get("accessToken");
-    const socket: Socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      auth: token ? { token } : undefined,
+    const unsubscribe = subscribeToNotificationSocket({
+      userId,
+      onNotify: () => {
+        void refreshData();
+      },
     });
 
-    const onNotify = (notif?: any) => {
-      void refreshData();
-      if (notif?.title) {
-        toast.info(notif.title, {
-          description: notif.message,
-        });
-      }
-    };
-
-    socket.on(`getNotification::${userId}`, onNotify);
-    socket.on(`get-notification::${userId}`, onNotify);
-
     return () => {
-      socket.off(`getNotification::${userId}`, onNotify);
-      socket.off(`get-notification::${userId}`, onNotify);
-      socket.disconnect();
+      unsubscribe();
     };
   }, [job._id]);
 

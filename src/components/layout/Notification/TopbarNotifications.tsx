@@ -23,8 +23,11 @@ import {
   Clock,
 } from "lucide-react";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
-import { io, type Socket } from "socket.io-client";
+import {
+  subscribeToNotificationSocket,
+  resolveNotificationPath,
+} from "./notificationSocketManager";
+export { resolveNotificationPath };
 
 import { cn } from "@/lib/cn";
 import { getImageUrl } from "@/lib/getImageUrl";
@@ -82,54 +85,6 @@ function parsePayload(data: NotificationsPayload | undefined | null) {
       ? data.unreadCount
       : list.filter((n) => !n.seen).length;
   return { list, unreadCount };
-}
-
-/**
- * Nutsumo Domain-aware path resolution.
- */
-export function resolveNotificationPath(
-  path?: string,
-  userRole?: string,
-): string {
-  if (!path) {
-    return userRole === "ARTISAN" ? "/pro/notifications" : "/account/notifications";
-  }
-
-  let clean = path.trim();
-
-  // Strip leading locale or duplicate slashes
-  clean = clean.replace(/^\/(en|ht)/, "");
-  if (!clean.startsWith("/")) {
-    clean = `/${clean}`;
-  }
-
-  // Handle route mappings for Nutsumo
-  if (clean === "/notifications" || clean === "/my-notifications") {
-    return userRole === "ARTISAN" ? "/pro/notifications" : "/account/notifications";
-  }
-  if (clean === "/bookings" || clean === "/my-bookings") {
-    return userRole === "ARTISAN" ? "/pro/jobs" : "/account/bookings";
-  }
-  if (clean === "/messages" || clean === "/chat") {
-    return userRole === "ARTISAN" ? "/pro/messages" : "/account/messages";
-  }
-  if (clean === "/services" || clean === "/my-services") {
-    return "/pro/services";
-  }
-  if (clean === "/portfolio") {
-    return "/pro/portfolio";
-  }
-  if (clean === "/quotes" || clean === "/quotations") {
-    return userRole === "ARTISAN" ? "/pro/jobs" : "/account/bookings";
-  }
-  if (clean === "/pricing" || clean === "/subscription") {
-    return "/pro/pricing";
-  }
-  if (clean === "/verification" || clean === "/identity") {
-    return "/pro/profile";
-  }
-
-  return clean;
 }
 
 /**
@@ -374,53 +329,22 @@ export function TopbarNotifications({
     };
   }, [open]);
 
-  // Socket.io real-time push notification listener
+  // Socket.io real-time push notification listener (via shared singleton manager)
   React.useEffect(() => {
     if (!userId) return;
 
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL ||
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      "http://10.10.26.173:5005";
-
-    if (!socketUrl) return;
-
-    const token = Cookies.get("accessToken");
-    const socket: Socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      auth: token ? { token } : undefined,
-    });
-
-    const onNotify = (notif?: any) => {
-      // 1. Silent sync to update counts & feed list
-      void syncFromServer({ quiet: true });
-
-      // 2. Interactive floating toast
-      if (notif?.title) {
-        const destHref = resolveNotificationPath(notif.path, role);
-
-        toast(notif.title, {
-          description: notif.message,
-          action: destHref
-            ? {
-                label: "View",
-                onClick: () => router.push(destHref),
-              }
-            : undefined,
-        });
-      }
-    };
-
-    socket.on(`getNotification::${userId}`, onNotify);
-    socket.on(`get-notification::${userId}`, onNotify);
-    socket.on("connect_error", (err) => {
-      console.warn("Notification socket notice:", err.message);
+    const unsubscribe = subscribeToNotificationSocket({
+      userId,
+      role,
+      router,
+      onNotify: () => {
+        // Silently update unread badge & notification list
+        void syncFromServer({ quiet: true });
+      },
     });
 
     return () => {
-      socket.off(`getNotification::${userId}`, onNotify);
-      socket.off(`get-notification::${userId}`, onNotify);
-      socket.disconnect();
+      unsubscribe();
     };
   }, [userId, role, router, syncFromServer]);
 

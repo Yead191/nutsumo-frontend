@@ -27,9 +27,6 @@ import {
   Filter,
 } from "lucide-react";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
-import { io, type Socket } from "socket.io-client";
-
 import { cn } from "@/lib/cn";
 import { getImageUrl } from "@/lib/getImageUrl";
 import {
@@ -41,7 +38,10 @@ import {
   type NotificationItem,
   type NotificationsPayload,
 } from "@/components/layout/Notification/actions";
-import { resolveNotificationPath } from "@/components/layout/Notification/TopbarNotifications";
+import {
+  resolveNotificationPath,
+  subscribeToNotificationSocket,
+} from "@/components/layout/Notification/notificationSocketManager";
 
 interface NotificationsPageProps {
   role?: "pro" | "homeowner" | string;
@@ -245,7 +245,7 @@ export function NotificationsPage({ role }: NotificationsPageProps) {
     void loadNotifications(1, searchQuery);
   }, [loadNotifications, searchQuery]);
 
-  // Real-time socket sync
+  // Real-time socket sync (via shared singleton manager)
   React.useEffect(() => {
     let userId: string | undefined;
     try {
@@ -258,33 +258,15 @@ export function NotificationsPage({ role }: NotificationsPageProps) {
 
     if (!userId) return;
 
-    const socketUrl =
-      process.env.NEXT_PUBLIC_SOCKET_URL ||
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      "http://10.10.26.173:5005";
-
-    const token = Cookies.get("accessToken");
-    const socket: Socket = io(socketUrl, {
-      transports: ["websocket", "polling"],
-      auth: token ? { token } : undefined,
+    const unsubscribe = subscribeToNotificationSocket({
+      userId,
+      onNotify: () => {
+        void loadNotifications(page, searchQuery);
+      },
     });
 
-    const onNotify = (notif?: any) => {
-      void loadNotifications(page, searchQuery);
-      if (notif?.title) {
-        toast(notif.title, {
-          description: notif.message,
-        });
-      }
-    };
-
-    socket.on(`getNotification::${userId}`, onNotify);
-    socket.on(`get-notification::${userId}`, onNotify);
-
     return () => {
-      socket.off(`getNotification::${userId}`, onNotify);
-      socket.off(`get-notification::${userId}`, onNotify);
-      socket.disconnect();
+      unsubscribe();
     };
   }, [loadNotifications, page, searchQuery]);
 
