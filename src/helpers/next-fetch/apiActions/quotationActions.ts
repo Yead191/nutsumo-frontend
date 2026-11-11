@@ -68,6 +68,12 @@ export interface IAcceptQuotationResult {
     artisan: string;
     totalAmount: number;
     rateType: RateType;
+    vatRate?: number;
+    vatAmount?: number;
+    nhilRate?: number;
+    nhilAmount?: number;
+    getFundLevyRate?: number;
+    getFundLevyAmount?: number;
     platformCommissionRate?: number;
     platformFee?: number;
     artisanPayoutAmount?: number;

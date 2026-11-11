@@ -38,11 +38,14 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div className="rounded-2xl border border-line bg-smoke/70 p-3.5">
             <span className="text-[11px] text-muted block">Total Agreed Rate</span>
-            <span className="font-display text-xl font-bold text-[#FE375D] mt-0.5 block">
+            <span className="font-display text-xl font-bold text-primary mt-0.5 block">
               GH₵ {booking.totalAmount}
             </span>
             <span className="text-[10px] text-muted uppercase font-semibold">
               ({booking.rateType} Pricing)
+            </span>
+            <span className="text-[9px] text-slate-500 block mt-1 font-medium">
+              Incl. statutory taxes (VAT, NHIL, GETFund)
             </span>
           </div>
 
@@ -83,7 +86,7 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
           {job?._id && (
             <Link
               href={`/account/jobs/${job._id}`}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-[#FE375D] hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
             >
               <span>View Original Request</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -101,7 +104,7 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-line/60 text-xs">
             {job?.location && (
               <span className="flex items-center gap-1.5 text-title font-medium">
-                <MapPin className="h-3.5 w-3.5 text-[#FE375D] shrink-0" />
+                <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
                 <span>{job.location}</span>
               </span>
             )}

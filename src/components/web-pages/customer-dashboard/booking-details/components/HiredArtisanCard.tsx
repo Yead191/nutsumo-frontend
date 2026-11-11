@@ -59,7 +59,7 @@ export function HiredArtisanCard({ artisan }: HiredArtisanCardProps) {
 
           {artisan?.location && (
             <p className="mt-1 flex items-center gap-1.5 text-xs text-muted">
-              <MapPin className="h-3.5 w-3.5 text-[#FE375D] shrink-0" />
+              <MapPin className="h-3.5 w-3.5 text-primary shrink-0" />
               <span>{artisan.location}</span>
             </p>
           )}
@@ -102,7 +102,7 @@ export function HiredArtisanCard({ artisan }: HiredArtisanCardProps) {
 
         <Link
           href={`/account/messages?recipient=${artisan?._id}`}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-2.5 text-xs font-semibold shadow-xs transition-colors"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-white py-2.5 text-xs font-semibold shadow-xs transition-colors"
         >
           <MessageSquare className="h-4 w-4" />
           <span>Chat on Nutsumo</span>

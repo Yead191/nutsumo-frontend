@@ -67,6 +67,12 @@ export interface IBookingItem {
   rateType: "HOURLY" | "DAILY" | "FIXED";
   status: BookingStatus;
   paymentStatus: BookingPaymentStatus;
+  vatRate?: number;
+  vatAmount?: number;
+  nhilRate?: number;
+  nhilAmount?: number;
+  getFundLevyRate?: number;
+  getFundLevyAmount?: number;
   platformCommissionRate?: number;
   platformFee?: number;
   artisanPayoutAmount?: number;

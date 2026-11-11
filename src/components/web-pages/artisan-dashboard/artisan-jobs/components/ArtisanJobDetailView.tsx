@@ -46,6 +46,7 @@ import { DeliverWorkModal } from "./DeliverWorkModal";
 import { WithdrawProposalModal } from "./WithdrawProposalModal";
 import type { IJobItem } from "../types";
 import { getImageUrl } from "@/lib/getImageUrl";
+import { calculateFeeBreakdown, TAX_RATES } from "@/lib/taxCalculator";
 import { ImageLightboxModal } from "@/components/shared/ImageLightboxModal";
 
 interface ArtisanJobDetailViewProps {
@@ -389,39 +390,68 @@ export function ArtisanJobDetailView({
                 </span>
               </div>
 
-              {/* FINANCIAL BREAKDOWN */}
-              <div className="rounded-2xl bg-white p-4 border border-emerald-200/60 text-xs space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted">Contract Total:</span>
-                  <strong className="font-display text-sm text-primary">
-                    GH₵{booking.totalAmount?.toLocaleString()}
-                  </strong>
-                </div>
-                {booking.artisanPayoutAmount !== undefined && (
-                  <div className="flex justify-between pt-1 border-t border-line/50">
-                    <span className="text-muted">Your Net Payout (90%):</span>
-                    <strong className="font-display text-sm text-emerald-700">
-                      GH₵{booking.artisanPayoutAmount.toLocaleString()}
-                    </strong>
+              {/* FINANCIAL BREAKDOWN & STATUTORY DEDUCTION SUMMARY */}
+              {(() => {
+                const bookingGross = booking.totalAmount || 0;
+                const bookingFees = calculateFeeBreakdown(bookingGross);
+                const vatAmount = booking.vatAmount ?? bookingFees.vatAmount;
+                const nhilAmount = booking.nhilAmount ?? bookingFees.nhilAmount;
+                const getFundAmount = booking.getFundLevyAmount ?? bookingFees.getFundLevyAmount;
+                const totalDeductions = booking.platformFee ?? bookingFees.totalDeductions;
+                const netPayout = booking.artisanPayoutAmount ?? bookingFees.netPayoutAmount;
+
+                return (
+                  <div className="rounded-2xl bg-white p-4 border border-emerald-200/60 text-xs space-y-2.5">
+                    <div className="flex items-center justify-between pb-2 border-b border-line/60">
+                      <span className="font-bold text-title uppercase tracking-wider text-[11px]">
+                        Financial Summary & Escrow
+                      </span>
+                      <span className="font-semibold text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        {booking.paymentStatus === "ESCROW_HELD" ? "Escrow Protected 🔒" : booking.paymentStatus || "UNPAID"}
+                      </span>
+                    </div>
+
+                    {/* Transparent Breakdown Table */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-copy">
+                        <span className="text-muted">Gross Booking Amount:</span>
+                        <strong className="font-display text-sm text-primary">
+                          GH₵{bookingGross.toFixed(2)}
+                        </strong>
+                      </div>
+                      <div className="flex justify-between text-muted text-[11px]">
+                        <span>VAT (15%):</span>
+                        <span className="text-rose-600 font-medium">-GH₵{vatAmount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted text-[11px]">
+                        <span>NHIL (2.5%):</span>
+                        <span className="text-rose-600 font-medium">-GH₵{nhilAmount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted text-[11px]">
+                        <span>GETFund Levy (2.5%):</span>
+                        <span className="text-rose-600 font-medium">-GH₵{getFundAmount.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-copy pt-1 border-t border-dashed border-line/70 font-semibold text-[11px]">
+                        <span>Total Deductions (20%):</span>
+                        <span className="text-rose-600 font-bold">-GH₵{totalDeductions.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t border-line/60 bg-emerald-50/70 -mx-4 -mb-1 px-4 py-2 rounded-xl">
+                        <span className="text-emerald-950 font-bold">Net Artisan Payout (80%):</span>
+                        <strong className="font-display text-sm text-emerald-700 font-black">
+                          GH₵{netPayout.toFixed(2)}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-line/60 flex justify-between text-muted text-[11px]">
+                      <span>Booking Reference:</span>
+                      <span className="font-mono font-semibold text-title">
+                        #{booking.bookingNumber || booking._id.slice(-8).toUpperCase()}
+                      </span>
+                    </div>
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-muted">Booking Reference:</span>
-                  <span className="font-mono font-semibold text-title">
-                    #
-                    {booking.bookingNumber ||
-                      booking._id.slice(-8).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Payment Security:</span>
-                  <span className="font-semibold text-emerald-700">
-                    {booking.paymentStatus === "ESCROW_HELD"
-                      ? "ESCROW HELD 🔒"
-                      : booking.paymentStatus || "UNPAID"}
-                  </span>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* ESCROW STAGE NOTICE & INTERACTIVE ACTIONS */}
               {booking.status === "AWAITING_PAYMENT" ? (
@@ -454,10 +484,7 @@ export function ArtisanJobDetailView({
                         <span>Starting Work...</span>
                       </>
                     ) : (
-                      <>
-                        <Wrench className="h-4 w-4" />
-                        <span>Start Work (Begin Execution)</span>
-                      </>
+                      <span>Start Work (Begin Execution)</span>
                     )}
                   </button>
                 </div>
@@ -496,37 +523,39 @@ export function ArtisanJobDetailView({
                       &ldquo;{booking.deliveryNotes}&rdquo;
                     </div>
                   )}
-                  {booking.deliveryProof && booking.deliveryProof.length > 0 && (
-                    <div className="space-y-1.5 pt-2 border-t border-purple-200/60">
-                      <span className="text-[10px] font-bold uppercase text-purple-900 block tracking-wider">
-                        Submitted Proof Photos ({booking.deliveryProof.length})
-                      </span>
-                      <div className="flex flex-wrap gap-2">
-                        {booking.deliveryProof.map((img, idx) => (
-                          <button
-                            key={img}
-                            type="button"
-                            onClick={() => {
-                              setDeliveryLightboxIndex(idx);
-                              setIsDeliveryLightboxOpen(true);
-                            }}
-                            className="relative h-14 w-18 rounded-xl overflow-hidden border border-purple-200 bg-white group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-purple-400"
-                            title="Click to view full screen"
-                          >
-                            <Image
-                              src={getImageUrl(img) || img}
-                              alt={`Proof ${idx + 1}`}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform"
-                            />
-                            <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                              <Maximize2 className="h-3.5 w-3.5" />
-                            </div>
-                          </button>
-                        ))}
+                  {booking.deliveryProof &&
+                    booking.deliveryProof.length > 0 && (
+                      <div className="space-y-1.5 pt-2 border-t border-purple-200/60">
+                        <span className="text-[10px] font-bold uppercase text-purple-900 block tracking-wider">
+                          Submitted Proof Photos ({booking.deliveryProof.length}
+                          )
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {booking.deliveryProof.map((img, idx) => (
+                            <button
+                              key={img}
+                              type="button"
+                              onClick={() => {
+                                setDeliveryLightboxIndex(idx);
+                                setIsDeliveryLightboxOpen(true);
+                              }}
+                              className="relative h-14 w-18 rounded-xl overflow-hidden border border-purple-200 bg-white group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-purple-400"
+                              title="Click to view full screen"
+                            >
+                              <Image
+                                src={getImageUrl(img) || img}
+                                alt={`Proof ${idx + 1}`}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform"
+                              />
+                              <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                                <Maximize2 className="h-3.5 w-3.5" />
+                              </div>
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               ) : booking.status === "REVISION_REQUESTED" ? (
                 <div className="space-y-3">
@@ -536,7 +565,8 @@ export function ArtisanJobDetailView({
                       <span>Revisions Requested by Client</span>
                     </div>
                     <p className="leading-relaxed">
-                      The homeowner reviewed your delivery and requested the following modifications before releasing funds:
+                      The homeowner reviewed your delivery and requested the
+                      following modifications before releasing funds:
                     </p>
                     {booking.revisionNotes && (
                       <div className="rounded-xl bg-white p-3 text-xs text-copy italic border border-amber-200 whitespace-pre-line">
@@ -560,11 +590,13 @@ export function ArtisanJobDetailView({
                     <span>Dispute Under Admin Review</span>
                   </div>
                   <p className="leading-relaxed">
-                    A formal dispute has been logged for this contract. Platform escrow funds are frozen while mediation reviews the case.
+                    A formal dispute has been logged for this contract. Platform
+                    escrow funds are frozen while mediation reviews the case.
                   </p>
                   {booking.disputeReason && (
                     <div className="rounded-xl bg-white p-3 text-xs text-copy border border-rose-200 whitespace-pre-line">
-                      <strong>Reported Reason:</strong> &ldquo;{booking.disputeReason}&rdquo;
+                      <strong>Reported Reason:</strong> &ldquo;
+                      {booking.disputeReason}&rdquo;
                     </div>
                   )}
                 </div>
@@ -859,29 +891,66 @@ export function ArtisanJobDetailView({
                   </div>
                 </div>
 
-                {/* LIVE COMMISSION BREAKDOWN */}
-                {Number(proposedAmount) > 0 && (
-                  <div className="rounded-xl bg-smoke/60 p-3 border border-line/70 text-xs space-y-1.5 animate-in fade-in duration-200">
-                    <div className="flex justify-between text-muted">
-                      <span>Proposed Bid:</span>
-                      <span className="font-semibold text-title">
-                        GH₵ {Number(proposedAmount).toFixed(2)}
-                      </span>
+                {/* LIVE STATUTORY BREAKDOWN & TAKE-HOME CALCULATOR */}
+                {Number(proposedAmount) > 0 && (() => {
+                  const fees = calculateFeeBreakdown(proposedAmount);
+                  return (
+                    <div className="rounded-2xl bg-smoke/70 p-3.5 sm:p-4 border border-line text-xs space-y-2.5 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between pb-2 border-b border-line/70">
+                        <span className="font-bold text-title flex items-center gap-1.5">
+                          <span>Estimated Earnings Breakdown</span>
+                        </span>
+                        <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-bold border border-emerald-200">
+                          Ghana Tax Compliant
+                        </span>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex justify-between text-copy">
+                          <span>Proposed Total:</span>
+                          <span className="font-semibold text-title">
+                            GH₵ {fees.grossAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-muted text-[11px]">
+                          <span>VAT ({TAX_RATES.VAT}%):</span>
+                          <span className="text-rose-600 font-medium">
+                            -GH₵ {fees.vatAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-muted text-[11px]">
+                          <span>NHIL ({TAX_RATES.NHIL}%):</span>
+                          <span className="text-rose-600 font-medium">
+                            -GH₵ {fees.nhilAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-muted text-[11px]">
+                          <span>GETFund Levy ({TAX_RATES.GET_FUND_LEVY}%):</span>
+                          <span className="text-rose-600 font-medium">
+                            -GH₵ {fees.getFundLevyAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-copy pt-1 border-t border-dashed border-line font-medium">
+                          <span>Total Deductions (20%):</span>
+                          <span className="text-rose-600 font-bold">
+                            -GH₵ {fees.totalDeductions.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center pt-2 border-t border-line font-bold text-title bg-emerald-50/80 -mx-3.5 sm:-mx-4 -mb-3.5 sm:-mb-4 p-3 rounded-b-2xl border-emerald-100">
+                        <span className="text-emerald-950 font-display text-xs">Your Estimated Net Payout (80%):</span>
+                        <span className="text-emerald-700 font-display text-sm sm:text-base font-black">
+                          GH₵ {fees.netPayoutAmount.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <p className="text-[10px] text-muted leading-relaxed pt-3">
+                        ℹ️ Platform deductions cover statutory Ghana taxes & escrow protection (VAT 15%, NHIL 2.5%, GETFund 2.5%).
+                      </p>
                     </div>
-                    <div className="flex justify-between text-muted">
-                      <span>Platform Fee (10%):</span>
-                      <span className="font-semibold text-rose-600">
-                        -GH₵ {(Number(proposedAmount) * 0.1).toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between pt-1 border-t border-line/60 font-bold text-title">
-                      <span>Estimated Net Payout:</span>
-                      <span className="text-emerald-700 font-display">
-                        GH₵ {(Number(proposedAmount) * 0.9).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                )}
+                  );
+                })()}
 
                 <div>
                   <label className="block text-xs font-semibold text-title mb-1">
@@ -954,9 +1023,9 @@ export function ArtisanJobDetailView({
               <span>Nutsumo Escrow & Payout Protection</span>
             </div>
             <p className="text-[11px] leading-relaxed">
-              Your payment is 100% held in secure platform escrow before you begin
-              work. Upon customer completion sign-off, net funds are immediately
-              disbursed to your account.
+              Your payment is 100% held in secure platform escrow before you
+              begin work. Upon customer completion sign-off, net funds are
+              immediately disbursed to your account.
             </p>
           </div>
         </div>

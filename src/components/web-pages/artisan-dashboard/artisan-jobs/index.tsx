@@ -26,7 +26,10 @@ export function ArtisanJobsManager({
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const tabParam = (searchParams.get("tab") as ArtisanJobsTab) || initialParams?.tab || "proposals";
+  const tabParam =
+    (searchParams.get("tab") as ArtisanJobsTab) ||
+    initialParams?.tab ||
+    "proposals";
   const [activeTab, setActiveTab] = useState<ArtisanJobsTab>(tabParam);
 
   useEffect(() => {
@@ -51,7 +54,8 @@ export function ArtisanJobsManager({
             Jobs & Proposals
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-muted">
-            Manage your active client contracts, track submitted proposals, and win new work in Ghana.
+            Manage your active client contracts, track submitted proposals, and
+            win new work in Ghana.
           </p>
         </div>
 
@@ -83,7 +87,6 @@ export function ArtisanJobsManager({
                 : "border-transparent text-muted hover:text-title hover:border-slate-300"
             }`}
           >
-            <Briefcase className="h-4 w-4" />
             <span>Active Contracts &amp; Work</span>
             <span
               className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
@@ -114,7 +117,6 @@ export function ArtisanJobsManager({
                 : "border-transparent text-muted hover:text-title hover:border-slate-300"
             }`}
           >
-            <FileText className="h-4 w-4" />
             <span>My Submitted Proposals</span>
             <span
               className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
@@ -142,7 +144,6 @@ export function ArtisanJobsManager({
                 : "border-transparent text-muted hover:text-title hover:border-slate-300"
             }`}
           >
-            <Sparkles className="h-4 w-4 text-primary" />
             <span>Available Job Opportunities</span>
             <span
               className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
@@ -163,25 +164,34 @@ export function ArtisanJobsManager({
               Marketplace Pipeline:
             </span>
             <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
-              <span className="grid h-4 w-4 place-items-center rounded-full bg-slate-200 text-[10px] font-bold">1</span>
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-slate-200 text-[10px] font-bold">
+                1
+              </span>
               <span>Find Jobs &amp; Submit Bids</span>
             </span>
             <span className="text-slate-400">➔</span>
             <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
-              <span className="grid h-4 w-4 place-items-center rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold">2</span>
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-orange-100 text-orange-800 text-[10px] font-bold">
+                2
+              </span>
               <span>Client Reviews Proposals</span>
             </span>
             <span className="text-slate-400">➔</span>
             <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-800">
-              <span className="grid h-4 w-4 place-items-center rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">3</span>
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                3
+              </span>
               <span>Hired · Deliver in Active Contracts</span>
             </span>
           </div>
 
           <div className="text-[11px] text-muted italic">
-            {activeTab === "bookings" && "Active Contracts: Confirmed client bookings to perform and deliver."}
-            {activeTab === "proposals" && "Submitted Proposals: Your quotes awaiting client decision."}
-            {activeTab === "leads" && "Opportunities: Live client requests open for bids."}
+            {activeTab === "bookings" &&
+              "Active Contracts: Confirmed client bookings to perform and deliver."}
+            {activeTab === "proposals" &&
+              "Submitted Proposals: Your quotes awaiting client decision."}
+            {activeTab === "leads" &&
+              "Opportunities: Live client requests open for bids."}
           </div>
         </div>
 

@@ -32,7 +32,7 @@ export function BookingHeader({ booking }: BookingHeaderProps) {
       <div>
         <Link
           href="/account/bookings"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-[#FE375D] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to All Bookings</span>
@@ -49,7 +49,7 @@ export function BookingHeader({ booking }: BookingHeaderProps) {
             <button
               type="button"
               onClick={handleCopy}
-              className="grid h-7 w-7 place-items-center rounded-lg border border-line bg-white text-muted hover:border-[#FE375D] hover:text-[#FE375D] transition-colors cursor-pointer"
+              className="grid h-7 w-7 place-items-center rounded-lg border border-line bg-white text-muted hover:border-primary hover:text-primary transition-colors cursor-pointer"
               title="Copy booking reference"
             >
               {copied ? (

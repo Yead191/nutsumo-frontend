@@ -123,16 +123,32 @@ export function AcceptProposalModal({
             </div>
           </div>
 
-          <div className="pt-2 border-t border-line/60 flex items-center justify-between text-xs">
-            <span className="text-muted">Agreed Rate:</span>
-            <span className="font-display font-bold text-base text-[#FE375D]">
-              GH₵ {proposal.proposedAmount}{" "}
-              <span className="text-xs font-normal text-muted">({proposal.rateType})</span>
-            </span>
+          <div className="pt-2 border-t border-line/60 space-y-1.5 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-muted">Service Cost:</span>
+              <span className="font-semibold text-title">
+                GH₵ {proposal.proposedAmount}{" "}
+                <span className="text-[11px] font-normal text-muted">({proposal.rateType})</span>
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pt-1 border-t border-dashed border-line/70">
+              <span className="font-bold text-title">Total Amount Payable:</span>
+              <span className="font-display font-bold text-base text-primary">
+                GH₵ {proposal.proposedAmount}{" "}
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full ml-1">
+                  Escrow Protected 🔒
+                </span>
+              </span>
+            </div>
+
+            <p className="text-[10px] text-muted pt-1">
+              * Total includes statutory Ghana taxes (VAT 15%, NHIL 2.5%, GETFund 2.5%). No hidden fees.
+            </p>
           </div>
 
           {proposal.estimatedDuration && (
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between text-xs pt-1 border-t border-line/50">
               <span className="text-muted">Estimated Duration:</span>
               <span className="font-semibold text-title">
                 {proposal.estimatedDuration}
