@@ -9,6 +9,7 @@ import {
   Loader2,
   Sparkles,
   Briefcase,
+  CheckCircle2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -125,9 +126,18 @@ export function ReviewCard({ review, profile, onPostReply }: ReviewCardProps) {
           </div>
 
           <div>
-            <p className="font-display text-sm font-semibold text-title sm:text-base">
-              {customerName}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="font-display text-sm font-semibold text-title sm:text-base">
+                {customerName}
+              </p>
+              {review.customer &&
+                typeof review.customer === "object" &&
+                review.customer.verified && (
+                  <span title="Verified Customer" className="inline-flex text-primary">
+                    <CheckCircle2 className="h-3.5 w-3.5 fill-primary text-white" />
+                  </span>
+                )}
+            </div>
             <div className="flex items-center gap-2 text-xs text-muted">
               <span>{formatDate(review.createdAt)}</span>
               {review.job?.location && (
@@ -218,6 +228,11 @@ export function ReviewCard({ review, profile, onPostReply }: ReviewCardProps) {
                   <span className="font-display text-xs font-semibold text-title">
                     {artisanName}
                   </span>
+                  {artisanObj?.verified && (
+                    <span title="Verified Professional" className="inline-flex text-primary">
+                      <CheckCircle2 className="h-3 w-3 fill-primary text-white" />
+                    </span>
+                  )}
                   <span className="rounded-full bg-primary/10 px-2 py-0.2 text-[10px] font-bold text-primary">
                     You
                   </span>

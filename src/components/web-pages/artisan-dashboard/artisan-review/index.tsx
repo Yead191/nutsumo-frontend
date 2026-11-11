@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { revalidateTags } from "@/helpers/next-fetch/core/revalidateTags";
 import {
   replyToReviewAction,
   type IReviewItem,
@@ -18,7 +19,6 @@ import type {
   ReviewStats,
   RatingBreakdownItem,
 } from "./types";
-import { revalidateTags } from "@/helpers/next-fetch/core/revalidateTags";
 
 export default function ArtisanReviewView({
   initialReviews: reviews = [],
@@ -26,6 +26,23 @@ export default function ArtisanReviewView({
 }: ArtisanReviewViewProps) {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("all");
   const [showRequestModal, setShowRequestModal] = useState(false);
+
+  // Derive effective artisan identity directly from reviews if profile is null
+  const effectiveArtisan = useMemo(() => {
+    if (profile) return profile;
+    const firstArtisan = reviews.find(
+      (r) => r.artisan && typeof r.artisan === "object",
+    )?.artisan;
+    if (firstArtisan && typeof firstArtisan === "object") {
+      return {
+        _id: firstArtisan._id,
+        name: firstArtisan.name,
+        image: firstArtisan.image,
+        location: firstArtisan.location,
+      };
+    }
+    return null;
+  }, [profile, reviews]);
 
   // Derived statistics for metrics and filters
   const stats: ReviewStats = useMemo(() => {
@@ -95,20 +112,7 @@ export default function ArtisanReviewView({
     try {
       const res = await replyToReviewAction(reviewId, { comment });
       if (res.success || !res.error) {
-        // setReviews((prev) =>
-        //   prev.map((r) =>
-        //     r._id === reviewId
-        //       ? {
-        //           ...r,
-        //           reply: {
-        //             comment,
-        //             repliedAt: new Date().toISOString(),
-        //           },
-        //         }
-        //       : r,
-        //   ),
-        // );
-        revalidateTags(["reviews", "my-reviews"]);
+        await revalidateTags(["reviews", "my-reviews"]);
         toast.success("Response posted publicly to client review.");
         return true;
       } else {
@@ -121,13 +125,11 @@ export default function ArtisanReviewView({
     }
   };
 
-  console.log(reviews);
-
   return (
     <div className="space-y-6 max-w-5xl">
       {/* 1. Header with Title & Direct Actions */}
       <ReviewStatsHeader
-        profile={profile}
+        profile={effectiveArtisan}
         onRequestReview={() => setShowRequestModal(true)}
       />
 
@@ -160,7 +162,7 @@ export default function ArtisanReviewView({
             <ReviewCard
               key={review._id}
               review={review}
-              profile={profile}
+              profile={effectiveArtisan}
               onPostReply={handlePostReply}
             />
           ))
@@ -171,7 +173,7 @@ export default function ArtisanReviewView({
       <RequestReviewModal
         isOpen={showRequestModal}
         onClose={() => setShowRequestModal(false)}
-        profile={profile}
+        profile={effectiveArtisan}
       />
     </div>
   );

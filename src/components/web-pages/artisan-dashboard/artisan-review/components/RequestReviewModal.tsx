@@ -10,7 +10,7 @@ import type { ArtisanUserProfile } from "../types";
 interface RequestReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  profile: ArtisanUserProfile | null;
+  profile?: ArtisanUserProfile | null;
 }
 
 export function RequestReviewModal({
