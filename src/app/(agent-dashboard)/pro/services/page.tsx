@@ -19,6 +19,11 @@ interface ServiceCategoryRef {
 
 interface SelectedServiceRecord {
   _id?: string;
+  source?: "CATALOG" | "CUSTOM";
+  customName?: string;
+  proposedCategory?: string;
+  reviewStatus?: "APPROVED" | "PENDING_REVIEW" | "REJECTED";
+  category?: ServiceCategoryRef | string;
   service?:
     | {
         _id?: string;
@@ -62,10 +67,17 @@ function mapSelectedService(item: SelectedServiceRecord): ArtisanServiceItem {
 
   return {
     _id: item._id,
+    source: item.source || (service ? "CATALOG" : "CUSTOM"),
+    reviewStatus: item.reviewStatus,
     serviceId: service?._id || (typeof item.service === "string" ? item.service : undefined),
-    serviceName: service?.name || "Service",
-    category: categoryId(service?.category),
-    categoryName: categoryName(service?.category),
+    serviceName: service?.name || item.customName || "Service",
+    category: categoryId(service?.category) || categoryId(item.category),
+    categoryName:
+      categoryName(service?.category) !== "Trade Service"
+        ? categoryName(service?.category)
+        : categoryName(item.category) !== "Trade Service"
+          ? categoryName(item.category)
+          : item.proposedCategory || "Uncategorized",
     rateType: asRateType(item.rateType),
     rate: item.rateAmount || 0,
     description: item.description || "",

@@ -6,18 +6,21 @@ import { Search, Loader2, X, Check, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TextField, TextArea } from "@/components/ui/field";
 import { toast } from "sonner";
-import { getCatalogServices } from "@/helpers/next-fetch/apiActions/artisanActions";
-import type { CatalogServiceItem } from "../types";
+import {
+  getCatalogServices,
+  getServiceCategories,
+} from "@/helpers/next-fetch/apiActions/artisanActions";
+import type { AddServiceInput, CatalogServiceItem } from "../types";
+
+interface CategoryOption {
+  _id: string;
+  name: string;
+}
 
 interface AddServiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (data: {
-    selectedService: CatalogServiceItem;
-    rateAmount: number;
-    rateType: "hourly" | "daily";
-    description: string;
-  }) => void;
+  onAdd: (data: AddServiceInput) => void;
   isSaving: boolean;
 }
 
@@ -37,6 +40,11 @@ export function AddServiceModal({
   const [addRateType, setAddRateType] = useState<"hourly" | "daily">("hourly");
   const [addRateAmount, setAddRateAmount] = useState<number>(75);
   const [addDescription, setAddDescription] = useState("");
+  const [mode, setMode] = useState<"catalog" | "custom">("catalog");
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
+  const [categoryId, setCategoryId] = useState("");
+  const [customCategoryName, setCustomCategoryName] = useState("");
+  const [customName, setCustomName] = useState("");
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -77,12 +85,29 @@ export function AddServiceModal({
   );
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || mode !== "catalog") return;
     const timer = setTimeout(() => {
       fetchCatalogServices(1, catalogSearch, false);
     }, catalogSearch ? 300 : 0);
     return () => clearTimeout(timer);
-  }, [catalogSearch, isOpen, fetchCatalogServices]);
+  }, [catalogSearch, isOpen, mode, fetchCatalogServices]);
+
+  useEffect(() => {
+    if (!isOpen || mode !== "custom" || categories.length > 0) return;
+    let cancelled = false;
+    getServiceCategories({ limit: 100 }).then((res) => {
+      if (cancelled) return;
+      const list = Array.isArray(res.data) ? res.data : [];
+      setCategories(
+        list
+          .filter((item: CategoryOption) => item?._id && item?.name)
+          .map((item: CategoryOption) => ({ _id: item._id, name: item.name })),
+      );
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, mode, categories.length]);
 
   const handleScroll = () => {
     const el = scrollContainerRef.current;
@@ -97,17 +122,37 @@ export function AddServiceModal({
   };
 
   const handleSubmit = () => {
-    if (!selectedService) {
-      toast.error("Please select a service from the suggestions list");
-      return;
-    }
-
     if (!addRateAmount || addRateAmount <= 0) {
       toast.error("Please enter a valid rate amount");
       return;
     }
 
+    if (mode === "custom") {
+      if (customName.trim().length < 3) {
+        toast.error("Custom service name must be at least 3 characters");
+        return;
+      }
+      const category = categories.find((item) => item._id === categoryId);
+      onAdd({
+        mode: "custom",
+        categoryId: categoryId || undefined,
+        categoryName: category?.name,
+        proposedCategory: categoryId ? undefined : customCategoryName.trim() || undefined,
+        customName: customName.trim(),
+        rateAmount: Number(addRateAmount),
+        rateType: addRateType,
+        description: addDescription.trim(),
+      });
+      return;
+    }
+
+    if (!selectedService) {
+      toast.error("Please select a service from the suggestions list");
+      return;
+    }
+
     onAdd({
+      mode: "catalog",
       selectedService,
       rateAmount: Number(addRateAmount),
       rateType: addRateType,
@@ -140,10 +185,12 @@ export function AddServiceModal({
         <div className="flex items-center justify-between border-b border-line px-6 py-4 sm:px-7 shrink-0">
           <div>
             <h3 className="font-display text-lg font-bold text-title">
-              Add Service from Catalog
+              {mode === "catalog" ? "Add Service from Catalog" : "Offer a Custom Service"}
             </h3>
             <p className="text-xs text-muted">
-              Search approved services, set your rate, and provide your service scope.
+              {mode === "catalog"
+                ? "Search approved services, set your rate, and provide your service scope."
+                : "Name the service you offer. Pick a category if one fits. If none does, type your own or leave it blank. It still goes on your profile."}
             </p>
           </div>
           <button
@@ -157,7 +204,82 @@ export function AddServiceModal({
 
         {/* Scrollable Body */}
         <div className="overflow-y-auto px-6 py-4 sm:px-7 space-y-4 flex-1">
-          {/* Search Catalog */}
+          <div className="grid grid-cols-2 rounded-xl bg-slate-100 p-1 border border-line">
+            <button
+              type="button"
+              onClick={() => setMode("catalog")}
+              className={`rounded-lg py-2 text-xs font-bold transition ${
+                mode === "catalog"
+                  ? "bg-white text-primary shadow-2xs"
+                  : "text-muted hover:text-title"
+              }`}
+            >
+              Catalog service
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("custom")}
+              className={`rounded-lg py-2 text-xs font-bold transition ${
+                mode === "custom"
+                  ? "bg-white text-primary shadow-2xs"
+                  : "text-muted hover:text-title"
+              }`}
+            >
+              Custom service
+            </button>
+          </div>
+
+          {mode === "custom" && (
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-title block mb-1.5">
+                  Trade category <span className="font-medium text-muted">(optional)</span>
+                </label>
+                <select
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-xs text-title"
+                >
+                  <option value="">No matching category</option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {!categoryId && (
+                <div>
+                  <label className="text-xs font-bold text-title block mb-1.5">
+                    Your category name <span className="font-medium text-muted">(optional)</span>
+                  </label>
+                  <TextField
+                    value={customCategoryName}
+                    onChange={(e) => setCustomCategoryName(e.target.value)}
+                    placeholder="e.g. Healthcare"
+                    className="text-xs"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="text-xs font-bold text-title block mb-1.5">
+                  Service name
+                </label>
+                <TextField
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="e.g. Solar water heater installation"
+                  className="text-xs"
+                />
+                <p className="mt-1.5 text-[11px] text-muted">
+                  This is added to your profile even if the admin has no category for it. A similar customer job still notifies you by name.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {mode === "catalog" && (
+          <div className="space-y-4">
           <div>
             <label className="text-xs font-bold text-title block mb-1.5">
               1. Search Service Catalog
@@ -198,8 +320,20 @@ export function AddServiceModal({
                   Loading catalog services...
                 </div>
               ) : catalogServices.length === 0 ? (
-                <div className="py-6 text-center text-xs text-muted">
-                  No matching services found in catalog.
+                <div className="py-6 text-center text-xs text-muted space-y-2">
+                  <p>No matching services found in catalog.</p>
+                  {catalogSearch.trim().length >= 3 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomName(catalogSearch.trim());
+                        setMode("custom");
+                      }}
+                      className="font-bold text-primary hover:underline"
+                    >
+                      Offer &quot;{catalogSearch.trim()}&quot; as a custom service
+                    </button>
+                  )}
                 </div>
               ) : (
                 catalogServices.map((service) => {
@@ -253,8 +387,10 @@ export function AddServiceModal({
             </div>
           </div>
 
-          {/* Selected Service Badge */}
-          {selectedService && (
+          </div>
+          )}
+
+          {mode === "catalog" && selectedService && (
             <div className="rounded-xl border border-primary/20 bg-primary/5 p-2.5 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold text-primary block uppercase tracking-wider">
@@ -348,7 +484,7 @@ export function AddServiceModal({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={isSaving || !selectedService}
+            disabled={isSaving || (mode === "catalog" && !selectedService)}
             className="font-bold text-xs px-5"
           >
             {isSaving ? "Saving..." : "Add to My Services"}

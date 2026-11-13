@@ -81,7 +81,9 @@ export interface IArtisanProfileItem {
 export interface IArtisanServiceItem {
   _id: string;
   artisan: IArtisanUser;
-  service: IServiceItem;
+  service?: IServiceItem | null;
+  customName?: string;
+  source?: "CATALOG" | "CUSTOM";
   rateAmount: number;
   rateType: "HOURLY" | "FIXED" | "DAILY" | string;
   description?: string;

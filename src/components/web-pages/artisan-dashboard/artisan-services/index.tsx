@@ -13,8 +13,8 @@ import {
 } from "@/helpers/next-fetch/apiActions/artisanActions";
 
 import type {
+  AddServiceInput,
   ArtisanServiceItem,
-  CatalogServiceItem,
   ArtisanServicesManagerProps,
 } from "./types";
 import { ServiceCard } from "./components/ServiceCard";
@@ -51,17 +51,15 @@ export function ArtisanServicesManager({
     setShowAddModal(true);
   };
 
-  const handleAddService = (data: {
-    selectedService: CatalogServiceItem;
-    rateAmount: number;
-    rateType: "hourly" | "daily";
-    description: string;
-  }) => {
-    const { selectedService, rateAmount, rateType, description } = data;
+  const handleAddService = (data: AddServiceInput) => {
+    const offeredName =
+      data.mode === "catalog" ? data.selectedService.name : data.customName;
     const isDuplicate = services.some(
       (service) =>
-        (service.serviceId && service.serviceId === selectedService._id) ||
-        service.serviceName.toLowerCase() === selectedService.name.toLowerCase(),
+        (data.mode === "catalog" &&
+          service.serviceId &&
+          service.serviceId === data.selectedService._id) ||
+        service.serviceName.toLowerCase() === offeredName.toLowerCase(),
     );
 
     if (isDuplicate) {
@@ -70,19 +68,36 @@ export function ArtisanServicesManager({
     }
 
     startTransition(async () => {
-      const res = await addArtisanService({
-        service: selectedService._id,
-        rateAmount,
-        rateType: rateType === "daily" ? "DAILY" : "HOURLY",
-        description,
-      });
+      const res = await addArtisanService(
+        data.mode === "catalog"
+          ? {
+              service: data.selectedService._id,
+              rateAmount: data.rateAmount,
+              rateType: data.rateType === "daily" ? "DAILY" : "HOURLY",
+              description: data.description,
+            }
+          : {
+              category: data.categoryId || undefined,
+              proposedCategory: data.categoryId ? undefined : data.proposedCategory,
+              customName: data.customName,
+              rateAmount: data.rateAmount,
+              rateType: data.rateType === "daily" ? "DAILY" : "HOURLY",
+              description: data.description,
+            },
+      );
 
       if (!res.success) {
         toast.error(res.message || "Failed to add service");
         return;
       }
 
-      toast.success(`"${selectedService.name}" added to your services!`);
+      const linkedToCatalog =
+        data.mode === "custom" && res.data?.source === "CATALOG";
+      toast.success(
+        linkedToCatalog
+          ? `"${offeredName}" already exists in the catalog, so it was added as an official service.`
+          : `"${offeredName}" added to your services!`,
+      );
       setShowAddModal(false);
     });
   };
@@ -93,6 +108,7 @@ export function ArtisanServicesManager({
     rateType: "hourly" | "daily";
     description: string;
     isActive: boolean;
+    customName?: string;
   }) => {
     const { service, rateAmount, rateType, description, isActive } = data;
 
@@ -103,6 +119,8 @@ export function ArtisanServicesManager({
 
     startTransition(async () => {
       const res = await updateArtisanService(service._id as string, {
+        customName:
+          service.source === "CUSTOM" ? data.customName : undefined,
         rateAmount,
         rateType: rateType === "daily" ? "DAILY" : "HOURLY",
         description,

@@ -219,7 +219,10 @@ export async function getArtisanSelectedServices() {
  * POST /artisan-service — add a service selection for the artisan
  */
 export async function addArtisanService(payload: {
-  service: string;
+  service?: string;
+  category?: string;
+  customName?: string;
+  proposedCategory?: string;
   rateAmount: number;
   rateType: "HOURLY" | "DAILY";
   description?: string;
@@ -244,6 +247,7 @@ export async function addArtisanService(payload: {
 export async function updateArtisanService(
   id: string,
   payload: {
+    customName?: string;
     rateAmount?: number;
     rateType?: "HOURLY" | "DAILY";
     description?: string;

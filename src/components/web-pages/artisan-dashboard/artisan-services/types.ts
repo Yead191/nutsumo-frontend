@@ -4,6 +4,8 @@ export interface ArtisanServiceItem {
   categoryName?: string;
   serviceId?: string;
   serviceName: string;
+  source?: "CATALOG" | "CUSTOM";
+  reviewStatus?: "APPROVED" | "PENDING_REVIEW" | "REJECTED";
   rateType: "hourly" | "daily";
   rate: number;
   description?: string;
@@ -12,6 +14,25 @@ export interface ArtisanServiceItem {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export type AddServiceInput =
+  | {
+      mode: "catalog";
+      selectedService: CatalogServiceItem;
+      rateAmount: number;
+      rateType: "hourly" | "daily";
+      description: string;
+    }
+  | {
+      mode: "custom";
+      categoryId?: string;
+      categoryName?: string;
+      proposedCategory?: string;
+      customName: string;
+      rateAmount: number;
+      rateType: "hourly" | "daily";
+      description: string;
+    };
 
 export interface CatalogServiceItem {
   _id: string;

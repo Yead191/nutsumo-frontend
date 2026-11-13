@@ -32,6 +32,11 @@ export function ViewServiceModal({
             <h3 className="font-display text-xl font-black text-title">
               {service.serviceName}
             </h3>
+            {service.source === "CUSTOM" && (
+              <p className="text-xs text-amber-700">
+                Custom offering. It stays on your profile even without an admin category. Similar customer jobs notify you by name.
+              </p>
+            )}
           </div>
           <button
             type="button"

@@ -28,14 +28,21 @@ export function ServiceCard({
             {service.categoryName || "Trade Category"}
           </span>
 
-          <span
-            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-              service.isActive !== false
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                : "bg-slate-100 text-slate-500 border border-slate-200"
-            }`}
-          >
-            {service.isActive !== false ? "Active" : "Paused"}
+          <span className="flex items-center gap-1">
+            {service.source === "CUSTOM" && (
+              <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/70">
+                {service.reviewStatus === "PENDING_REVIEW" ? "In review" : "Custom"}
+              </span>
+            )}
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                service.isActive !== false
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                  : "bg-slate-100 text-slate-500 border border-slate-200"
+              }`}
+            >
+              {service.isActive !== false ? "Active" : "Paused"}
+            </span>
           </span>
         </div>
 

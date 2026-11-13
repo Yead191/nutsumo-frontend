@@ -17,6 +17,7 @@ interface EditServiceModalProps {
     rateType: "hourly" | "daily";
     description: string;
     isActive: boolean;
+    customName?: string;
   }) => void;
   isSaving: boolean;
 }
@@ -38,6 +39,10 @@ function EditServiceForm({
   const [editRateAmount, setEditRateAmount] = useState<number>(service.rate || 75);
   const [editDescription, setEditDescription] = useState(service.description || "");
   const [editIsActive, setEditIsActive] = useState(service.isActive !== false);
+  const [customName, setCustomName] = useState(
+    service.serviceName || "",
+  );
+  const isCustom = service.source === "CUSTOM";
 
   const handleSubmit = () => {
     if (!editRateAmount || editRateAmount <= 0) {
@@ -45,8 +50,14 @@ function EditServiceForm({
       return;
     }
 
+    if (isCustom && customName.trim().length < 3) {
+      toast.error("Custom service name must be at least 3 characters");
+      return;
+    }
+
     onSave({
       service,
+      customName: isCustom ? customName.trim() : undefined,
       rateAmount: Number(editRateAmount),
       rateType: editRateType,
       description: editDescription.trim(),
@@ -78,13 +89,21 @@ function EditServiceForm({
           {/* Scrollable Body */}
           <div className="overflow-y-auto px-6 py-4 sm:px-7 space-y-4 flex-1">
             {/* Service Info Banner */}
-            <div className="rounded-2xl bg-slate-50 border border-line/80 p-3.5 space-y-1">
+            <div className="rounded-2xl bg-slate-50 border border-line/80 p-3.5 space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                 {service.categoryName || "Trade Category"}
               </span>
-              <h4 className="font-display text-base font-bold text-title">
-                {service.serviceName}
-              </h4>
+              {isCustom ? (
+                <TextField
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="Custom service name"
+                />
+              ) : (
+                <h4 className="font-display text-base font-bold text-title">
+                  {service.serviceName}
+                </h4>
+              )}
             </div>
 
             {/* Rate Type and Amount */}

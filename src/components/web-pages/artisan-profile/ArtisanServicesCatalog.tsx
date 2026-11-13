@@ -75,7 +75,9 @@ export function ArtisanServicesCatalog({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {services.map((serviceItem) => {
           const serviceName =
-            serviceItem.service?.name || "Professional Artisan Service";
+            serviceItem.service?.name ||
+            serviceItem.customName ||
+            "Professional Artisan Service";
           const rateFormatted = `GH₵ ${serviceItem.rateAmount}`;
           const rateTypeLabel =
             serviceItem.rateType?.toLowerCase() === "hourly"
