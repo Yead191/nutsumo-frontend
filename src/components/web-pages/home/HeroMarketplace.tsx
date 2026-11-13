@@ -68,7 +68,7 @@ export function HeroMarketplace({
 
           {/* Main Title */}
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-title tracking-tight leading-[1.12]">
-            Hire Vetted Trade Pros &amp; Craftsmen with{" "}
+            Find the Right Professional for Any Job with{" "}
             <span className="text-primary underline decoration-primary/20 decoration-wavy underline-offset-4">
               Escrow Protection
             </span>

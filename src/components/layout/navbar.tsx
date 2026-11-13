@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Menu,
   X,
@@ -20,13 +20,6 @@ import { ProfileMenu } from "@/components/layout/profile-menu";
 import { TopbarNotifications } from "@/components/layout/Notification/TopbarNotifications";
 import { cn } from "@/lib/cn";
 import Image from "next/image";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/jobs", label: "Find Jobs" },
-  { href: "/contact", label: "Contact" },
-];
 
 interface NavbarProps {
   user?: any;
@@ -102,6 +95,18 @@ export function Navbar({ user }: NavbarProps) {
   }, [pathname, isHome]);
 
   const isArtisan = Boolean(user?.role === "ARTISAN");
+
+  const navLinks = useMemo(
+    () => [
+      { href: "/", label: "Home" },
+      { href: "/about", label: "About" },
+      isArtisan
+        ? { href: "/jobs", label: "Find Jobs" }
+        : { href: "/browse-pros", label: "Find Seekers" },
+      { href: "/contact", label: "Contact" },
+    ],
+    [isArtisan],
+  );
 
   const isArtisanUnverified =
     user &&
@@ -328,21 +333,28 @@ export function Navbar({ user }: NavbarProps) {
         {open && (
           <div className="md:hidden mt-3 mx-4 rounded-2xl bg-white border border-slate-200 p-5 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors",
-                    pathname === link.href
-                      ? "bg-[#FE375D] text-white"
-                      : "text-slate-700 hover:bg-slate-50",
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname.startsWith(link.href);
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "px-4 py-2.5 text-sm font-semibold rounded-xl transition-colors",
+                      isActive
+                        ? "bg-[#FE375D] text-white"
+                        : "text-slate-700 hover:bg-slate-50",
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
 
               <div className="h-px bg-slate-100 my-2" />
 
@@ -360,7 +372,11 @@ export function Navbar({ user }: NavbarProps) {
 
                   {/* Mobile Notifications link */}
                   <Link
-                    href={isArtisan ? "/pro/notifications" : "/account/notifications"}
+                    href={
+                      isArtisan
+                        ? "/pro/notifications"
+                        : "/account/notifications"
+                    }
                     onClick={() => setOpen(false)}
                     className="flex items-center justify-between px-3.5 py-2.5 text-sm font-semibold text-slate-800 rounded-xl bg-slate-50 border border-slate-200/60 hover:border-[#FE375D] transition-colors"
                   >

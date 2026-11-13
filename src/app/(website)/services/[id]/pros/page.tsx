@@ -77,7 +77,9 @@ export default async function ServiceArtisansPage({
         location: resolvedSearchParams.location || "",
         sort: resolvedSearchParams.sort || "",
       }),
-      categoryId ? getCategoryById(categoryId) : Promise.resolve({ data: null }),
+      categoryId
+        ? getCategoryById(categoryId)
+        : Promise.resolve({ data: null }),
       getMarketplaceCategories(),
       // Also query general trade artisans if specific service listings are sparse
       categoryName
@@ -94,7 +96,8 @@ export default async function ServiceArtisansPage({
   const category = categoryRes?.data || null;
   const categories = allCategoriesRes?.data || [];
   const directArtisanServices = artisanServicesRes?.data || [];
-  const generalTradeProfiles = (tradeProfilesRes?.data || []) as IArtisanProfileItem[];
+  const generalTradeProfiles = (tradeProfilesRes?.data ||
+    []) as IArtisanProfileItem[];
 
   // 3. Assemble unified artisan list
   const seenArtisanUserIds = new Set<string>();
@@ -105,6 +108,7 @@ export default async function ServiceArtisansPage({
 
   // Add direct service providers first (highest precision)
   directArtisanServices.forEach((asItem) => {
+    console.log(directArtisanServices);
     const artisanUser = asItem.artisan;
     if (!artisanUser || seenArtisanUserIds.has(artisanUser._id)) return;
 
@@ -116,17 +120,20 @@ export default async function ServiceArtisansPage({
           _id: artisanUser._id,
           name: artisanUser.name,
           email: artisanUser.email,
-          image: (artisanUser as any).profileImage || (artisanUser as any).image,
+          image:
+            (artisanUser as any).profileImage || (artisanUser as any).image,
           verified: artisanUser.verified,
           location: artisanUser.location,
           trade: artisanUser.trade || categoryName || service.name,
         },
-        businessName: (artisanUser as any).businessName || `${artisanUser.name} Services`,
+        businessName:
+          (artisanUser as any).businessName || `${artisanUser.name} Services`,
         trade: artisanUser.trade || categoryName || service.name,
         hourlyRate: asItem.rateAmount,
         startingRate: asItem.rateAmount,
         location: artisanUser.location,
-        availabilityStatus: (artisanUser as any).availabilityStatus || "Available",
+        availabilityStatus:
+          (artisanUser as any).availabilityStatus || "Available",
       },
       customRate: {
         amount: asItem.rateAmount,
@@ -147,11 +154,13 @@ export default async function ServiceArtisansPage({
   });
 
   // Apply server-requested rating filter if selected
-  const finalArtisans = resolvedSearchParams.rating && resolvedSearchParams.rating !== "all"
-    ? unifiedArtisans.filter(
-        (a) => (a.profile.rating || 5.0) >= Number(resolvedSearchParams.rating)
-      )
-    : unifiedArtisans;
+  const finalArtisans =
+    resolvedSearchParams.rating && resolvedSearchParams.rating !== "all"
+      ? unifiedArtisans.filter(
+          (a) =>
+            (a.profile.rating || 5.0) >= Number(resolvedSearchParams.rating),
+        )
+      : unifiedArtisans;
 
   return (
     <ServiceArtisansContainer

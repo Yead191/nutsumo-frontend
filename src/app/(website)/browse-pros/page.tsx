@@ -51,7 +51,8 @@ export default async function BrowseProsPage({
       searchTerm: searchTerm || undefined,
       trade: trade || undefined,
       location: location || undefined,
-      availabilityStatus: availabilityStatus !== "all" ? availabilityStatus : undefined,
+      availabilityStatus:
+        availabilityStatus !== "all" ? availabilityStatus : undefined,
       sort,
       page,
       limit: 12,
@@ -69,7 +70,7 @@ export default async function BrowseProsPage({
   }
 
   return (
-    <div className="bg-slate-50/60 min-h-screen">
+    <div className="bg-slate-50/60 min-h-screen pt-18">
       <PageBanner
         eyebrow="Marketplace Directory"
         title="Find &amp; Hire Verified Trade Pros"

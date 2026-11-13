@@ -55,9 +55,12 @@ export function AboutContent() {
   ];
 
   return (
-    <div className="bg-white min-h-screen pb-24">
+    <div className="bg-white min-h-screen pb-24 ">
       {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200">
+      <section
+        id="hero"
+        className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200 "
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
@@ -66,11 +69,15 @@ export function AboutContent() {
             </div>
 
             <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-title tracking-tight leading-tight">
-              Building Absolute Trust in Every Home Repair & Construction Project
+              Building Absolute Trust in Every Home Repair & Construction
+              Project
             </h1>
 
             <p className="text-base sm:text-lg text-copy leading-relaxed font-sans max-w-2xl mx-auto">
-              Nutsumo is Ghana's first escrow-backed digital marketplace connecting households and businesses directly with vetted, master craftsmen—eliminating contractor ghosting, unsafe cash deals, and surprise costs.
+              Nutsumo is Ghana's first escrow-backed digital marketplace
+              connecting households and businesses directly with vetted, master
+              craftsmen—eliminating contractor ghosting, unsafe cash deals, and
+              surprise costs.
             </p>
 
             <div className="pt-4 flex flex-wrap justify-center gap-4">
@@ -121,7 +128,9 @@ export function AboutContent() {
               Eliminating the Friction of Informal Service Hiring
             </h2>
             <p className="text-sm sm:text-base text-copy leading-relaxed">
-              Finding a reliable electrician, plumber, or mason in Accra has historically depended on random word-of-mouth recommendations, unverified workers, and risky advance cash payments.
+              Finding a reliable electrician, plumber, or mason in Accra has
+              historically depended on random word-of-mouth recommendations,
+              unverified workers, and risky advance cash payments.
             </p>
           </div>
 
@@ -137,15 +146,25 @@ export function AboutContent() {
               <ul className="space-y-3.5 text-xs sm:text-sm text-slate-700">
                 <li className="flex items-start gap-2.5">
                   <span className="text-rose-500 font-bold">✕</span>
-                  <span><strong>Full Advance Cash Required:</strong> You pay cash upfront, but the artisan delays or never shows up.</span>
+                  <span>
+                    <strong>Full Advance Cash Required:</strong> You pay cash
+                    upfront, but the artisan delays or never shows up.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-rose-500 font-bold">✕</span>
-                  <span><strong>Zero Recourse for Subpar Work:</strong> When pipes burst or wiring fails hours later, phone numbers go unanswered.</span>
+                  <span>
+                    <strong>Zero Recourse for Subpar Work:</strong> When pipes
+                    burst or wiring fails hours later, phone numbers go
+                    unanswered.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-rose-500 font-bold">✕</span>
-                  <span><strong>Unvetted Strangers in Your Home:</strong> No identity checks, no police clearance, and no safety audit.</span>
+                  <span>
+                    <strong>Unvetted Strangers in Your Home:</strong> No
+                    identity checks, no police clearance, and no safety audit.
+                  </span>
                 </li>
               </ul>
             </div>
@@ -161,15 +180,26 @@ export function AboutContent() {
               <ul className="space-y-3.5 text-xs sm:text-sm text-slate-700">
                 <li className="flex items-start gap-2.5">
                   <span className="text-emerald-600 font-bold">✓</span>
-                  <span><strong>Escrow Financial Security:</strong> Funds are locked safely in escrow and released only when you click 'Approve'.</span>
+                  <span>
+                    <strong>Escrow Financial Security:</strong> Funds are locked
+                    safely in escrow and released only when you click 'Approve'.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-emerald-600 font-bold">✓</span>
-                  <span><strong>Biometric Ghana Card Auditing:</strong> Every artisan's identity, national ID, and track record are vetted.</span>
+                  <span>
+                    <strong>Biometric Ghana Card Auditing:</strong> Every
+                    artisan's identity, national ID, and track record are
+                    vetted.
+                  </span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-emerald-600 font-bold">✓</span>
-                  <span><strong>Dedicated Dispute Resolution:</strong> If work is incomplete, our Accra customer desk steps in with guaranteed refunds.</span>
+                  <span>
+                    <strong>Dedicated Dispute Resolution:</strong> If work is
+                    incomplete, our Accra customer desk steps in with guaranteed
+                    refunds.
+                  </span>
                 </li>
               </ul>
             </div>
@@ -227,7 +257,8 @@ export function AboutContent() {
                 Ready to Experience Stress-Free Home Repairs?
               </h2>
               <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                Browse verified local craftsmen in Accra, request a custom quote, and hire with 100% escrow protection today.
+                Browse verified local craftsmen in Accra, request a custom
+                quote, and hire with 100% escrow protection today.
               </p>
             </div>
 

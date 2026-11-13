@@ -41,7 +41,7 @@ export default async function CategoryServicesPage({
   const categoryBannerUrl = category.image ? getImageUrl(category.image) : null;
 
   return (
-    <div className="bg-white min-h-screen pb-20">
+    <div className="bg-white min-h-screen pb-20 pt-18">
       {/* 1. CATEGORY HEADER & HERO BANNER */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/60 py-12 sm:py-16 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
