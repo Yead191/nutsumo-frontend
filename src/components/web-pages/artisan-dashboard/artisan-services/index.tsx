@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useMemo, useState, useTransition } from "react";
 import { Briefcase, Plus, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TextField } from "@/components/ui/field";
 import { toast } from "sonner";
 import {
-  updateArtisanProfile,
   addArtisanService,
   updateArtisanService,
   deleteArtisanService,
@@ -27,35 +26,42 @@ import { ViewServiceModal } from "./components/ViewServiceModal";
 export function ArtisanServicesManager({
   initialServices = [],
 }: ArtisanServicesManagerProps) {
-  // State initialized from server component prop (NO unnecessary useEffect GET calls!)
-  const [services, setServices] = useState<ArtisanServiceItem[]>(initialServices);
-  const [isSaving, setIsSaving] = useState(false);
+  const services = initialServices;
+  const [isPending, startTransition] = useTransition();
   const [localSearch, setLocalSearch] = useState("");
-
-  // Sync if server revalidates and passes fresh initialServices
-  useEffect(() => {
-    setServices(initialServices);
-  }, [initialServices]);
-
-  // Modal States
   const [showAddModal, setShowAddModal] = useState(false);
+  const [addSession, setAddSession] = useState(0);
   const [editingService, setEditingService] = useState<ArtisanServiceItem | null>(null);
   const [viewingService, setViewingService] = useState<ArtisanServiceItem | null>(null);
 
-  // 1. Add Service
-  const handleAddService = async (data: {
+  const filteredServices = useMemo(() => {
+    const query = localSearch.trim().toLowerCase();
+    if (!query) return services;
+    return services.filter((service) => {
+      return (
+        service.serviceName.toLowerCase().includes(query) ||
+        service.categoryName?.toLowerCase().includes(query) ||
+        service.description?.toLowerCase().includes(query)
+      );
+    });
+  }, [services, localSearch]);
+
+  const openAddModal = () => {
+    setAddSession((session) => session + 1);
+    setShowAddModal(true);
+  };
+
+  const handleAddService = (data: {
     selectedService: CatalogServiceItem;
     rateAmount: number;
     rateType: "hourly" | "daily";
     description: string;
   }) => {
     const { selectedService, rateAmount, rateType, description } = data;
-
-    // Check duplicate
     const isDuplicate = services.some(
-      (s) =>
-        (s.serviceId && s.serviceId === selectedService._id) ||
-        s.serviceName.toLowerCase() === selectedService.name.toLowerCase(),
+      (service) =>
+        (service.serviceId && service.serviceId === selectedService._id) ||
+        service.serviceName.toLowerCase() === selectedService.name.toLowerCase(),
     );
 
     if (isDuplicate) {
@@ -63,17 +69,7 @@ export function ArtisanServicesManager({
       return;
     }
 
-    const catId =
-      typeof selectedService.category === "object"
-        ? selectedService.category._id
-        : selectedService.category;
-    const catName =
-      typeof selectedService.category === "object"
-        ? selectedService.category.name
-        : "Trade Service";
-
-    setIsSaving(true);
-    try {
+    startTransition(async () => {
       const res = await addArtisanService({
         service: selectedService._id,
         rateAmount,
@@ -81,45 +77,17 @@ export function ArtisanServicesManager({
         description,
       });
 
-      const newServiceItem: ArtisanServiceItem = {
-        _id: res?.data?._id,
-        serviceId: selectedService._id,
-        serviceName: selectedService.name,
-        category: catId,
-        categoryName: catName,
-        rateType,
-        rate: rateAmount,
-        description,
-        catalogDescription: selectedService.description || "",
-        isActive: true,
-        createdAt: new Date().toISOString(),
-      };
-
-      const updated = [newServiceItem, ...services];
-      setServices(updated);
-
-      // Sync to User profile services array
-      await updateArtisanProfile({
-        services: updated.map((s) => ({
-          category: s.category,
-          serviceName: s.serviceName,
-          rateType: s.rateType,
-          rate: s.rate,
-          description: s.description || "",
-        })),
-      });
+      if (!res.success) {
+        toast.error(res.message || "Failed to add service");
+        return;
+      }
 
       toast.success(`"${selectedService.name}" added to your services!`);
       setShowAddModal(false);
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to add service");
-    } finally {
-      setIsSaving(false);
-    }
+    });
   };
 
-  // 2. Edit Service
-  const handleSaveEdit = async (data: {
+  const handleSaveEdit = (data: {
     service: ArtisanServiceItem;
     rateAmount: number;
     rateType: "hourly" | "daily";
@@ -128,107 +96,52 @@ export function ArtisanServicesManager({
   }) => {
     const { service, rateAmount, rateType, description, isActive } = data;
 
-    setIsSaving(true);
-    try {
-      // If document exists in ArtisanService collection, update it
-      if (service._id) {
-        await updateArtisanService(service._id, {
-          rateAmount,
-          rateType: rateType === "daily" ? "DAILY" : "HOURLY",
-          description,
-          isActive,
-        });
+    if (!service._id) {
+      toast.error("This service cannot be updated until it is saved on your catalog");
+      return;
+    }
+
+    startTransition(async () => {
+      const res = await updateArtisanService(service._id as string, {
+        rateAmount,
+        rateType: rateType === "daily" ? "DAILY" : "HOURLY",
+        description,
+        isActive,
+      });
+
+      if (!res.success) {
+        toast.error(res.message || "Failed to update service");
+        return;
       }
-
-      // Update state locally
-      const updatedServices = services.map((s) => {
-        if (
-          (service._id && s._id === service._id) ||
-          s.serviceName === service.serviceName
-        ) {
-          return {
-            ...s,
-            rate: rateAmount,
-            rateType,
-            description,
-            isActive,
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return s;
-      });
-
-      setServices(updatedServices);
-
-      // Sync to User profile services
-      await updateArtisanProfile({
-        services: updatedServices.map((s) => ({
-          category: s.category,
-          serviceName: s.serviceName,
-          rateType: s.rateType,
-          rate: s.rate,
-          description: s.description || "",
-        })),
-      });
 
       toast.success(`"${service.serviceName}" updated successfully!`);
       setEditingService(null);
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to update service");
-    } finally {
-      setIsSaving(false);
-    }
+    });
   };
 
-  // 3. Remove Service
-  const handleRemoveService = async (targetService: ArtisanServiceItem) => {
-    const updatedServices = services.filter((s) => {
-      if (targetService._id && s._id) return s._id !== targetService._id;
-      return s.serviceName !== targetService.serviceName;
-    });
+  const handleRemoveService = (targetService: ArtisanServiceItem) => {
+    if (!targetService._id) {
+      toast.error("This service cannot be removed until it is saved on your catalog");
+      return;
+    }
 
-    setServices(updatedServices);
+    startTransition(async () => {
+      const res = await deleteArtisanService(targetService._id as string);
 
-    setIsSaving(true);
-    try {
-      if (targetService._id) {
-        await deleteArtisanService(targetService._id);
+      if (!res.success) {
+        toast.error(res.message || "Failed to remove service");
+        return;
       }
-      // Update User profile services
-      await updateArtisanProfile({
-        services: updatedServices.map((s) => ({
-          category: s.category,
-          serviceName: s.serviceName,
-          rateType: s.rateType,
-          rate: s.rate,
-          description: s.description || "",
-        })),
-      });
+
       toast.success(`"${targetService.serviceName}" removed`);
       if (viewingService?._id === targetService._id) {
         setViewingService(null);
       }
-    } catch {
-      toast.success("Service removed");
-    } finally {
-      setIsSaving(false);
-    }
+    });
   };
-
-  // Filtered services for local search
-  const filteredServices = services.filter((s) => {
-    if (!localSearch.trim()) return true;
-    const q = localSearch.toLowerCase();
-    return (
-      s.serviceName.toLowerCase().includes(q) ||
-      (s.categoryName && s.categoryName.toLowerCase().includes(q)) ||
-      (s.description && s.description.toLowerCase().includes(q))
-    );
-  });
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-6">
         <div>
           <h1 className="font-display text-2xl font-black tracking-tight text-title flex items-center gap-2">
@@ -248,7 +161,7 @@ export function ArtisanServicesManager({
         <div>
           <Button
             type="button"
-            onClick={() => setShowAddModal(true)}
+            onClick={openAddModal}
             className="font-bold text-xs px-5 shadow-xs flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -257,7 +170,6 @@ export function ArtisanServicesManager({
         </div>
       </div>
 
-      {/* Search / Filter bar (when services exist) */}
       {services.length > 0 && (
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-full max-w-xs">
@@ -285,52 +197,49 @@ export function ArtisanServicesManager({
         </div>
       )}
 
-      {/* Services List / Empty State */}
       {services.length === 0 ? (
-        <EmptyServicesState onAddClick={() => setShowAddModal(true)} />
+        <EmptyServicesState onAddClick={openAddModal} />
       ) : filteredServices.length === 0 ? (
         <Card className="rounded-2xl border border-line bg-white p-8 text-center text-xs text-muted">
           No services match your search &quot;{localSearch}&quot;.
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredServices.map((svc, idx) => (
+          {filteredServices.map((service) => (
             <ServiceCard
-              key={svc._id || idx}
-              service={svc}
-              onView={(s) => setViewingService(s)}
-              onEdit={(s) => setEditingService(s)}
-              onRemove={(s) => handleRemoveService(s)}
+              key={service._id || service.serviceName}
+              service={service}
+              onView={setViewingService}
+              onEdit={setEditingService}
+              onRemove={handleRemoveService}
             />
           ))}
         </div>
       )}
 
-      {/* Modal 1: Add Service */}
       <AddServiceModal
+        key={addSession}
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddService}
-        isSaving={isSaving}
+        isSaving={isPending}
       />
 
-      {/* Modal 2: Edit Service */}
       <EditServiceModal
         service={editingService}
         onClose={() => setEditingService(null)}
         onSave={handleSaveEdit}
-        isSaving={isSaving}
+        isSaving={isPending}
       />
 
-      {/* Modal 3: View Service Details */}
       <ViewServiceModal
         service={viewingService}
         onClose={() => setViewingService(null)}
-        onEdit={(s) => {
+        onEdit={(service) => {
           setViewingService(null);
-          setEditingService(s);
+          setEditingService(service);
         }}
-        onRemove={(s) => handleRemoveService(s)}
+        onRemove={handleRemoveService}
       />
     </div>
   );

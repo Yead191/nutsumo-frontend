@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal } from "antd";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,39 +17,35 @@ interface EditServiceModalProps {
     rateType: "hourly" | "daily";
     description: string;
     isActive: boolean;
-  }) => Promise<void>;
+  }) => void;
   isSaving: boolean;
 }
 
-export function EditServiceModal({
+function EditServiceForm({
   service,
   onClose,
   onSave,
   isSaving,
-}: EditServiceModalProps) {
-  const [editRateType, setEditRateType] = useState<"hourly" | "daily">("hourly");
-  const [editRateAmount, setEditRateAmount] = useState<number>(75);
-  const [editDescription, setEditDescription] = useState("");
-  const [editIsActive, setEditIsActive] = useState<boolean>(true);
+}: {
+  service: ArtisanServiceItem;
+  onClose: () => void;
+  onSave: EditServiceModalProps["onSave"];
+  isSaving: boolean;
+}) {
+  const [editRateType, setEditRateType] = useState<"hourly" | "daily">(
+    service.rateType || "hourly",
+  );
+  const [editRateAmount, setEditRateAmount] = useState<number>(service.rate || 75);
+  const [editDescription, setEditDescription] = useState(service.description || "");
+  const [editIsActive, setEditIsActive] = useState(service.isActive !== false);
 
-  useEffect(() => {
-    if (service) {
-      setEditRateType(service.rateType || "hourly");
-      setEditRateAmount(service.rate || 75);
-      setEditDescription(service.description || "");
-      setEditIsActive(service.isActive !== undefined ? service.isActive : true);
-    }
-  }, [service]);
-
-  const handleSubmit = async () => {
-    if (!service) return;
-
+  const handleSubmit = () => {
     if (!editRateAmount || editRateAmount <= 0) {
       toast.error("Please enter a valid rate amount");
       return;
     }
 
-    await onSave({
+    onSave({
       service,
       rateAmount: Number(editRateAmount),
       rateType: editRateType,
@@ -59,26 +55,6 @@ export function EditServiceModal({
   };
 
   return (
-    <Modal
-      open={Boolean(service)}
-      onCancel={onClose}
-      destroyOnClose
-      footer={null}
-      closable={false}
-      centered
-      width={560}
-      className="[&_.ant-modal-content]:!p-0 [&_.ant-modal-content]:!rounded-3xl [&_.ant-modal-content]:!overflow-hidden [&_.ant-modal-content]:!border [&_.ant-modal-content]:!border-line [&_.ant-modal-content]:!shadow-2xl"
-      styles={{
-        body: {
-          padding: 0,
-        },
-        mask: {
-          backdropFilter: "blur(4px)",
-          backgroundColor: "rgba(0, 0, 0, 0.6)",
-        },
-      }}
-    >
-      {service && (
         <div className="flex flex-col max-h-[85vh] bg-white">
           {/* Fixed Header */}
           <div className="flex items-center justify-between border-b border-line px-6 py-4 sm:px-7 shrink-0">
@@ -223,7 +199,44 @@ export function EditServiceModal({
             </Button>
           </div>
         </div>
-      )}
+  );
+}
+
+export function EditServiceModal({
+  service,
+  onClose,
+  onSave,
+  isSaving,
+}: EditServiceModalProps) {
+  return (
+    <Modal
+      open={Boolean(service)}
+      onCancel={onClose}
+      destroyOnClose
+      footer={null}
+      closable={false}
+      centered
+      width={560}
+      className="[&_.ant-modal-content]:!p-0 [&_.ant-modal-content]:!rounded-3xl [&_.ant-modal-content]:!overflow-hidden [&_.ant-modal-content]:!border [&_.ant-modal-content]:!border-line [&_.ant-modal-content]:!shadow-2xl"
+      styles={{
+        body: {
+          padding: 0,
+        },
+        mask: {
+          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+        },
+      }}
+    >
+      {service ? (
+        <EditServiceForm
+          key={service._id || service.serviceName}
+          service={service}
+          onClose={onClose}
+          onSave={onSave}
+          isSaving={isSaving}
+        />
+      ) : null}
     </Modal>
   );
 }

@@ -232,6 +232,7 @@ export async function addArtisanService(payload: {
 
   if (result.success) {
     await revalidateTags(["artisan-services", "user-profile"]);
+    revalidatePath("/pro/services");
   }
 
   return result;
@@ -256,6 +257,7 @@ export async function updateArtisanService(
 
   if (result.success) {
     await revalidateTags(["artisan-services", "user-profile"]);
+    revalidatePath("/pro/services");
   }
 
   return result;
@@ -271,6 +273,7 @@ export async function deleteArtisanService(id: string) {
 
   if (result.success) {
     await revalidateTags(["artisan-services", "user-profile"]);
+    revalidatePath("/pro/services");
   }
 
   return result;

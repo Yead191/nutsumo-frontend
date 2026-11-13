@@ -17,7 +17,7 @@ interface AddServiceModalProps {
     rateAmount: number;
     rateType: "hourly" | "daily";
     description: string;
-  }) => Promise<void>;
+  }) => void;
   isSaving: boolean;
 }
 
@@ -78,19 +78,9 @@ export function AddServiceModal({
 
   useEffect(() => {
     if (!isOpen) return;
-    setSelectedService(null);
-    setCatalogSearch("");
-    setAddRateType("hourly");
-    setAddRateAmount(75);
-    setAddDescription("");
-    fetchCatalogServices(1, "", false);
-  }, [isOpen, fetchCatalogServices]);
-
-  useEffect(() => {
-    if (!isOpen) return;
     const timer = setTimeout(() => {
       fetchCatalogServices(1, catalogSearch, false);
-    }, 300);
+    }, catalogSearch ? 300 : 0);
     return () => clearTimeout(timer);
   }, [catalogSearch, isOpen, fetchCatalogServices]);
 
@@ -106,7 +96,7 @@ export function AddServiceModal({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!selectedService) {
       toast.error("Please select a service from the suggestions list");
       return;
@@ -117,7 +107,7 @@ export function AddServiceModal({
       return;
     }
 
-    await onAdd({
+    onAdd({
       selectedService,
       rateAmount: Number(addRateAmount),
       rateType: addRateType,
