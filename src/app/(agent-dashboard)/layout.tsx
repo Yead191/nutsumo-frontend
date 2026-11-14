@@ -5,6 +5,7 @@ import { NavServer } from "@/components/layout/NavServer";
 
 const items = [
   { href: "/pro", label: "Overview" },
+  { href: "/pro/wallet", label: "Wallet" },
   { href: "/pro/profile", label: "Professional Profile" },
   { href: "/pro/services", label: "Services & Rates" },
   { href: "/pro/portfolio", label: "Portfolio Showcase" },

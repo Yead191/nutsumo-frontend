@@ -19,15 +19,16 @@ export function ArtisanStatsStrip({
   totalReviews = 0,
   averageRating = 0,
 }: ArtisanStatsStripProps) {
-  const rating =
-    averageRating > 0
-      ? averageRating.toFixed(1)
-      : (profile.rating || 5.0).toFixed(1);
   const reviewsCount =
-    totalReviews > 0 ? totalReviews : profile.reviewsCount || 18;
-  const completedCount = profile.completedJobs || 24;
-  const experienceYears = profile.experienceYears || 5;
-  const rate = profile.startingRate || profile.hourlyRate || 50;
+    totalReviews > 0 ? totalReviews : profile.reviewsCount || 0;
+  const rating =
+    reviewsCount > 0
+      ? (averageRating > 0 ? averageRating : profile.rating || 0).toFixed(1)
+      : "New";
+  const completedCount = profile.completedJobs || 0;
+  const experienceYears = profile.experienceYears || 0;
+  const rate =
+    profile.startingOffer?.rateAmount || profile.startingRate || profile.hourlyRate || 0;
 
   const stats = [
     {
@@ -35,15 +36,15 @@ export function ArtisanStatsStrip({
       iconColor: "text-amber-500 fill-amber-400",
       bg: "bg-amber-50 border-amber-100",
       label: "Star Rating",
-      value: `${rating} ★`,
-      subtext: `From ${reviewsCount} verified reviews`,
+      value: reviewsCount > 0 ? `${rating} ★` : "New",
+      subtext: reviewsCount > 0 ? `From ${reviewsCount} verified reviews` : "No reviews yet",
     },
     {
       icon: CheckCircle2,
       iconColor: "text-emerald-600",
       bg: "bg-emerald-50 border-emerald-100",
       label: "Completed Jobs",
-      value: `${completedCount}+`,
+      value: `${completedCount}`,
       subtext: "100% Escrow Fulfilled",
     },
     {
@@ -51,7 +52,7 @@ export function ArtisanStatsStrip({
       iconColor: "text-primary",
       bg: "bg-primary/5 border-primary/10",
       label: "Experience",
-      value: `${experienceYears}+ Yrs`,
+      value: experienceYears > 0 ? `${experienceYears} yrs` : "Not added",
       subtext: "Master craftsman trade",
     },
     {
@@ -59,7 +60,7 @@ export function ArtisanStatsStrip({
       iconColor: "text-indigo-600",
       bg: "bg-indigo-50 border-indigo-100",
       label: "Starting From",
-      value: `GH₵ ${rate}`,
+      value: rate ? `GH₵ ${rate}` : "Quote",
       subtext: "Transparent upfront quotes",
     },
   ];

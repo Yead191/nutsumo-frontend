@@ -86,7 +86,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
             return (
               <Link
                 key={cat._id}
-                href={`/categories/${cat._id}`}
+                href={`/browse-pros?category=${cat._id}`}
                 className="group relative rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xs hover:shadow-lg hover:border-primary/40 hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between"
               >
                 <div>

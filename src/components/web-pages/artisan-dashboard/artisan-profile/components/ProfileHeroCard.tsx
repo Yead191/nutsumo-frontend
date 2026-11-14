@@ -27,9 +27,6 @@ interface ProfileHeroCardProps {
   onResetImage: () => void;
   onAvailabilityChange: (status: AvailabilityStatus) => void;
   onSave: () => void;
-  stripeConnected: boolean;
-  stripePending: boolean;
-  onStripe: () => void;
 }
 
 export function ProfileHeroCard({
@@ -41,9 +38,6 @@ export function ProfileHeroCard({
   onResetImage,
   onAvailabilityChange,
   onSave,
-  stripeConnected,
-  stripePending,
-  onStripe,
 }: ProfileHeroCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -208,22 +202,6 @@ export function ProfileHeroCard({
               )}
             </div>
           </div>
-
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onStripe}
-            disabled={stripePending}
-            className="text-sm font-bold mt-5 sm:mt-5"
-          >
-            {stripePending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : stripeConnected ? (
-              "Login Stripe"
-            ) : (
-              "Connect Stripe"
-            )}
-          </Button>
 
           <Button
             type="button"

@@ -131,7 +131,7 @@ export function HeroMarketplace({
             {chips.map((cat: any) => (
               <Link
                 key={cat._id || cat.slug}
-                href={`/categories/${cat._id || cat.slug}`}
+                href={`/browse-pros?q=${encodeURIComponent(cat.name)}`}
                 className="rounded-full bg-white border border-slate-200/90 px-3 py-1 text-copy font-medium hover:border-primary hover:text-primary hover:bg-primary/5 transition-all shadow-2xs"
               >
                 {cat.name}

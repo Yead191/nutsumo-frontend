@@ -40,7 +40,8 @@ export default async function BrowseProsPage({
 
   const searchTerm = resolvedParams.searchTerm || resolvedParams.q || "";
   const location = resolvedParams.location || resolvedParams.zip || "";
-  const trade = resolvedParams.trade || resolvedParams.category || "";
+  const trade = resolvedParams.trade || "";
+  const category = resolvedParams.category || "";
   const availabilityStatus = resolvedParams.availabilityStatus || "";
   const sort = resolvedParams.sort || "-rating";
 
@@ -50,24 +51,20 @@ export default async function BrowseProsPage({
     searchArtisansAction({
       searchTerm: searchTerm || undefined,
       trade: trade || undefined,
+      category: category || undefined,
       location: location || undefined,
       availabilityStatus:
         availabilityStatus !== "all" ? availabilityStatus : undefined,
       sort,
+      rating: resolvedParams.rating,
       page,
       limit: 12,
     }),
   ]);
 
   const categories = categoriesRes?.data || [];
-  let artisans = (artisansRes?.data || []) as IArtisanProfileItem[];
+  const artisans = (artisansRes?.data || []) as IArtisanProfileItem[];
   const pagination = (artisansRes as any)?.pagination || null;
-
-  // Apply server rating filter if requested
-  if (resolvedParams.rating && resolvedParams.rating !== "all") {
-    const min = Number(resolvedParams.rating);
-    artisans = artisans.filter((a) => (a.rating || 5.0) >= min);
-  }
 
   return (
     <div className="bg-slate-50/60 min-h-screen pt-18">
@@ -91,6 +88,7 @@ export default async function BrowseProsPage({
           filterParams={{
             searchTerm,
             trade,
+            category,
             location,
             availabilityStatus,
             sort,

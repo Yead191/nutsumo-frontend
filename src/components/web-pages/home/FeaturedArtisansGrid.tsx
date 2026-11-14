@@ -57,11 +57,20 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
             const displayName =
               user.name || artisan.businessName || "Verified Pro";
             const trade = artisan.trade || user.trade || "Craftsman";
-            const location = artisan.location || user.location || "Ghana";
-            const rating = Number(artisan.rating) || 5.0;
-            const reviewsCount = Number(artisan.reviewsCount) || 1;
+            const location = artisan.location || user.location || "Location not set";
+            const reviewsCount = Number(artisan.reviewsCount) || 0;
+            const rating = reviewsCount > 0 ? Number(artisan.rating) || 0 : 0;
             const completedJobs = Number(artisan.completedJobs) || 0;
-            const rate = artisan.startingRate || artisan.hourlyRate || 35;
+            const listedRate =
+              artisan.startingOffer?.rateAmount ||
+              artisan.startingRate ||
+              artisan.hourlyRate ||
+              0;
+            const rate = listedRate;
+            const rateSuffix =
+              String(artisan.startingOffer?.rateType || "").toUpperCase() === "DAILY"
+                ? "/ day"
+                : "/ hr";
             const isAvailable = artisan.availabilityStatus !== "Booked";
             const profileUrl = `/job-seeker/${user._id || artisan._id}`;
 
@@ -144,11 +153,13 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400 shrink-0" />
                       <span className="font-bold text-title">
-                        {rating.toFixed(1)}
+                        {reviewsCount > 0 ? rating.toFixed(1) : "New"}
                       </span>
-                      <span className="text-muted text-[11px]">
-                        ({reviewsCount})
-                      </span>
+                      {reviewsCount > 0 ? (
+                        <span className="text-muted text-[11px]">
+                          ({reviewsCount})
+                        </span>
+                      ) : null}
                     </div>
 
                     <div className="flex items-center gap-1 text-right justify-end text-emerald-700 font-medium text-[11px]">
@@ -165,10 +176,12 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
                   <div className="bg-slate-50/80 rounded-xl p-2.5 border border-slate-100 flex items-center justify-between text-xs mb-4">
                     <span className="text-muted">Starting Rate:</span>
                     <strong className="font-display font-bold text-title text-sm text-primary">
-                      GH₵ {rate}
-                      <span className="text-[10px] text-muted font-normal ml-0.5">
-                        /hr
-                      </span>
+                      {rate ? `GH₵ ${rate}` : "Quote"}
+                      {rate ? (
+                        <span className="text-[10px] text-muted font-normal ml-0.5">
+                          {rateSuffix}
+                        </span>
+                      ) : null}
                     </strong>
                   </div>
                 </div>

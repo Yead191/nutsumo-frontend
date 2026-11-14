@@ -158,7 +158,8 @@ export default async function ServiceArtisansPage({
     resolvedSearchParams.rating && resolvedSearchParams.rating !== "all"
       ? unifiedArtisans.filter(
           (a) =>
-            (a.profile.rating || 5.0) >= Number(resolvedSearchParams.rating),
+            (a.profile.reviewsCount || 0) > 0 &&
+            (a.profile.rating || 0) >= Number(resolvedSearchParams.rating),
         )
       : unifiedArtisans;
 

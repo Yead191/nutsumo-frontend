@@ -104,12 +104,6 @@ export function BrowseProsClient({
     });
   };
 
-  const currentCategory =
-    searchParams.get("trade") ||
-    searchParams.get("category") ||
-    filterParams.trade ||
-    filterParams.category ||
-    "";
   const currentAvailability =
     searchParams.get("availabilityStatus") ||
     filterParams.availabilityStatus ||
@@ -198,18 +192,18 @@ export function BrowseProsClient({
               Trade Category
             </label>
             <select
-              value={currentCategory}
+              value={searchParams.get("category") || filterParams.category || ""}
               onChange={(e) =>
                 updateServerFilters({
-                  trade: e.target.value,
-                  category: null,
+                  category: e.target.value,
+                  trade: null,
                 })
               }
               className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
             >
               <option value="">All Trade Categories</option>
               {categories.map((c) => (
-                <option key={c._id} value={c.name}>
+                <option key={c._id} value={c._id}>
                   {c.name}
                 </option>
               ))}
@@ -311,19 +305,21 @@ export function BrowseProsClient({
               artisan.businessName || user.name || "Master Artisan";
             const trade = artisan.trade || "Craftsman";
             const locationText =
-              artisan.location ||
-              artisan.city ||
-              user.location ||
-              "Accra, Ghana";
+              artisan.location || artisan.city || user.location || "Location not set";
             const isAvailable =
               artisan.availability !== "BOOKED" &&
               artisan.availabilityStatus?.toLowerCase() !== "booked";
 
-            const rating = (artisan.rating || 5.0).toFixed(1);
-            const reviewsCount = artisan.reviewsCount || 16;
-            const completedJobs = artisan.completedJobs || 22;
+            const reviewsCount = artisan.reviewsCount || 0;
+            const rating =
+              reviewsCount > 0 ? Number(artisan.rating || 0).toFixed(1) : "New";
+            const completedJobs = artisan.completedJobs || 0;
+            const matched = artisan.matchedOffering;
+            const price = matched || artisan.startingOffer;
             const rateAmount =
-              artisan.startingRate || artisan.hourlyRate || 50;
+              price?.rateAmount || artisan.startingRate || artisan.hourlyRate || 0;
+            const rateSuffix =
+              String(price?.rateType || "").toUpperCase() === "DAILY" ? "/ day" : "/ hr";
 
             const initials = (user.name || displayName || "A")
               .split(" ")
@@ -383,7 +379,7 @@ export function BrowseProsClient({
 
                         <div className="flex items-center gap-2 text-xs">
                           <span className="font-semibold text-primary rounded-md bg-primary/10 px-2 py-0.5 text-[11px]">
-                            {trade}
+                            {matched?.name || trade}
                           </span>
 
                           {isAvailable ? (
@@ -406,28 +402,33 @@ export function BrowseProsClient({
                         Starting At
                       </span>
                       <div className="font-display text-lg font-black text-title">
-                        GH₵ {rateAmount}
-                        <span className="text-xs font-normal text-muted ml-0.5">
-                          / hr
-                        </span>
+                        {rateAmount ? `GH₵ ${rateAmount}` : "Quote"}
+                        {rateAmount ? (
+                          <span className="text-xs font-normal text-muted ml-0.5">
+                            {rateSuffix}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                   </div>
 
                   {/* Bio */}
-                  <p className="text-xs text-copy line-clamp-2 leading-relaxed">
-                    {artisan.bio ||
-                      `Professional ${trade.toLowerCase()} craftsman with verified credentials, premium tools, and 100% escrow backed client satisfaction.`}
-                  </p>
+                  {artisan.bio ? (
+                    <p className="text-xs text-copy line-clamp-2 leading-relaxed">
+                      {artisan.bio}
+                    </p>
+                  ) : null}
 
                   {/* Metrics */}
                   <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-muted border-t border-slate-100">
                     <div className="flex items-center gap-1 font-bold text-title">
                       <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400" />
                       <span>{rating}</span>
-                      <span className="text-muted font-normal text-[11px]">
-                        ({reviewsCount})
-                      </span>
+                      {reviewsCount > 0 ? (
+                        <span className="text-muted font-normal text-[11px]">
+                          ({reviewsCount})
+                        </span>
+                      ) : null}
                     </div>
 
                     <span>•</span>

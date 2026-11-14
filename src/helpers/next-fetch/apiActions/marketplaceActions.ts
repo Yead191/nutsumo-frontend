@@ -78,6 +78,16 @@ export interface IArtisanProfileItem {
     year?: number;
   }>;
   isProfilePublic?: boolean;
+  matchedOffering?: {
+    name: string;
+    rateAmount: number;
+    rateType: string;
+  } | null;
+  startingOffer?: {
+    name: string;
+    rateAmount: number;
+    rateType: string;
+  } | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -310,7 +320,7 @@ export async function getFeaturedArtisans(
 ): Promise<FetchResponse<IArtisanProfileItem[]>> {
   try {
     return await nextFetch<IArtisanProfileItem[]>(
-      `/artisan-profile?sort=-rating&limit=${limit}`,
+      `/artisan-profile/discover?sort=-rating&limit=${limit}`,
       {
         method: "GET",
         cache: "force-cache",
@@ -336,6 +346,7 @@ export async function searchArtisansAction(params?: {
   location?: string;
   availabilityStatus?: string;
   sort?: string;
+  rating?: string;
   page?: number;
   limit?: number;
 }): Promise<FetchResponse<IArtisanProfileItem[]>> {
@@ -343,13 +354,15 @@ export async function searchArtisansAction(params?: {
     const q = new URLSearchParams();
     if (params?.searchTerm) q.append("searchTerm", params.searchTerm);
     if (params?.trade) q.append("trade", params.trade);
+    if (params?.category) q.append("category", params.category);
     if (params?.location) q.append("location", params.location);
     if (params?.availabilityStatus) q.append("availabilityStatus", params.availabilityStatus);
     if (params?.sort) q.append("sort", params.sort);
+    if (params?.rating && params.rating !== "all") q.append("rating", params.rating);
     if (params?.page) q.append("page", String(params.page));
     if (params?.limit) q.append("limit", String(params.limit || 20));
 
-    return await nextFetch<IArtisanProfileItem[]>(`/artisan-profile?${q.toString()}`, {
+    return await nextFetch<IArtisanProfileItem[]>(`/artisan-profile/discover?${q.toString()}`, {
       method: "GET",
       cache: "no-store",
     });

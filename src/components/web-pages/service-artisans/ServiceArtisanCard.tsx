@@ -38,16 +38,21 @@ export function ServiceArtisanCard({
   const avatarUrl = user.image ? getImageUrl(user.image) : null;
   const displayName = artisan.businessName || user.name || "Master Artisan";
   const trade = artisan.trade || "Craftsman";
-  const location = artisan.location || artisan.city || user.location || "Ghana";
+  const location = artisan.location || artisan.city || user.location || "Location not set";
   const isAvailable =
     artisan.availability !== "BOOKED" &&
     artisan.availabilityStatus?.toLowerCase() !== "booked";
 
-  const rating = (artisan.rating || 5.0).toFixed(1);
-  const reviewsCount = artisan.reviewsCount || 14;
-  const completedJobs = artisan.completedJobs || 18;
+  const reviewsCount = artisan.reviewsCount || 0;
+  const rating = reviewsCount > 0 ? Number(artisan.rating || 0).toFixed(1) : "New";
+  const completedJobs = artisan.completedJobs || 0;
 
-  const rateAmount = customRate?.amount || artisan.startingRate || artisan.hourlyRate || 50;
+  const rateAmount =
+    customRate?.amount ||
+    artisan.startingOffer?.rateAmount ||
+    artisan.startingRate ||
+    artisan.hourlyRate ||
+    0;
   const rateType = customRate?.type
     ? customRate.type.toLowerCase() === "hourly"
       ? "/ hr"
@@ -138,19 +143,20 @@ export function ServiceArtisanCard({
               {customRate ? "Service Rate" : "Starting At"}
             </span>
             <div className="font-display text-lg font-black text-title">
-              GH₵ {rateAmount}
-              <span className="text-xs font-normal text-muted ml-0.5">
-                {rateType}
-              </span>
+              {rateAmount ? `GH₵ ${rateAmount}` : "Quote"}
+              {rateAmount ? (
+                <span className="text-xs font-normal text-muted ml-0.5">
+                  {rateType}
+                </span>
+              ) : null}
             </div>
           </div>
         </div>
 
         {/* Bio / Summary Snippet */}
-        <p className="text-xs text-copy line-clamp-2 leading-relaxed">
-          {artisan.bio ||
-            `Dedicated ${trade.toLowerCase()} specialist with ${artisan.experienceYears || 5}+ years of verified on-site experience providing top-rated craftsmanship.`}
-        </p>
+        {artisan.bio ? (
+          <p className="text-xs text-copy line-clamp-2 leading-relaxed">{artisan.bio}</p>
+        ) : null}
 
         {/* Badges / Metrics Strip */}
         <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-muted border-t border-slate-100">
@@ -158,9 +164,11 @@ export function ServiceArtisanCard({
           <div className="flex items-center gap-1 font-bold text-title">
             <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400" />
             <span>{rating}</span>
-            <span className="text-muted font-normal text-[11px]">
-              ({reviewsCount})
-            </span>
+            {reviewsCount > 0 ? (
+              <span className="text-muted font-normal text-[11px]">
+                ({reviewsCount})
+              </span>
+            ) : null}
           </div>
 
           <span>•</span>
