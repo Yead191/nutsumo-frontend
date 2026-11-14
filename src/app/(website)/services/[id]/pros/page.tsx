@@ -9,6 +9,8 @@ import {
   type IArtisanProfileItem,
 } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 import { ServiceArtisansContainer } from "@/components/web-pages/service-artisans/ServiceArtisansContainer";
+import getProfile from "@/helpers/next-fetch/core/getProfile";
+import { toQuoteViewer } from "@/lib/quoteViewer";
 
 export const revalidate = 60; // 1 minute ISR for live marketplace availability
 
@@ -71,7 +73,7 @@ export default async function ServiceArtisansPage({
       : undefined;
 
   // 2. Fetch Category, Specific Service Artisans & Categories Catalog in parallel
-  const [artisanServicesRes, categoryRes, allCategoriesRes, tradeProfilesRes] =
+  const [artisanServicesRes, categoryRes, allCategoriesRes, tradeProfilesRes, user] =
     await Promise.all([
       getArtisansByService(id, {
         location: resolvedSearchParams.location || "",
@@ -91,6 +93,7 @@ export default async function ServiceArtisansPage({
             sort: resolvedSearchParams.sort,
           })
         : Promise.resolve({ data: [] }),
+      getProfile(),
     ]);
 
   const category = categoryRes?.data || null;
@@ -170,6 +173,7 @@ export default async function ServiceArtisansPage({
       artisans={finalArtisans}
       categories={categories}
       filterParams={resolvedSearchParams}
+      viewer={toQuoteViewer(user)}
     />
   );
 }

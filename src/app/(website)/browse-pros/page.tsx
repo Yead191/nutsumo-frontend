@@ -8,6 +8,8 @@ import {
   searchArtisansAction,
   type IArtisanProfileItem,
 } from "@/helpers/next-fetch/apiActions/marketplaceActions";
+import getProfile from "@/helpers/next-fetch/core/getProfile";
+import { toQuoteViewer } from "@/lib/quoteViewer";
 
 export const revalidate = 60; // 1 minute ISR for live search/availability
 
@@ -46,7 +48,7 @@ export default async function BrowseProsPage({
   const sort = resolvedParams.sort || "-rating";
 
   // 1. Parallel backend fetch: categories list + server-side filtered artisans
-  const [categoriesRes, artisansRes] = await Promise.all([
+  const [categoriesRes, artisansRes, user] = await Promise.all([
     getMarketplaceCategories(),
     searchArtisansAction({
       searchTerm: searchTerm || undefined,
@@ -60,6 +62,7 @@ export default async function BrowseProsPage({
       page,
       limit: 12,
     }),
+    getProfile(),
   ]);
 
   const categories = categoriesRes?.data || [];
@@ -85,6 +88,7 @@ export default async function BrowseProsPage({
           artisans={artisans}
           categories={categories}
           pagination={pagination}
+          viewer={toQuoteViewer(user)}
           filterParams={{
             searchTerm,
             trade,

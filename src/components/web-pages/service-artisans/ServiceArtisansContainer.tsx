@@ -17,6 +17,7 @@ import {
 import { ServiceArtisansFilterBar } from "./ServiceArtisansFilterBar";
 import { ServiceArtisanCard } from "./ServiceArtisanCard";
 import { DirectQuoteModal } from "@/components/web-pages/DirectQuoteModal";
+import type { QuoteViewer } from "@/lib/quoteViewer";
 import { getImageUrl } from "@/lib/getImageUrl";
 import type {
   IServiceItem,
@@ -33,6 +34,7 @@ interface ServiceArtisansContainerProps {
     customRate?: { amount: number; type: string };
   }>;
   categories: ICategoryItem[];
+  viewer?: QuoteViewer | null;
   filterParams: {
     searchTerm?: string;
     location?: string;
@@ -48,6 +50,7 @@ export function ServiceArtisansContainer({
   artisans,
   categories,
   filterParams,
+  viewer = null,
 }: ServiceArtisansContainerProps) {
   // Direct Quote Modal state
   const [selectedArtisanForQuote, setSelectedArtisanForQuote] =
@@ -222,6 +225,7 @@ export function ServiceArtisansContainer({
           categories={categories}
           preselectedServiceId={service._id}
           preselectedServiceName={service.name}
+          viewer={viewer}
         />
       )}
     </div>

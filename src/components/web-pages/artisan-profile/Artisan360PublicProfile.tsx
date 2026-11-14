@@ -23,6 +23,7 @@ import { ArtisanServicesCatalog } from "./ArtisanServicesCatalog";
 import { ArtisanPortfolioShowcase } from "./ArtisanPortfolioShowcase";
 import { ArtisanReviewsSection } from "./ArtisanReviewsSection";
 import { DirectQuoteModal } from "@/components/web-pages/DirectQuoteModal";
+import type { QuoteViewer } from "@/lib/quoteViewer";
 import type {
   IArtisanProfileItem,
   IArtisanServiceItem,
@@ -37,6 +38,7 @@ interface Artisan360PublicProfileProps {
   portfolio: IPortfolioItem[];
   reviewData?: IArtisanReviewData;
   categories: ICategoryItem[];
+  viewer?: QuoteViewer | null;
 }
 
 export function Artisan360PublicProfile({
@@ -45,6 +47,7 @@ export function Artisan360PublicProfile({
   portfolio,
   reviewData,
   categories,
+  viewer = null,
 }: Artisan360PublicProfileProps) {
   // Modal state
   const [quoteModalOpen, setQuoteModalOpen] = useState(false);
@@ -308,6 +311,7 @@ export function Artisan360PublicProfile({
         categories={categories}
         preselectedServiceId={preselectedService.id}
         preselectedServiceName={preselectedService.name}
+        viewer={viewer}
       />
     </div>
   );

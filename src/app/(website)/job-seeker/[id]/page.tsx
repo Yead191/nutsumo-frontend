@@ -8,6 +8,8 @@ import {
   getMarketplaceCategories,
 } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 import { Artisan360PublicProfile } from "@/components/web-pages/artisan-profile/Artisan360PublicProfile";
+import getProfile from "@/helpers/next-fetch/core/getProfile";
+import { toQuoteViewer } from "@/lib/quoteViewer";
 
 export const revalidate = 120; // 2 minutes ISR for live artisan profiles
 
@@ -62,12 +64,13 @@ export default async function JobSeekerPublicProfilePage({
   const artisanUserId = profile.user?._id || profile._id;
 
   // 2. Parallel fetch of sub-resources (Services, Portfolio, Reviews, Categories)
-  const [servicesRes, portfolioRes, reviewsRes, categoriesRes] =
+  const [servicesRes, portfolioRes, reviewsRes, categoriesRes, user] =
     await Promise.all([
       getArtisanServices(artisanUserId),
       getArtisanPortfolioList(artisanUserId),
       getArtisanReviewsData(artisanUserId),
       getMarketplaceCategories(),
+      getProfile(),
     ]);
 
   const services = servicesRes?.data || [];
@@ -82,6 +85,7 @@ export default async function JobSeekerPublicProfilePage({
       portfolio={portfolio}
       reviewData={reviewData}
       categories={categories}
+      viewer={toQuoteViewer(user)}
     />
   );
 }

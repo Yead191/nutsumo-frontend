@@ -24,6 +24,7 @@ import type {
 } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 import { getImageUrl } from "@/lib/getImageUrl";
 import { DirectQuoteModal } from "@/components/web-pages/DirectQuoteModal";
+import type { QuoteViewer } from "@/lib/quoteViewer";
 
 interface BrowseProsClientProps {
   artisans: IArtisanProfileItem[];
@@ -34,6 +35,7 @@ interface BrowseProsClientProps {
     total: number;
     totalPage: number;
   } | null;
+  viewer?: QuoteViewer | null;
   filterParams: {
     searchTerm?: string;
     category?: string;
@@ -70,6 +72,7 @@ export function BrowseProsClient({
   categories,
   pagination,
   filterParams,
+  viewer = null,
 }: BrowseProsClientProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -385,6 +388,7 @@ export function BrowseProsClient({
               quoteTargetArtisan.user?.location,
           }}
           categories={categories}
+          viewer={viewer}
         />
       ) : null}
     </div>

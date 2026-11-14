@@ -2,22 +2,20 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   X,
   Upload,
-  Calendar,
-  DollarSign,
   MapPin,
   ShieldCheck,
   Loader2,
-  FileText,
-  CheckCircle2,
-  Sparkles,
   Trash2,
+  LogIn,
 } from "lucide-react";
 import { toast } from "sonner";
 import { createJobAction } from "@/helpers/next-fetch/apiActions/jobActions";
 import { getImageUrl } from "@/lib/getImageUrl";
+import type { QuoteViewer } from "@/lib/quoteViewer";
 import type { ICategoryItem } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 
 interface DirectQuoteModalProps {
@@ -41,6 +39,7 @@ interface DirectQuoteModalProps {
   categories?: ICategoryItem[];
   preselectedServiceId?: string;
   preselectedServiceName?: string;
+  viewer?: QuoteViewer | null;
 }
 
 export function DirectQuoteModal({
@@ -50,6 +49,7 @@ export function DirectQuoteModal({
   categories = [],
   preselectedServiceId,
   preselectedServiceName,
+  viewer = null,
 }: DirectQuoteModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -65,6 +65,7 @@ export function DirectQuoteModal({
   const [filePreviews, setFilePreviews] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [returnTo, setReturnTo] = useState("/");
 
   // Auto-match category if artisan has a matching trade
   useEffect(() => {
@@ -78,6 +79,11 @@ export function DirectQuoteModal({
     }
   }, [categories, artisan, selectedCategory]);
 
+  useEffect(() => {
+    if (!isOpen || typeof window === "undefined") return;
+    setReturnTo(`${window.location.pathname}${window.location.search}`);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const artisanUser = artisan.user || {};
@@ -85,6 +91,45 @@ export function DirectQuoteModal({
   const artisanAvatar = artisanUser.image ? getImageUrl(artisanUser.image) : null;
   const artisanTrade = artisan.trade || artisanUser.trade || "Specialist";
   const artisanUserId = artisanUser._id || artisanUser.id || artisan._id;
+  const isOwnProfile = Boolean(viewer?.id && artisanUserId && viewer.id === artisanUserId);
+
+  if (!viewer) {
+    return (
+      <QuoteAccessDialog
+        onClose={onClose}
+        title="Sign in to request a quote"
+        body={`Log in with a customer account and you can send this request to ${artisanName}. You will come back to this page.`}
+        primaryHref={`/login?redirect=${encodeURIComponent(returnTo)}`}
+        primaryLabel="Log in"
+        secondaryHref="/signup"
+        secondaryLabel="Create account"
+      />
+    );
+  }
+
+  if (viewer.role !== "USER") {
+    return (
+      <QuoteAccessDialog
+        onClose={onClose}
+        title="Customer accounts send quotes"
+        body="This login is a professional account. Quote requests are sent from a customer account, then the pro replies with a price."
+        primaryHref={viewer.role === "ARTISAN" ? "/pro" : undefined}
+        primaryLabel="Go to your dashboard"
+      />
+    );
+  }
+
+  if (isOwnProfile) {
+    return (
+      <QuoteAccessDialog
+        onClose={onClose}
+        title="This is your profile"
+        body="Customers request quotes from this page. Open your dashboard to reply when a request arrives."
+        primaryHref="/pro"
+        primaryLabel="Open dashboard"
+      />
+    );
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -441,6 +486,71 @@ export function DirectQuoteModal({
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function QuoteAccessDialog({
+  onClose,
+  title,
+  body,
+  primaryHref,
+  primaryLabel,
+  secondaryHref,
+  secondaryLabel,
+}: {
+  onClose: () => void;
+  title: string;
+  body: string;
+  primaryHref?: string;
+  primaryLabel: string;
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
+      <div className="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-8">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-4 top-4 grid h-8 w-8 place-items-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-title"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#fff1f3] text-[#d4234c]">
+          <LogIn className="h-5 w-5" />
+        </div>
+        <h2 className="mt-4 font-display text-xl font-bold text-title">{title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+        <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+          {primaryHref ? (
+            <Link
+              href={primaryHref}
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-white hover:bg-primary-hover"
+            >
+              {primaryLabel}
+            </Link>
+          ) : null}
+          {secondaryHref && secondaryLabel ? (
+            <Link
+              href={secondaryHref}
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-2xl border border-slate-200 text-sm font-semibold text-title hover:bg-slate-50"
+            >
+              {secondaryLabel}
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-2xl border border-slate-200 text-sm font-semibold text-title hover:bg-slate-50"
+            >
+              Close
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
