@@ -131,7 +131,10 @@ export async function getMyJobsAction(
 
   return nextFetch<IJobItem[]>(`/job/my-jobs${path}`, {
     method: "GET",
-    cache: "no-store",
+    cache: "force-cache",
+    next: {
+      revalidate: 60 * 15, // 15 minutes
+    },
     tags: ["my-jobs", "jobs"],
   });
 }

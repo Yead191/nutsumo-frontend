@@ -126,7 +126,10 @@ export async function getMyBookingsAction(
 
   return nextFetch<IBookingItem[]>(`/booking/my-bookings${path}`, {
     method: "GET",
-    cache: "no-store",
+    cache: "force-cache",
+    next: {
+      revalidate: 60 * 15, // 15 minutes
+    },
     tags: ["bookings", "my-bookings"],
   });
 }
