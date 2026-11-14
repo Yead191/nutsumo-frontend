@@ -82,7 +82,7 @@ export function ViewServiceModal({
           {/* Artisan's Custom Scope & Details */}
           <div className="space-y-1.5">
             <h4 className="text-xs font-bold uppercase tracking-wider text-title flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
+             
               Your Custom Scope & Labor Details
             </h4>
             {service.description ? (

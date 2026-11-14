@@ -125,6 +125,18 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
                       <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                       <span className="truncate">{location}</span>
                     </p>
+                    {(artisan.responseSamples || 0) >= 3 && (
+                      <p className="text-[11px] text-muted pt-1">
+                        {typeof artisan.responseTimeMinutes === "number"
+                          ? artisan.responseTimeMinutes < 60
+                            ? `Replies in ${Math.max(1, Math.round(artisan.responseTimeMinutes))}m`
+                            : `Replies in ${Math.round(artisan.responseTimeMinutes / 60)}h`
+                          : "Response time building"}
+                        {typeof artisan.acceptRate === "number"
+                          ? ` · Accepts ${Math.round(artisan.acceptRate * 100)}%`
+                          : ""}
+                      </p>
+                    )}
                   </div>
 
                   {/* Stats Pill Strip */}

@@ -122,6 +122,13 @@ export function PostJobWizard({
         jobJsonPayload.customServiceName = formData.customServiceName.trim();
       }
       if (formData.postCode) jobJsonPayload.postCode = formData.postCode.trim();
+      if (
+        typeof formData.latitude === "number" &&
+        typeof formData.longitude === "number"
+      ) {
+        jobJsonPayload.latitude = formData.latitude;
+        jobJsonPayload.longitude = formData.longitude;
+      }
       if (formData.preferredDate) {
         jobJsonPayload.preferredDate = new Date(formData.preferredDate).toISOString();
       }
@@ -330,6 +337,35 @@ export function PostJobWizard({
                   className="w-full rounded-xl border border-line bg-white pl-10 pr-3.5 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-[#FE375D] focus:outline-none focus:ring-1 focus:ring-[#FE375D] shadow-2xs"
                 />
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!navigator.geolocation) {
+                    toast.error("This browser cannot share a location");
+                    return;
+                  }
+                  navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                      setFormData((current) => ({
+                        ...current,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        location: current.location.trim()
+                          ? current.location
+                          : "Shared from this device",
+                      }));
+                      toast.success("Job location pinned for nearby artisans");
+                    },
+                    () => toast.error("Location permission was blocked"),
+                    { enableHighAccuracy: true, timeout: 8000 },
+                  );
+                }}
+                className="mt-2 text-xs font-semibold text-[#FE375D]"
+              >
+                {typeof formData.latitude === "number"
+                  ? "Location pinned for nearby matching"
+                  : "Use my location so nearby artisans can match"}
+              </button>
             </div>
 
             {/* Postcode */}

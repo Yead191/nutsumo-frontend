@@ -15,6 +15,8 @@ import {
   X,
   RotateCcw,
 } from "lucide-react";
+import { toast } from "sonner";
+import { saveJobAlertAction } from "@/helpers/next-fetch/apiActions/jobAlertActions";
 import { SendProposalModal } from "@/components/web-pages/jobs-marketplace/components/SendProposalModal";
 import {
   ServiceCategoryFilterModal,
@@ -158,6 +160,32 @@ export function ArtisanJobsFeed({
   };
 
   const hasActiveFilter = Boolean(activeCategory || activeService || searchTerm.trim());
+  const [savingAlert, setSavingAlert] = useState(false);
+
+  const saveAlert = async () => {
+    const keywords = searchTerm.trim();
+    if (keywords.length < 2) {
+      toast.error("Type the kind of job you want alerts for");
+      return;
+    }
+    setSavingAlert(true);
+    try {
+      const res = await saveJobAlertAction({
+        keywords,
+        category: activeCategory || undefined,
+        service: activeService || undefined,
+      });
+      if (res.success) {
+        toast.success("Alert saved. New matching jobs will notify you.");
+      } else {
+        toast.error(res.message || "Could not save the alert");
+      }
+    } catch {
+      toast.error("Could not save the alert");
+    } finally {
+      setSavingAlert(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -175,6 +203,15 @@ export function ArtisanJobsFeed({
               className="w-full rounded-2xl border border-line bg-smoke/50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
             />
           </form>
+
+          <button
+            type="button"
+            onClick={saveAlert}
+            disabled={savingAlert}
+            className="inline-flex items-center justify-center rounded-2xl border border-line bg-white px-4 py-2.5 text-xs font-bold text-title hover:border-primary hover:text-primary disabled:opacity-60"
+          >
+            {savingAlert ? "Saving..." : "Alert me"}
+          </button>
 
           {/* FILTER MODAL TRIGGER BUTTON */}
           <div className="flex items-center gap-2">

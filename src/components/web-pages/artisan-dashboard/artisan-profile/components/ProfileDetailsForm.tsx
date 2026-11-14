@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Field, TextField, TextArea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, MapPin, Save } from "lucide-react";
 import type { ProfileFormState } from "../types";
 
 interface ProfileDetailsFormProps {
@@ -23,6 +24,32 @@ export function ProfileDetailsForm({
   onChange,
   onSave,
 }: ProfileDetailsFormProps) {
+  const [locating, setLocating] = useState(false);
+  const hasPoint =
+    typeof form.serviceLatitude === "number" &&
+    typeof form.serviceLongitude === "number";
+
+  const shareLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("This browser cannot share a location");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        onChange("serviceLatitude", position.coords.latitude);
+        onChange("serviceLongitude", position.coords.longitude);
+        setLocating(false);
+        toast.success("Base location saved. Set how far you travel.");
+      },
+      () => {
+        setLocating(false);
+        toast.error("Location permission was blocked");
+      },
+      { enableHighAccuracy: true, timeout: 8000 },
+    );
+  };
+
   return (
     <Card className="rounded-3xl border border-line/80 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
       <div className="border-b border-line pb-4 flex items-center justify-between">
@@ -92,6 +119,41 @@ export function ProfileDetailsForm({
             placeholder="e.g. 78701 or SW1A 1AA"
           />
         </Field>
+
+        <div className="sm:col-span-2 rounded-2xl border border-line bg-slate-50/70 p-4">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <Field label="Travel radius (km)">
+              <TextField
+                type="number"
+                min={1}
+                max={150}
+                value={form.serviceRadiusKm}
+                onChange={(e) =>
+                  onChange("serviceRadiusKm", Number(e.target.value) || 25)
+                }
+              />
+            </Field>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={shareLocation}
+              disabled={locating}
+              className="mb-0.5 flex items-center gap-2 text-xs"
+            >
+              {locating ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <MapPin className="h-3.5 w-3.5" />
+              )}
+              Use my location
+            </Button>
+          </div>
+          <p className="mt-2 text-xs text-muted">
+            {hasPoint
+              ? `Jobs inside ${form.serviceRadiusKm} km of this point can reach you, even when the postcode text does not match.`
+              : "Share a base point so nearby jobs match by distance, not only by the same postcode text."}
+          </p>
+        </div>
 
         <Field label="Direct Phone Number">
           <TextField

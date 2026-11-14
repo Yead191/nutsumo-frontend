@@ -65,6 +65,10 @@ export interface IArtisanProfileItem {
   completedJobs?: number;
   rating?: number;
   reviewsCount?: number;
+  acceptRate?: number;
+  responseTimeMinutes?: number;
+  responseSamples?: number;
+  serviceRadiusKm?: number;
   skills?: string[];
   specialties?: string[];
   tools?: string[];

@@ -27,6 +27,12 @@ export function ProfessionalProfileManager({
     trade: user?.trade || user?.artisanProfile?.trade || "",
     location: user?.location || user?.artisanProfile?.location || "",
     postCode: user?.postCode || user?.artisanProfile?.postCode || "",
+    serviceLatitude:
+      user?.serviceLatitude ?? user?.artisanProfile?.serviceLatitude,
+    serviceLongitude:
+      user?.serviceLongitude ?? user?.artisanProfile?.serviceLongitude,
+    serviceRadiusKm:
+      user?.serviceRadiusKm ?? user?.artisanProfile?.serviceRadiusKm ?? 25,
     phone: user?.phone || "",
     experienceYears:
       user?.experienceYears ?? user?.artisanProfile?.experienceYears ?? 0,
@@ -55,6 +61,18 @@ export function ProfessionalProfileManager({
           user?.location ?? user?.artisanProfile?.location ?? prev.location,
         postCode:
           user?.postCode ?? user?.artisanProfile?.postCode ?? prev.postCode,
+        serviceLatitude:
+          user?.serviceLatitude ??
+          user?.artisanProfile?.serviceLatitude ??
+          prev.serviceLatitude,
+        serviceLongitude:
+          user?.serviceLongitude ??
+          user?.artisanProfile?.serviceLongitude ??
+          prev.serviceLongitude,
+        serviceRadiusKm:
+          user?.serviceRadiusKm ??
+          user?.artisanProfile?.serviceRadiusKm ??
+          prev.serviceRadiusKm,
         phone: user?.phone ?? prev.phone,
         experienceYears:
           user?.experienceYears ??
@@ -172,6 +190,14 @@ export function ProfessionalProfileManager({
         trade: form.trade.trim(),
         location: form.location.trim(),
         postCode: form.postCode.trim(),
+        serviceRadiusKm: Number(form.serviceRadiusKm) || 25,
+        ...(typeof form.serviceLatitude === "number" &&
+        typeof form.serviceLongitude === "number"
+          ? {
+              serviceLatitude: form.serviceLatitude,
+              serviceLongitude: form.serviceLongitude,
+            }
+          : {}),
         phone: form.phone.trim(),
         experienceYears: Number(form.experienceYears) || 0,
         bio: form.bio.trim(),

@@ -46,7 +46,7 @@ export default async function PaymentSuccessPage({
   const jobTitle = booking?.job?.title || "Home Service";
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-16 px-4 sm:px-6 bg-slate-50/50">
+    <div className="min-h-[80vh] flex items-center justify-center py-20 px-4 sm:px-6 bg-slate-50/50 ">
       <div className="w-full max-w-xl rounded-3xl border border-line bg-white p-6 sm:p-10 shadow-xl space-y-6 text-center animate-in fade-in zoom-in-95 duration-300">
         {/* SUCCESS ICON */}
         <div className="mx-auto grid h-20 w-20 place-items-center rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-inner">

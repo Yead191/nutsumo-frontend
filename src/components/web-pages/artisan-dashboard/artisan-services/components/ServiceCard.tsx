@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Tag, Eye, Edit3, Trash2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import type { ArtisanServiceItem } from "../types";
 
 interface ServiceCardProps {
@@ -18,73 +17,69 @@ export function ServiceCard({
   onEdit,
   onRemove,
 }: ServiceCardProps) {
-  return (
-    <Card className="group rounded-2xl border border-line/80 bg-white p-5 shadow-2xs hover:shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between space-y-4">
-      <div className="space-y-3">
-        {/* Badges */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 text-primary px-2.5 py-0.5 text-[11px] font-bold truncate max-w-[170px]">
-            <Tag className="h-3 w-3 shrink-0" />
-            {service.categoryName || "Trade Category"}
-          </span>
+  const live = service.isActive !== false;
+  const custom = service.source === "CUSTOM";
+  const unit = service.rateType === "hourly" ? "hour" : "day";
 
-          <span className="flex items-center gap-1">
-            {service.source === "CUSTOM" && (
-              <span className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200/70">
-                {service.reviewStatus === "PENDING_REVIEW" ? "In review" : "Custom"}
-              </span>
-            )}
+  return (
+    <article className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-line/80 bg-white shadow-2xs transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
+      <button
+        type="button"
+        onClick={() => onView(service)}
+        className="flex flex-1 flex-col px-5 pb-4 pt-5 text-left"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+            {service.categoryName || "Uncategorized"}
+          </p>
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wider ${
+              live
+                ? "bg-emerald-50 text-emerald-700"
+                : "bg-slate-100 text-slate-500"
+            }`}
+          >
             <span
-              className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                service.isActive !== false
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60"
-                  : "bg-slate-100 text-slate-500 border border-slate-200"
+              className={`h-1.5 w-1.5 rounded-full ${
+                live ? "bg-emerald-500" : "bg-slate-400"
               }`}
-            >
-              {service.isActive !== false ? "Active" : "Paused"}
-            </span>
+            />
+            {live ? "Live" : "Paused"}
           </span>
         </div>
 
-        {/* Service Name */}
-        <h3
-          onClick={() => onView(service)}
-          className="font-display text-base font-bold text-title group-hover:text-primary transition cursor-pointer line-clamp-2"
-        >
+        <h3 className="mt-3 font-display text-[20px] font-semibold leading-snug tracking-tight text-title transition group-hover:text-primary">
           {service.serviceName}
         </h3>
 
-        {/* Scope & Details */}
-        {service.description ? (
-          <p className="text-xs text-muted line-clamp-2 leading-relaxed">
-            {service.description}
-          </p>
-        ) : (
-          <p className="text-xs text-muted/60 italic">
-            Standard service scope and labor included.
+        <p className="mt-2 line-clamp-2 min-h-10 text-sm leading-relaxed text-muted">
+          {service.description || "Scope is the standard labor for this service. Add a note so clients know what is included."}
+        </p>
+
+        {custom && (
+          <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-700">
+            {service.reviewStatus === "PENDING_REVIEW"
+              ? "Specialty · awaiting catalog review"
+              : "Your specialty"}
           </p>
         )}
-      </div>
+      </button>
 
-      {/* Bottom Details & Action Bar */}
-      <div className="pt-3 border-t border-line flex items-center justify-between gap-2">
+      <div className="mt-auto flex items-center justify-between gap-3 border-t border-line/70 bg-slate-50/70 px-4 py-3">
         <div>
-          <span className="text-[10px] uppercase font-bold text-muted block tracking-wider">
-            {service.rateType} Rate
-          </span>
-          <span className="font-display text-xl font-black text-title">
-            GH₵{service.rate}
-            <span className="text-xs font-semibold text-muted">
-              /{service.rateType === "hourly" ? "hr" : "day"}
-            </span>
-          </span>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+            Per {unit}
+          </p>
+          <p className="font-display text-[22px] font-semibold tracking-tight text-title">
+            GH₵ {service.rate}
+          </p>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center rounded-2xl border border-line bg-white p-1">
           <button
             type="button"
             onClick={() => onView(service)}
-            className="p-2 rounded-xl text-muted hover:text-primary hover:bg-primary/5 transition"
+            className="rounded-xl p-2 text-muted transition hover:bg-smoke hover:text-title"
             title="View details"
           >
             <Eye className="h-4 w-4" />
@@ -92,21 +87,21 @@ export function ServiceCard({
           <button
             type="button"
             onClick={() => onEdit(service)}
-            className="p-2 rounded-xl text-muted hover:text-title hover:bg-slate-100 transition"
-            title="Edit service & rate"
+            className="rounded-xl p-2 text-muted transition hover:bg-smoke hover:text-title"
+            title="Edit service"
           >
-            <Edit3 className="h-4 w-4" />
+            <Pencil className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => onRemove(service)}
-            className="p-2 rounded-xl text-muted hover:text-rose-600 hover:bg-rose-50 transition"
+            className="rounded-xl p-2 text-muted transition hover:bg-rose-50 hover:text-rose-600"
             title="Remove service"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
       </div>
-    </Card>
+    </article>
   );
 }

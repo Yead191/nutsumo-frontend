@@ -14,6 +14,9 @@ export interface ProfileFormState {
   trade: string;
   location: string;
   postCode: string;
+  serviceLatitude?: number;
+  serviceLongitude?: number;
+  serviceRadiusKm: number;
   phone: string;
   experienceYears: number;
   bio: string;

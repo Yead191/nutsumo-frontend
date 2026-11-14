@@ -31,6 +31,8 @@ export interface PostJobFormData {
   customServiceName: string;
   location: string;
   postCode: string;
+  latitude?: number;
+  longitude?: number;
   budget: string;
   preferredDate: string;
   images: File[];

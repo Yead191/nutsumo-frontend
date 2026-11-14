@@ -30,6 +30,7 @@ export function JobDetailsManager({
   job: initialJob,
   quotations: initialQuotations,
 }: JobDetailsManagerProps) {
+  console.log(initialJob)
   const router = useRouter();
 
   const [job, setJob] = useState(initialJob);
