@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,15 +11,12 @@ import {
   ShieldCheck,
   CheckCircle2,
   ArrowRight,
-  Filter,
-  DollarSign,
-  Briefcase,
   X,
-  SlidersHorizontal,
-  Sparkles,
   Loader2,
   ChevronLeft,
   ChevronRight,
+  BadgeCheck,
+  Clock,
 } from "lucide-react";
 import type {
   IArtisanProfileItem,
@@ -49,6 +46,25 @@ interface BrowseProsClientProps {
   };
 }
 
+const availabilityOptions = [
+  { value: "all", label: "Anyone" },
+  { value: "Available", label: "Available" },
+  { value: "Booked", label: "Booked" },
+];
+
+const ratingOptions = [
+  { value: "all", label: "Any rating" },
+  { value: "4", label: "4.0+" },
+  { value: "4.5", label: "4.5+" },
+];
+
+const sortOptions = [
+  { value: "-rating", label: "Top rated" },
+  { value: "-completedJobs", label: "Most jobs" },
+  { value: "hourlyRate", label: "Price: low" },
+  { value: "-hourlyRate", label: "Price: high" },
+];
+
 export function BrowseProsClient({
   artisans,
   categories,
@@ -59,16 +75,16 @@ export function BrowseProsClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-
-  // Local form inputs
   const [searchTerm, setSearchTerm] = useState(filterParams.searchTerm || "");
   const [location, setLocation] = useState(filterParams.location || "");
-
-  // Direct Quote Modal State
   const [quoteTargetArtisan, setQuoteTargetArtisan] =
     useState<IArtisanProfileItem | null>(null);
 
-  // Server Filter Updater
+  useEffect(() => {
+    setSearchTerm(filterParams.searchTerm || "");
+    setLocation(filterParams.location || "");
+  }, [filterParams.searchTerm, filterParams.location]);
+
   const updateServerFilters = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, value]) => {
@@ -78,18 +94,16 @@ export function BrowseProsClient({
         params.set(key, value);
       }
     });
-    // Reset to page 1 unless pagination is being changed
-    if (!("page" in updates)) {
-      params.delete("page");
-    }
+    if (!("page" in updates)) params.delete("page");
+    if ("searchTerm" in updates) params.delete("q");
 
     startTransition(() => {
-      router.push(`${pathname}?${params.toString()}`);
+      router.push(params.size ? `${pathname}?${params.toString()}` : pathname);
     });
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     updateServerFilters({
       searchTerm: searchTerm.trim(),
       location: location.trim(),
@@ -104,405 +118,259 @@ export function BrowseProsClient({
     });
   };
 
+  const appliedQuery = searchParams.get("searchTerm") || searchParams.get("q") || "";
+  const appliedLocation = searchParams.get("location") || searchParams.get("zip") || "";
+  const appliedCategory = searchParams.get("category") || filterParams.category || "";
+  const appliedTrade = searchParams.get("trade") || "";
   const currentAvailability =
-    searchParams.get("availabilityStatus") ||
-    filterParams.availabilityStatus ||
-    "all";
+    searchParams.get("availabilityStatus") || filterParams.availabilityStatus || "all";
   const currentSort = searchParams.get("sort") || filterParams.sort || "-rating";
   const currentRating = searchParams.get("rating") || filterParams.rating || "all";
+  const categoryName = categories.find((item) => item._id === appliedCategory)?.name;
+  const total = pagination?.total ?? artisans.length;
 
-  const hasActiveFilters = Boolean(
-    searchParams.get("searchTerm") ||
-    searchParams.get("trade") ||
-    searchParams.get("category") ||
-    searchParams.get("location") ||
-    searchParams.get("availabilityStatus") ||
-    searchParams.get("rating") ||
-    searchParams.get("sort")
-  );
+  const chips = [
+    appliedQuery ? { key: "searchTerm", label: appliedQuery } : null,
+    appliedLocation ? { key: "location", label: appliedLocation } : null,
+    categoryName ? { key: "category", label: categoryName } : null,
+    appliedTrade ? { key: "trade", label: appliedTrade } : null,
+    currentAvailability !== "all"
+      ? { key: "availabilityStatus", label: currentAvailability }
+      : null,
+    currentRating !== "all" ? { key: "rating", label: `${currentRating}+ stars` } : null,
+    currentSort !== "-rating"
+      ? {
+          key: "sort",
+          label: sortOptions.find((item) => item.value === currentSort)?.label || "Sorted",
+        }
+      : null,
+  ].filter((chip): chip is { key: string; label: string } => Boolean(chip));
+
+  const clearChip = (key: string) => {
+    if (key === "searchTerm") setSearchTerm("");
+    if (key === "location") setLocation("");
+    updateServerFilters({
+      [key]: null,
+      ...(key === "searchTerm" ? { q: null } : {}),
+      ...(key === "location" ? { zip: null } : {}),
+    });
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-8">
-      {/* 1. FILTER & SEARCH CONTROL BAR */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-          <div className="flex items-center gap-2 text-title font-bold text-sm sm:text-base">
-            <SlidersHorizontal className="h-4 w-4 text-primary" />
-            <span>Search &amp; Filter Verified Professionals</span>
-            {isPending && <Loader2 className="h-4 w-4 animate-spin text-primary ml-2" />}
-          </div>
-
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={handleReset}
-              className="text-xs font-semibold text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <X className="h-3.5 w-3.5" />
-              <span>Reset All Filters</span>
-            </button>
-          )}
-        </div>
-
-        {/* Search & Location Bar */}
-        <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs">
-          <div className="sm:col-span-5 relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+      <form
+        onSubmit={handleSearchSubmit}
+        className="rounded-3xl border border-slate-200/80 bg-white p-3 shadow-[0_16px_40px_-24px_rgba(15,23,42,0.45)] sm:p-4"
+      >
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+          <label className="relative min-w-0 flex-1">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name, trade or skill..."
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-3 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:border-primary focus:outline-none transition-colors"
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Try plumbing, garden, cleaning…"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-sm text-title outline-none transition focus:border-primary focus:bg-white"
             />
-          </div>
+            {searchTerm ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => clearChip("searchTerm")}
+                className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-200/70 hover:text-title"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
+          </label>
 
-          <div className="sm:col-span-4 relative">
-            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <label className="relative min-w-0 lg:w-72">
+            <MapPin className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="City, region, or postcode..."
-              className="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-3 py-3 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:border-primary focus:outline-none transition-colors"
+              onChange={(event) => setLocation(event.target.value)}
+              placeholder="City or postcode"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-sm text-title outline-none transition focus:border-primary focus:bg-white"
             />
-          </div>
+            {location ? (
+              <button
+                type="button"
+                aria-label="Clear location"
+                onClick={() => clearChip("location")}
+                className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 hover:bg-slate-200/70 hover:text-title"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            ) : null}
+          </label>
 
-          <div className="sm:col-span-3">
-            <button
-              type="submit"
-              disabled={isPending}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3 px-4 text-xs sm:text-sm font-bold shadow-xs cursor-pointer transition-all disabled:opacity-50"
-            >
-              {isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Search className="h-4 w-4" />
-              )}
-              <span>Find Professionals</span>
-            </button>
-          </div>
-        </form>
+          <button
+            type="submit"
+            disabled={isPending}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-60"
+          >
+            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            Search
+          </button>
+        </div>
 
-        {/* Dropdown Filters (Category, Availability, Rating, Sort) */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
-          {/* Category Dropdown */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted uppercase font-display block">
-              Trade Category
-            </label>
-            <select
-              value={searchParams.get("category") || filterParams.category || ""}
-              onChange={(e) =>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <FilterPill
+            active={!appliedCategory}
+            onClick={() => updateServerFilters({ category: null, trade: null })}
+          >
+            All trades
+          </FilterPill>
+          {categories.map((category) => (
+            <FilterPill
+              key={category._id}
+              active={appliedCategory === category._id}
+              onClick={() =>
                 updateServerFilters({
-                  category: e.target.value,
+                  category: appliedCategory === category._id ? null : category._id,
                   trade: null,
                 })
               }
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
             >
-              <option value="">All Trade Categories</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
+              {category.name}
+            </FilterPill>
+          ))}
+        </div>
+
+        <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            {availabilityOptions.map((option) => (
+              <FilterPill
+                key={option.value}
+                active={currentAvailability === option.value}
+                onClick={() => updateServerFilters({ availabilityStatus: option.value })}
+              >
+                {option.label}
+              </FilterPill>
+            ))}
+            <span className="mx-1 hidden h-4 w-px bg-slate-200 sm:block" />
+            {ratingOptions.map((option) => (
+              <FilterPill
+                key={option.value}
+                active={currentRating === option.value}
+                onClick={() => updateServerFilters({ rating: option.value })}
+              >
+                {option.label}
+              </FilterPill>
+            ))}
+          </div>
+          <label className="flex items-center gap-2 text-xs font-semibold text-muted">
+            Sort
+            <select
+              value={currentSort}
+              onChange={(event) => updateServerFilters({ sort: event.target.value })}
+              className="h-9 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-title outline-none"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>
-          </div>
-
-          {/* Availability Status */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted uppercase font-display block">
-              Availability
-            </label>
-            <select
-              value={currentAvailability}
-              onChange={(e) => updateServerFilters({ availabilityStatus: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
-            >
-              <option value="all">All Professionals</option>
-              <option value="Available">🟢 Available Now</option>
-              <option value="Booked">🟡 Currently Booked</option>
-            </select>
-          </div>
-
-          {/* Rating */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted uppercase font-display block">
-              Minimum Rating
-            </label>
-            <select
-              value={currentRating}
-              onChange={(e) => updateServerFilters({ rating: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
-            >
-              <option value="all">Any Star Rating</option>
-              <option value="4.5">4.5 ★ &amp; Above</option>
-              <option value="4.0">4.0 ★ &amp; Above</option>
-            </select>
-          </div>
-
-          {/* Sort By */}
-          <div className="space-y-1">
-            <label className="text-[11px] font-bold text-muted uppercase font-display block">
-              Sort By
-            </label>
-            <select
-              value={currentSort}
-              onChange={(e) => updateServerFilters({ sort: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
-            >
-              <option value="-rating">Highest Rated ★</option>
-              <option value="-completedJobs">Most Completed Jobs</option>
-              <option value="hourlyRate">Starting Rate: Low to High</option>
-              <option value="-hourlyRate">Starting Rate: High to Low</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. RESULTS SUMMARY HEADER */}
-      <div className="flex items-center justify-between pb-2">
-        <div className="text-xs sm:text-sm text-muted">
-          Showing <strong className="text-title font-bold">{artisans.length}</strong> verified{" "}
-          {artisans.length === 1 ? "artisan" : "artisans"} in Ghana
+          </label>
         </div>
 
-        <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5">
+        {chips.length > 0 ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {chips.map((chip) => (
+              <button
+                key={`${chip.key}-${chip.label}`}
+                type="button"
+                onClick={() => clearChip(chip.key)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#fff1f3] px-3 py-1.5 text-xs font-semibold text-[#d4234c]"
+              >
+                {chip.label}
+                <X className="h-3.5 w-3.5" />
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-xs font-semibold text-slate-500 underline-offset-2 hover:text-title hover:underline"
+            >
+              Clear filters
+            </button>
+          </div>
+        ) : null}
+      </form>
+
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="font-display text-2xl font-bold tracking-tight text-title">
+            {total} {total === 1 ? "professional" : "professionals"}
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            Compare a rate, open the profile, or ask for a quote. Payment stays in escrow.
+          </p>
+        </div>
+        <p className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700">
           <ShieldCheck className="h-4 w-4" />
-          <span>100% Escrow Protected Direct Contracts</span>
-        </div>
+          Escrow protected
+        </p>
       </div>
 
-      {/* 3. ARTISANS GRID */}
       {artisans.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center space-y-4">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 text-primary">
-            <Search className="h-7 w-7" />
+        <div className="mt-6 rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#fff1f3] text-[#d4234c]">
+            <Search className="h-6 w-6" />
           </div>
-          <div className="space-y-1 max-w-sm mx-auto">
-            <h3 className="font-display text-base font-bold text-title">
-              No Professionals Found
-            </h3>
-            <p className="text-xs text-muted leading-relaxed">
-              We couldn't find any artisans matching your exact filters. Try broadening your search or resetting filters.
-            </p>
-          </div>
+          <h2 className="mt-4 font-display text-xl font-bold text-title">No one matches this search</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted">
+            Try a service name, a city, or clear a filter. Professionals appear when they offer that work.
+          </p>
           <button
             type="button"
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary text-white px-5 py-2 text-xs font-bold shadow-xs cursor-pointer"
+            className="mt-5 inline-flex h-11 items-center rounded-full bg-primary px-5 text-sm font-semibold text-white"
           >
-            <span>Reset All Filters</span>
+            Clear filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {artisans.map((artisan) => {
-            const user = artisan.user || ({} as any);
-            const avatarUrl = user.image ? getImageUrl(user.image) : null;
-            const displayName =
-              artisan.businessName || user.name || "Master Artisan";
-            const trade = artisan.trade || "Craftsman";
-            const locationText =
-              artisan.location || artisan.city || user.location || "Location not set";
-            const isAvailable =
-              artisan.availability !== "BOOKED" &&
-              artisan.availabilityStatus?.toLowerCase() !== "booked";
-
-            const reviewsCount = artisan.reviewsCount || 0;
-            const rating =
-              reviewsCount > 0 ? Number(artisan.rating || 0).toFixed(1) : "New";
-            const completedJobs = artisan.completedJobs || 0;
-            const matched = artisan.matchedOffering;
-            const price = matched || artisan.startingOffer;
-            const rateAmount =
-              price?.rateAmount || artisan.startingRate || artisan.hourlyRate || 0;
-            const rateSuffix =
-              String(price?.rateType || "").toUpperCase() === "DAILY" ? "/ day" : "/ hr";
-
-            const initials = (user.name || displayName || "A")
-              .split(" ")
-              .filter(Boolean)
-              .slice(0, 2)
-              .map((w: string) => w[0]?.toUpperCase())
-              .join("");
-
-            const profileHref = `/job-seeker/${user._id || artisan._id}`;
-
-            return (
-              <div
-                key={artisan._id}
-                className="group rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xs hover:shadow-lg hover:border-primary/40 transition-all flex flex-col justify-between space-y-5"
-              >
-                <div className="space-y-4">
-                  {/* Top Header: Avatar, Name, Trade */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3.5">
-                      <div className="relative h-16 w-16 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                        {avatarUrl ? (
-                          <Image
-                            src={avatarUrl}
-                            alt={displayName}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform"
-                          />
-                        ) : (
-                          <div className="h-full w-full grid place-items-center bg-primary/10 text-primary font-bold text-lg font-display">
-                            {initials}
-                          </div>
-                        )}
-                        {user.verified && (
-                          <div
-                            title="Verified Pro"
-                            className="absolute bottom-1 right-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-white shadow-xs"
-                          >
-                            <ShieldCheck className="h-3.5 w-3.5 stroke-[2.5]" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <Link
-                            href={profileHref}
-                            className="font-display text-base font-bold text-title group-hover:text-primary transition-colors hover:underline"
-                          >
-                            {displayName}
-                          </Link>
-                          {user.verified && (
-                            <span className="text-emerald-600">
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2 text-xs">
-                          <span className="font-semibold text-primary rounded-md bg-primary/10 px-2 py-0.5 text-[11px]">
-                            {matched?.name || trade}
-                          </span>
-
-                          {isAvailable ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              Available
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                              Booked
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      <span className="text-[10px] uppercase font-bold text-muted block tracking-wider">
-                        Starting At
-                      </span>
-                      <div className="font-display text-lg font-black text-title">
-                        {rateAmount ? `GH₵ ${rateAmount}` : "Quote"}
-                        {rateAmount ? (
-                          <span className="text-xs font-normal text-muted ml-0.5">
-                            {rateSuffix}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bio */}
-                  {artisan.bio ? (
-                    <p className="text-xs text-copy line-clamp-2 leading-relaxed">
-                      {artisan.bio}
-                    </p>
-                  ) : null}
-
-                  {/* Metrics */}
-                  <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-muted border-t border-slate-100">
-                    <div className="flex items-center gap-1 font-bold text-title">
-                      <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400" />
-                      <span>{rating}</span>
-                      {reviewsCount > 0 ? (
-                        <span className="text-muted font-normal text-[11px]">
-                          ({reviewsCount})
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <span>•</span>
-
-                    <div className="flex items-center gap-1 text-slate-700 font-medium">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                      <span>{completedJobs} completed</span>
-                    </div>
-
-                    <span>•</span>
-
-                    <div className="flex items-center gap-1 text-slate-700 font-medium">
-                      <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                      <span className="line-clamp-1">{locationText}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="pt-4 border-t border-slate-100 flex items-center gap-2.5">
-                  <Link
-                    href={profileHref}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-2xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-title py-2.5 text-xs font-bold transition-colors"
-                  >
-                    <span>View Profile</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={() => setQuoteTargetArtisan(artisan)}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary-hover text-white py-2.5 text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer transform active:scale-95"
-                  >
-                    <Sparkles className="h-3.5 w-3.5" />
-                    <span>Request Quote</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {artisans.map((artisan) => (
+            <ArtisanCard
+              key={artisan._id}
+              artisan={artisan}
+              onQuote={() => setQuoteTargetArtisan(artisan)}
+            />
+          ))}
         </div>
       )}
 
-      {/* 4. SERVER PAGINATION CONTROLS */}
-      {pagination && pagination.totalPage > 1 && (
-        <div className="pt-8 flex items-center justify-center gap-2">
+      {pagination && pagination.totalPage > 1 ? (
+        <div className="mt-8 flex items-center justify-center gap-2">
           <button
             type="button"
             disabled={pagination.page <= 1 || isPending}
             onClick={() => updateServerFilters({ page: String(pagination.page - 1) })}
-            className="inline-flex items-center gap-1 px-4 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-title disabled:opacity-40 cursor-pointer"
+            className="inline-flex h-10 items-center gap-1 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-title disabled:opacity-40"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span>Previous</span>
+            Previous
           </button>
-
-          <span className="text-xs font-semibold text-muted px-3">
-            Page {pagination.page} of {pagination.totalPage}
+          <span className="px-3 text-sm text-muted">
+            {pagination.page} / {pagination.totalPage}
           </span>
-
           <button
             type="button"
             disabled={pagination.page >= pagination.totalPage || isPending}
             onClick={() => updateServerFilters({ page: String(pagination.page + 1) })}
-            className="inline-flex items-center gap-1 px-4 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-title disabled:opacity-40 cursor-pointer"
+            className="inline-flex h-10 items-center gap-1 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-title disabled:opacity-40"
           >
-            <span>Next</span>
+            Next
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-      )}
+      ) : null}
 
-      {/* 5. DIRECT CUSTOM QUOTE MODAL */}
-      {quoteTargetArtisan && (
+      {quoteTargetArtisan ? (
         <DirectQuoteModal
           isOpen={Boolean(quoteTargetArtisan)}
           onClose={() => setQuoteTargetArtisan(null)}
@@ -514,11 +382,165 @@ export function BrowseProsClient({
             location:
               quoteTargetArtisan.location ||
               quoteTargetArtisan.city ||
-              (quoteTargetArtisan.user as any)?.location,
+              quoteTargetArtisan.user?.location,
           }}
           categories={categories}
         />
-      )}
+      ) : null}
     </div>
+  );
+}
+
+function replyLabel(minutes: number) {
+  if (minutes < 60) return `${Math.max(1, Math.round(minutes))}m reply`;
+  if (minutes < 60 * 24) return `${Math.round(minutes / 60)}h reply`;
+  return `${Math.max(1, Math.round(minutes / (60 * 24)))}d reply`;
+}
+
+function FilterPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+        active
+          ? "bg-title text-white"
+          : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-title"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ArtisanCard({
+  artisan,
+  onQuote,
+}: {
+  artisan: IArtisanProfileItem;
+  onQuote: () => void;
+}) {
+  const user = artisan.user;
+  const avatarUrl = user?.image ? getImageUrl(user.image) : null;
+  const displayName = artisan.businessName || user?.name || "Professional";
+  const trade = artisan.trade || user?.trade || "Trade";
+  const locationText = artisan.location || artisan.city || user?.location || "Location not set";
+  const isAvailable = artisan.availabilityStatus?.toLowerCase() !== "booked";
+  const reviewsCount = artisan.reviewsCount || 0;
+  const matched = artisan.matchedOffering;
+  const price = matched?.rateAmount ? matched : artisan.startingOffer;
+  const rateAmount = price?.rateAmount || artisan.startingRate || artisan.hourlyRate || 0;
+  const rateSuffix = String(price?.rateType || "").toUpperCase() === "DAILY" ? "/ day" : "/ hr";
+  const initials = displayName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+  const profileHref = `/job-seeker/${user?._id || artisan._id}`;
+  const showReply = (artisan.responseSamples || 0) >= 3 && artisan.responseTimeMinutes;
+
+  return (
+    <article className="group flex h-full flex-col rounded-3xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_30px_-22px_rgba(15,23,42,0.5)] transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_18px_40px_-24px_rgba(254,55,93,0.45)]">
+      <div className="flex items-start gap-3">
+        <Link href={profileHref} className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-2xl bg-slate-100">
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt=""
+              fill
+              className="object-cover transition duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <span className="grid h-full w-full place-items-center font-display text-lg font-bold text-[#d4234c]">
+              {initials || "P"}
+            </span>
+          )}
+        </Link>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <Link href={profileHref} className="flex items-center gap-1.5">
+                <h2 className="truncate font-display text-lg font-bold tracking-tight text-title">
+                  {displayName}
+                </h2>
+                {user?.verified ? (
+                  <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-label="Verified" />
+                ) : null}
+              </Link>
+              <p className="mt-0.5 truncate text-sm text-muted">{matched?.name || trade}</p>
+            </div>
+            <div className="shrink-0 text-right">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted">From</p>
+              <p className="font-display text-lg font-bold leading-none text-title">
+                {rateAmount ? `GH₵ ${rateAmount}` : "Quote"}
+              </p>
+              {rateAmount ? <p className="mt-1 text-[11px] text-muted">{rateSuffix}</p> : null}
+            </div>
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                isAvailable ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+              }`}
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? "bg-emerald-500" : "bg-amber-500"}`} />
+              {isAvailable ? "Available" : "Booked"}
+            </span>
+            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500">
+              <MapPin className="h-3 w-3" />
+              <span className="max-w-[140px] truncate">{locationText}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {artisan.bio ? (
+        <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600">{artisan.bio}</p>
+      ) : null}
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+        <span className="inline-flex items-center gap-1 font-semibold text-title">
+          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+          {reviewsCount > 0 ? Number(artisan.rating || 0).toFixed(1) : "New"}
+          {reviewsCount > 0 ? <span className="font-normal text-muted">({reviewsCount})</span> : null}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+          {artisan.completedJobs || 0} jobs
+        </span>
+        {showReply ? (
+          <span className="inline-flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5 text-slate-400" />
+            {replyLabel(artisan.responseTimeMinutes || 0)}
+          </span>
+        ) : null}
+      </div>
+
+      <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+        <Link
+          href={profileHref}
+          className="inline-flex h-11 items-center justify-center gap-1.5 rounded-2xl border border-slate-200 text-sm font-semibold text-title transition hover:border-slate-300 hover:bg-slate-50"
+        >
+          Profile
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+        <button
+          type="button"
+          onClick={onQuote}
+          className="inline-flex h-11 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-white transition hover:bg-primary-hover"
+        >
+          Request quote
+        </button>
+      </div>
+    </article>
   );
 }
