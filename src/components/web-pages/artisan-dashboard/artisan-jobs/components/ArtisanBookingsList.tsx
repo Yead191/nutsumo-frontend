@@ -109,9 +109,9 @@ export function ArtisanBookingsList({ bookings }: ArtisanBookingsListProps) {
                   </span>
                 </div>
                 {booking.totalAmount !== undefined && (
-                  <span className="text-[10px] text-emerald-700 font-semibold block" title="Statutory deductions (VAT 15%, NHIL 2.5%, GETFund 2.5% = 20%)">
-                    Your Net Payout (80%): GH₵
-                    {(booking.artisanPayoutAmount ?? Number((booking.totalAmount * 0.8).toFixed(2))).toLocaleString()}
+                  <span className="text-[10px] text-emerald-700 font-semibold block" title="VAT 15% + NHIL 2.5% + GETFund 2.5% + platform fee 2.5%">
+                    Your net payout: GH₵
+                    {(booking.artisanPayoutAmount ?? Number((booking.totalAmount * 0.775).toFixed(2))).toLocaleString()}
                   </span>
                 )}
               </div>

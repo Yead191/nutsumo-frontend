@@ -24,7 +24,11 @@ import {
 } from "lucide-react";
 import { WithdrawProposalModal } from "./WithdrawProposalModal";
 import { getImageUrl } from "@/lib/getImageUrl";
-import { calculateFeeBreakdown } from "@/lib/taxCalculator";
+import {
+  ARTISAN_NET_PAYOUT_PERCENTAGE,
+  calculateFeeBreakdown,
+  TOTAL_DEDUCTION_PERCENTAGE,
+} from "@/lib/taxCalculator";
 import type { IQuotationItem, IBookingItem } from "../types";
 
 interface ArtisanProposalsListProps {
@@ -467,8 +471,8 @@ export function ArtisanProposalsList({
                       </span>
                     </div>
                     <div className="border-x border-line/70">
-                      <span className="block text-[10px] text-muted font-medium uppercase" title="Includes VAT 15%, NHIL 2.5%, GETFund 2.5%">
-                        Deductions (20%)
+                      <span className="block text-[10px] text-muted font-medium uppercase" title="VAT 15%, NHIL 2.5%, GETFund 2.5%, platform fee 2.5%">
+                        Deductions ({TOTAL_DEDUCTION_PERCENTAGE}%)
                       </span>
                       <span className="font-semibold text-rose-600">
                         -GH₵{feeBreakdown.totalDeductions.toFixed(2)}
@@ -476,7 +480,7 @@ export function ArtisanProposalsList({
                     </div>
                     <div>
                       <span className="block text-[10px] text-emerald-700 font-semibold uppercase">
-                        Net Take-Home (80%)
+                        Net Take-Home ({ARTISAN_NET_PAYOUT_PERCENTAGE}%)
                       </span>
                       <span className="font-bold text-emerald-700">
                         GH₵{feeBreakdown.netPayoutAmount.toFixed(2)}
@@ -489,6 +493,8 @@ export function ArtisanProposalsList({
                     <span>NHIL 2.5%: -GH₵{feeBreakdown.nhilAmount.toFixed(2)}</span>
                     <span className="text-line">•</span>
                     <span>GETFund 2.5%: -GH₵{feeBreakdown.getFundLevyAmount.toFixed(2)}</span>
+                    <span className="text-line">•</span>
+                    <span>Platform 2.5%: -GH₵{feeBreakdown.platformServiceFeeAmount.toFixed(2)}</span>
                   </div>
                 </div>
 

@@ -35,14 +35,14 @@ export function AboutContent() {
       icon: TrendingUp,
       title: "Statutory Tax Compliance",
       description:
-        "We build formal trust in Ghana's skilled trades with transparent 20% statutory deductions (15% VAT, 2.5% NHIL, 2.5% GETFund), protecting both client and artisan.",
+        "We build formal trust in Ghana's skilled trades with a transparent 22.5% deduction (15% VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee), protecting both client and artisan.",
       bg: "bg-amber-50 text-amber-600 border-amber-100",
     },
     {
       icon: HeartHandshake,
       title: "Fair Artisan Economics",
       description:
-        "No predatory bidding wars, no charging craftsmen for dead leads. Independent Ghanaian artisans keep 80% net take-home earnings with fast payouts.",
+        "No predatory bidding wars, no charging craftsmen for dead leads. Independent Ghanaian artisans keep 77.5% net take-home earnings, then withdraw from their Nutsumo balance.",
       bg: "bg-indigo-50 text-indigo-600 border-indigo-100",
     },
   ];

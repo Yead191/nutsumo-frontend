@@ -20,7 +20,7 @@ const sections: LegalSection[] = [
   },
   {
     title: "3. Direct Custom Quotations & Statutory Deductions",
-    body: "Artisans submit transparent quotations specifying proposed labor, materials, and timeframes. In compliance with Ghanaian fiscal statutory regulations, all completed orders incorporate a 20% statutory and platform breakdown (15% Ghana VAT, 2.5% NHIL, and 2.5% GETFund). Artisans receive 80% net take-home earnings.",
+    body: "Artisans submit transparent quotations specifying proposed labor, materials, and timeframes. Completed orders deduct 22.5% in total: 15% Ghana VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee. Artisans receive 77.5% in their Nutsumo balance and withdraw it to a bank account or mobile money.",
     note: "Statutory Transparency: Both client and artisan receive a fully itemized receipt detailing statutory levies upon payment completion.",
   },
   {

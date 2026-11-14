@@ -46,7 +46,12 @@ import { DeliverWorkModal } from "./DeliverWorkModal";
 import { WithdrawProposalModal } from "./WithdrawProposalModal";
 import type { IJobItem } from "../types";
 import { getImageUrl } from "@/lib/getImageUrl";
-import { calculateFeeBreakdown, TAX_RATES } from "@/lib/taxCalculator";
+import {
+  ARTISAN_NET_PAYOUT_PERCENTAGE,
+  calculateFeeBreakdown,
+  TAX_RATES,
+  TOTAL_DEDUCTION_PERCENTAGE,
+} from "@/lib/taxCalculator";
 import { ImageLightboxModal } from "@/components/shared/ImageLightboxModal";
 
 interface ArtisanJobDetailViewProps {
@@ -397,7 +402,10 @@ export function ArtisanJobDetailView({
                 const vatAmount = booking.vatAmount ?? bookingFees.vatAmount;
                 const nhilAmount = booking.nhilAmount ?? bookingFees.nhilAmount;
                 const getFundAmount = booking.getFundLevyAmount ?? bookingFees.getFundLevyAmount;
+                const serviceFee = booking.platformServiceFeeAmount ?? 0;
                 const totalDeductions = booking.platformFee ?? bookingFees.totalDeductions;
+                const deductionRate = booking.platformCommissionRate ?? TOTAL_DEDUCTION_PERCENTAGE;
+                const netRate = Number((100 - deductionRate).toFixed(1));
                 const netPayout = booking.artisanPayoutAmount ?? bookingFees.netPayoutAmount;
 
                 return (
@@ -431,12 +439,18 @@ export function ArtisanJobDetailView({
                         <span>GETFund Levy (2.5%):</span>
                         <span className="text-rose-600 font-medium">-GH₵{getFundAmount.toFixed(2)}</span>
                       </div>
+                      {serviceFee > 0 && (
+                        <div className="flex justify-between text-muted text-[11px]">
+                          <span>Platform fee (2.5%):</span>
+                          <span className="text-rose-600 font-medium">-GH₵{serviceFee.toFixed(2)}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between text-copy pt-1 border-t border-dashed border-line/70 font-semibold text-[11px]">
-                        <span>Total Deductions (20%):</span>
+                        <span>Total Deductions ({deductionRate}%):</span>
                         <span className="text-rose-600 font-bold">-GH₵{totalDeductions.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t border-line/60 bg-emerald-50/70 -mx-4 -mb-1 px-4 py-2 rounded-xl">
-                        <span className="text-emerald-950 font-bold">Net Artisan Payout (80%):</span>
+                        <span className="text-emerald-950 font-bold">Net Artisan Payout ({netRate}%):</span>
                         <strong className="font-display text-sm text-emerald-700 font-black">
                           GH₵{netPayout.toFixed(2)}
                         </strong>
@@ -607,13 +621,15 @@ export function ArtisanJobDetailView({
                     <span>Contract Completed & Approved!</span>
                   </div>
                   <p className="leading-relaxed text-slate-600">
-                    Payout Status:{" "}
+                    Payout status:{" "}
                     <strong className="uppercase">
                       {booking.payoutStatus || "PENDING"}
                     </strong>
-                    . Net funds of GH₵
-                    {booking.artisanPayoutAmount?.toLocaleString()} are queued
-                    for transfer.
+                    . GH₵
+                    {booking.artisanPayoutAmount?.toLocaleString()}{" "}
+                    {booking.payoutStatus === "RELEASED"
+                      ? "is in your Nutsumo balance. Withdraw it from Overview."
+                      : "is waiting for Nutsumo to release it into your balance."}
                   </p>
                   {booking.customerRating && (
                     <div className="flex items-center gap-1.5 pt-1">
@@ -930,8 +946,14 @@ export function ArtisanJobDetailView({
                             -GH₵ {fees.getFundLevyAmount.toFixed(2)}
                           </span>
                         </div>
+                        <div className="flex justify-between text-muted text-[11px]">
+                          <span>Platform fee ({TAX_RATES.PLATFORM}%):</span>
+                          <span className="text-rose-600 font-medium">
+                            -GH₵ {fees.platformServiceFeeAmount.toFixed(2)}
+                          </span>
+                        </div>
                         <div className="flex justify-between text-copy pt-1 border-t border-dashed border-line font-medium">
-                          <span>Total Deductions (20%):</span>
+                          <span>Total Deductions ({TOTAL_DEDUCTION_PERCENTAGE}%):</span>
                           <span className="text-rose-600 font-bold">
                             -GH₵ {fees.totalDeductions.toFixed(2)}
                           </span>
@@ -939,14 +961,14 @@ export function ArtisanJobDetailView({
                       </div>
 
                       <div className="flex justify-between items-center pt-2 border-t border-line font-bold text-title bg-emerald-50/80 -mx-3.5 sm:-mx-4 -mb-3.5 sm:-mb-4 p-3 rounded-b-2xl border-emerald-100">
-                        <span className="text-emerald-950 font-display text-xs">Your Estimated Net Payout (80%):</span>
+                        <span className="text-emerald-950 font-display text-xs">Your Estimated Net Payout ({ARTISAN_NET_PAYOUT_PERCENTAGE}%):</span>
                         <span className="text-emerald-700 font-display text-sm sm:text-base font-black">
                           GH₵ {fees.netPayoutAmount.toFixed(2)}
                         </span>
                       </div>
 
                       <p className="text-[10px] text-muted leading-relaxed pt-3">
-                        ℹ️ Platform deductions cover statutory Ghana taxes & escrow protection (VAT 15%, NHIL 2.5%, GETFund 2.5%).
+                        ℹ️ Deductions are VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% platform fee. Your net is withdrawn from Overview.
                       </p>
                     </div>
                   );

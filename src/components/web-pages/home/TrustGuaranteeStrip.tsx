@@ -28,9 +28,9 @@ export function TrustGuaranteeStrip() {
     {
       icon: Receipt,
       badge: "Ghana Tax Compliant",
-      title: "Transparent 20% Statutory Deductions",
+      title: "Transparent 22.5% fee",
       description:
-        "Transparent line-item breakdowns on every quote: VAT 15%, NHIL 2.5%, GETFund 2.5%. No hidden surcharges, middleman markups, or surprises.",
+        "Every quote itemizes VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% Nutsumo platform fee. No hidden surcharges.",
       color: "bg-purple-50 text-purple-600 border-purple-100",
     },
     {

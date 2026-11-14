@@ -87,7 +87,7 @@ export function MarketplaceDualCta() {
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-emerald-300 shrink-0" />
                   <span>
-                    Keep 80% net take-home earnings with full tax transparency
+                    Keep 77.5% net, then withdraw it from your Nutsumo balance
                   </span>
                 </li>
                 <li className="flex items-center gap-2">

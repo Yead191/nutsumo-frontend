@@ -77,7 +77,7 @@ export function HowItWorksContent() {
       step: "03",
       title: "Submit Official Itemized Quotations",
       description:
-        "Propose your exact rate (hourly or fixed) and completion timeline. Transparent 20% statutory deductions (15% VAT, 2.5% NHIL, 2.5% GETFund) ensure full tax compliance.",
+        "Propose your exact rate (hourly or fixed) and completion timeline. The quote shows 22.5% in total: 15% VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% platform fee.",
       icon: FileCheck2,
       badge: "Zero Dead Lead Fees",
     },
@@ -85,7 +85,7 @@ export function HowItWorksContent() {
       step: "04",
       title: "Work with Secured Escrow & Fast Payout",
       description:
-        "Once the client accepts and funds escrow, begin work with 100% financial confidence. Payout is released directly to your bank account or mobile wallet upon client approval.",
+        "Once the client accepts and funds escrow, begin work with the payment held by Nutsumo. After completion, your net is released to your balance and you withdraw it to a bank account or mobile money.",
       icon: Banknote,
       badge: "Guaranteed Payout",
     },

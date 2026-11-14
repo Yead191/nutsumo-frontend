@@ -32,7 +32,7 @@ export function HomeTestimonialsSection({
       name: "Samuel Osei",
       role: "Homeowner",
       comment:
-        "What I love most is the 20% statutory tax breakdown. Everything was upfront — VAT, NHIL, and GETFund were clearly itemized on the proposal. The craftsman was professional, tidy, and did an outstanding tiling job.",
+        "What I love most is the fee breakdown. Everything was upfront — VAT, NHIL, GETFund, and the platform fee were itemized on the proposal. The craftsman was professional, tidy, and did an outstanding tiling job.",
       rating: 5,
     },
   ];

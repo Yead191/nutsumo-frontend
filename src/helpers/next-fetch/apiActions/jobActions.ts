@@ -136,6 +136,17 @@ export async function getMyJobsAction(
   });
 }
 
+export async function refreshCustomerJobView(jobId: string) {
+  await revalidateTags([
+    "jobs",
+    `job-${jobId}`,
+    "my-jobs",
+    "quotations",
+    `job-quotations-${jobId}`,
+  ]);
+  revalidatePath(`/account/jobs/${jobId}`);
+}
+
 /**
  * GET /job/:id — Fetch single job details
  */

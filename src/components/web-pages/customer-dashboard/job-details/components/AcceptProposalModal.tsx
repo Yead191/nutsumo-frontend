@@ -143,7 +143,7 @@ export function AcceptProposalModal({
             </div>
 
             <p className="text-[10px] text-muted pt-1">
-              * Total includes statutory Ghana taxes (VAT 15%, NHIL 2.5%, GETFund 2.5%). No hidden fees.
+              * The artisan's payout later deducts VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% platform fee. You pay the quoted amount.
             </p>
           </div>
 

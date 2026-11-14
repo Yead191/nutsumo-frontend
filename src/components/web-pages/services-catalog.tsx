@@ -96,7 +96,7 @@ export function ServicesCatalog({ categories }: ServicesCatalogProps) {
               Looking for a custom project or specialized trade?
             </h3>
             <p className="mt-1 text-xs sm:text-sm text-copy">
-              Post your job details to receive transparent proposals with 20% statutory deductions and 100% escrow protection.
+              Post your job details to receive transparent proposals with a 22.5% fee breakdown and 100% escrow protection.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">

@@ -1,18 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   FileText,
-  Clock,
-  Sparkles,
-  ShieldCheck,
   CheckCircle2,
   Inbox,
   ArrowRight,
-  MessageSquare,
 } from "lucide-react";
-import { toast } from "sonner";
 import { subscribeToNotificationSocket } from "@/components/layout/Notification/notificationSocketManager";
 
 import { JobHeroHeader } from "./components/JobHeroHeader";
@@ -23,41 +18,19 @@ import { RejectProposalModal } from "./components/RejectProposalModal";
 import { CancelJobModal } from "./components/CancelJobModal";
 import type { JobDetailsManagerProps } from "./types";
 import type { IQuotationItem } from "@/helpers/next-fetch/apiActions/quotationActions";
-import { getJobQuotationsAction } from "@/helpers/next-fetch/apiActions/quotationActions";
-import { getJobDetailsAction } from "@/helpers/next-fetch/apiActions/jobActions";
+import { refreshCustomerJobView } from "@/helpers/next-fetch/apiActions/jobActions";
 
 export function JobDetailsManager({
-  job: initialJob,
-  quotations: initialQuotations,
+  job,
+  quotations,
 }: JobDetailsManagerProps) {
-  console.log(initialJob)
   const router = useRouter();
+  const [, startTransition] = useTransition();
 
-  const [job, setJob] = useState(initialJob);
-  const [quotations, setQuotations] = useState<IQuotationItem[]>(initialQuotations);
-
-  // Modals state
   const [proposalToAccept, setProposalToAccept] = useState<IQuotationItem | null>(null);
   const [proposalToReject, setProposalToReject] = useState<IQuotationItem | null>(null);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
-  // Refresh data helper
-  const refreshData = async () => {
-    try {
-      const [jobRes, quotesRes] = await Promise.all([
-        getJobDetailsAction(job._id),
-        getJobQuotationsAction(job._id),
-      ]);
-      if (jobRes.success && jobRes.data) {
-        setJob(jobRes.data);
-      }
-      if (quotesRes.success && Array.isArray(quotesRes.data)) {
-        setQuotations(quotesRes.data);
-      }
-    } catch {}
-  };
-
-  // Real-time socket updates for new quotations (via shared singleton manager)
   useEffect(() => {
     let userId: string | undefined;
     try {
@@ -66,37 +39,45 @@ export function JobDetailsManager({
         const parsed = JSON.parse(rawUser);
         userId = parsed._id || parsed.id;
       }
-    } catch {}
+    } catch {
+      userId = undefined;
+    }
 
     if (!userId) return;
 
     const unsubscribe = subscribeToNotificationSocket({
       userId,
       onNotify: () => {
-        void refreshData();
+        startTransition(async () => {
+          await refreshCustomerJobView(job._id);
+          router.refresh();
+        });
       },
     });
 
     return () => {
       unsubscribe();
     };
-  }, [job._id]);
+  }, [job._id, router, startTransition]);
+
+  const refreshFromServer = () => {
+    startTransition(() => {
+      router.refresh();
+    });
+  };
 
   const activeQuotations = quotations.filter((q) => q.status !== "WITHDRAWN");
   const acceptedQuotation = quotations.find((q) => q.status === "ACCEPTED");
 
   return (
     <div className="space-y-8 max-w-5xl">
-      {/* 1. HERO HEADER */}
       <JobHeroHeader
         job={job}
         onCancelJob={() => setIsCancelModalOpen(true)}
       />
 
-      {/* 2. JOB DETAILS & PHOTOS */}
       <JobSpecsCard job={job} />
 
-      {/* 3. PROPOSALS SECTION */}
       <div className="space-y-4 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line/70 pb-3">
           <div className="flex items-center gap-2.5">
@@ -116,7 +97,6 @@ export function JobDetailsManager({
           )}
         </div>
 
-        {/* If a proposal has been accepted, show success highlight */}
         {acceptedQuotation && (
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -144,7 +124,6 @@ export function JobDetailsManager({
           </div>
         )}
 
-        {/* PROPOSALS LIST / EMPTY STATE */}
         {activeQuotations.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-line bg-white p-12 text-center">
             <div className="relative mb-3.5 grid h-14 w-14 place-items-center rounded-2xl bg-smoke text-[#FE375D]">
@@ -172,7 +151,6 @@ export function JobDetailsManager({
         )}
       </div>
 
-      {/* MODAL 1: ACCEPT PROPOSAL */}
       {proposalToAccept && (
         <AcceptProposalModal
           proposal={proposalToAccept}
@@ -181,7 +159,6 @@ export function JobDetailsManager({
           onClose={() => setProposalToAccept(null)}
           onSuccess={(bookingId) => {
             setProposalToAccept(null);
-            void refreshData();
             if (bookingId) {
               router.push(`/account/bookings/${bookingId}`);
             } else {
@@ -191,7 +168,6 @@ export function JobDetailsManager({
         />
       )}
 
-      {/* MODAL 2: REJECT PROPOSAL */}
       {proposalToReject && (
         <RejectProposalModal
           proposal={proposalToReject}
@@ -200,12 +176,11 @@ export function JobDetailsManager({
           onClose={() => setProposalToReject(null)}
           onSuccess={() => {
             setProposalToReject(null);
-            void refreshData();
+            refreshFromServer();
           }}
         />
       )}
 
-      {/* MODAL 3: CANCEL JOB */}
       {isCancelModalOpen && (
         <CancelJobModal
           jobId={job._id}
@@ -213,7 +188,7 @@ export function JobDetailsManager({
           onClose={() => setIsCancelModalOpen(false)}
           onSuccess={() => {
             setIsCancelModalOpen(false);
-            void refreshData();
+            refreshFromServer();
           }}
         />
       )}

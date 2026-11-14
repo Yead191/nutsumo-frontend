@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "Pricing & Transparent Platform Fees | Nutsumo",
   description:
-    "100% free for clients to browse and request quotes. Zero upfront lead fees for artisans. Learn about our transparent 20% statutory fee structure.",
+    "100% free for clients to browse and request quotes. Zero upfront lead fees for artisans. Learn about the 22.5% fee: statutory levies plus a 2.5% platform fee.",
 };
 
 export default function PricingPage() {
@@ -24,8 +24,9 @@ export default function PricingPage() {
     { name: "Ghana VAT (Standard)", rate: "15.0%", note: "Direct statutory value-added tax" },
     { name: "NHIL (National Health Insurance)", rate: "2.5%", note: "Healthcare infrastructure fund" },
     { name: "GETFund (Ghana Education Trust)", rate: "2.5%", note: "National education support levy" },
-    { name: "Total Statutory & Platform Deduction", rate: "20.0%", isTotal: true },
-    { name: "Artisan Net Take-Home Payout", rate: "80.0%", isArtisan: true },
+    { name: "Nutsumo platform fee", rate: "2.5%", note: "Charged only on a completed funded job" },
+    { name: "Total deduction", rate: "22.5%", isTotal: true },
+    { name: "Artisan net take-home", rate: "77.5%", isArtisan: true },
   ];
 
   return (
@@ -108,9 +109,9 @@ export default function PricingPage() {
 
               <div>
                 <div className="font-display text-4xl sm:text-5xl font-black text-primary">
-                  20%
+                  22.5%
                   <span className="text-xs sm:text-sm font-bold text-slate-700 ml-1.5">
-                    Statutory Platform Deduction
+                    Total deduction
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-copy mt-2 leading-relaxed">
@@ -129,11 +130,11 @@ export default function PricingPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  <span><strong>80% Net Guaranteed:</strong> Paid directly to your bank or mobile wallet</span>
+                  <span><strong>77.5% net:</strong> Lands in your Nutsumo balance, then you withdraw to bank or mobile money</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  <span><strong>Full Tax Compliance:</strong> 15% VAT, 2.5% NHIL, 2.5% GETFund remitted</span>
+                  <span><strong>Full breakdown:</strong> 15% VAT, 2.5% NHIL, 2.5% GETFund, plus a 2.5% platform fee</span>
                 </div>
               </div>
             </div>
@@ -157,7 +158,7 @@ export default function PricingPage() {
               Tax Transparency
             </span>
             <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-title">
-              Complete Breakdown of the 20% Deduction
+              Complete breakdown of the 22.5% deduction
             </h2>
             <p className="text-xs sm:text-sm text-muted">
               Here is exactly how every cedi is allocated when an escrow order is completed:

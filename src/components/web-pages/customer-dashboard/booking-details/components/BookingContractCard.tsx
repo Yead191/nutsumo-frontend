@@ -45,7 +45,7 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
               ({booking.rateType} Pricing)
             </span>
             <span className="text-[9px] text-slate-500 block mt-1 font-medium">
-              Incl. statutory taxes (VAT, NHIL, GETFund)
+              Artisan payout deducts VAT, NHIL, GETFund, and the platform fee
             </span>
           </div>
 

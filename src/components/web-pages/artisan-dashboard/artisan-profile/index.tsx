@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useTransition } from "react";
 import { toast } from "sonner";
 import { updateArtisanProfile } from "@/helpers/next-fetch/apiActions/artisanActions";
+import { connectStripeAccountAction } from "@/helpers/next-fetch/apiActions/walletActions";
 import { ProfileHeroCard } from "./components/ProfileHeroCard";
 import { ProfileDetailsForm } from "./components/ProfileDetailsForm";
 import type {
@@ -15,6 +16,14 @@ export function ProfessionalProfileManager({
   user,
 }: ProfessionalProfileManagerProps) {
   const [isSaving, setIsSaving] = useState(false);
+  const [stripePending, startStripe] = useTransition();
+  const stripeInfo = user?.stripeAccountInfo;
+  const stripeConnected = Boolean(
+    stripeInfo?.accountId &&
+      (stripeInfo.details_submitted ||
+        stripeInfo.payouts_enabled ||
+        stripeInfo.loginUrl),
+  );
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -252,6 +261,18 @@ export function ProfessionalProfileManager({
         onResetImage={handleResetImage}
         onAvailabilityChange={handleAvailabilityChange}
         onSave={handleSave}
+        stripeConnected={stripeConnected}
+        stripePending={stripePending}
+        onStripe={() => {
+          startStripe(async () => {
+            const result = await connectStripeAccountAction();
+            if (!result.success || !result.data?.url) {
+              toast.error(result.message || "Could not open Stripe");
+              return;
+            }
+            window.location.assign(result.data.url);
+          });
+        }}
       />
 
       <ProfileDetailsForm

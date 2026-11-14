@@ -55,13 +55,13 @@ const faqs: FaqItem[] = [
   },
   {
     category: "artisan",
-    q: "How does the 20% platform and statutory deduction work?",
-    a: "Nutsumo deducts a transparent 20% only when you successfully complete a funded job and the client releases escrow. This breakdown covers 15% standard Ghana VAT, 2.5% NHIL, and 2.5% GETFund. You keep 80% guaranteed net payout.",
+    q: "How does the 22.5% fee work?",
+    a: "Nutsumo deducts 22.5% only when a funded job is completed and released. That is 15% Ghana VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee. You keep 77.5% in your Nutsumo balance.",
   },
   {
     category: "artisan",
     q: "How and when do I receive payout after job completion?",
-    a: "Once the customer signs off the completed milestone, your 80% net payout is automatically released. You can withdraw directly to your Ghanaian bank account or MTN MoMo / Vodafone Cash / AirtelTigo wallet with instant or same-day processing.",
+    a: "After you deliver and the customer confirms, Nutsumo reviews the job and releases your 77.5% net into your Nutsumo balance. From Overview you withdraw that balance to a Ghanaian bank account or MTN MoMo, Vodafone Cash, or AirtelTigo.",
   },
   {
     category: "artisan",

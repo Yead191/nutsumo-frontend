@@ -20,9 +20,9 @@ export function HomeFaqSection({ faqs = [] }: HomeFaqSectionProps) {
     },
     {
       _id: "faq-2",
-      question: "What are the 20% statutory deductions shown on quotations?",
+      question: "What is the 22.5% fee shown on quotations?",
       answer:
-        "Nutsumo fully complies with Ghana's statutory tax and revenue laws. Every quote shows an exact transparent breakdown of the 20% total deductions: Value Added Tax (VAT 15%), National Health Insurance Levy (NHIL 2.5%), and Ghana Education Trust Fund Levy (GETFund 2.5%). Homeowners pay only the agreed contract price with zero hidden markups, and artisans receive their 80% net take-home earnings directly.",
+        "Every quote shows the full 22.5%: VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% Nutsumo platform fee. Homeowners pay the agreed contract price. Artisans receive 77.5% in their Nutsumo balance and withdraw it to a bank account or mobile money.",
     },
     {
       _id: "faq-3",

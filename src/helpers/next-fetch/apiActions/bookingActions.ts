@@ -74,6 +74,8 @@ export interface IBookingItem {
   getFundLevyRate?: number;
   getFundLevyAmount?: number;
   platformCommissionRate?: number;
+  platformServiceFeeRate?: number;
+  platformServiceFeeAmount?: number;
   platformFee?: number;
   artisanPayoutAmount?: number;
   stripeSessionId?: string;

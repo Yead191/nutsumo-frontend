@@ -57,7 +57,7 @@ export function ArtisanAboutCredentials({
     },
     {
       title: "Statutory Tax Compliant",
-      desc: "Registered under Ghanaian tax framework (VAT, NHIL, GETFund).",
+      desc: "Quotes show VAT, NHIL, GETFund, and the Nutsumo platform fee.",
     },
   ];
 

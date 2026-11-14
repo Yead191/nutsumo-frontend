@@ -121,7 +121,7 @@ export function ServiceArtisansContainer({
                 <span>•</span>
                 <span className="inline-flex items-center gap-1.5 font-bold text-title">
                   <CheckCircle2 className="h-4 w-4 text-indigo-600" />
-                  <span>Transparent 20% Tax Compliance</span>
+                  <span>Transparent 22.5% fees</span>
                 </span>
               </div>
             </div>

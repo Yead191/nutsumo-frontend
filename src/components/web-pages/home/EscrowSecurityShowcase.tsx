@@ -28,7 +28,7 @@ export function EscrowSecurityShowcase() {
       feature: "Pricing Transparency",
       traditional: "Hidden surprise markups and arbitrary middleman fees",
       nutsumo:
-        "20% statutory deductions (VAT 15%, NHIL 2.5%, GETFund 2.5%) itemized",
+        "22.5% itemized: VAT 15%, NHIL 2.5%, GETFund 2.5%, platform fee 2.5%",
     },
     {
       feature: "Identity & Trust",

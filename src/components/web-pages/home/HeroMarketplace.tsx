@@ -183,7 +183,7 @@ export function HeroMarketplace({
               <Sparkles className="h-5 w-5" />
             </div>
             <strong className="block font-display text-xl sm:text-2xl font-bold text-title">
-              20% Statutory
+              22.5% fees
             </strong>
             <span className="text-xs text-muted block font-medium">
               Transparent Ghana Levies

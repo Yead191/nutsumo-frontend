@@ -23,7 +23,7 @@ export function DiscoveryFunnelSteps() {
       icon: FileText,
       title: "Request Custom Quotes",
       description:
-        "Describe your project and receive competitive, transparent proposals with full statutory tax breakdowns (VAT 15%, NHIL 2.5%, GETFund 2.5%).",
+        "Describe your project and receive proposals with the full fee breakdown: VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% platform fee.",
       highlight: "0% Hidden Fees",
     },
     {
@@ -39,7 +39,7 @@ export function DiscoveryFunnelSteps() {
       icon: CheckCircle2,
       title: "Inspect & Release Payout",
       description:
-        "Inspect the completed work on site. Satisfied? Authorize release of the net 80% payout to the craftsman with a single click.",
+        "Inspect the completed work. When you confirm, Nutsumo can release the artisan's 77.5% net into their balance.",
       highlight: "Guaranteed Satisfaction",
     },
   ];
