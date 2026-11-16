@@ -1,5 +1,5 @@
 /**
- * Single product model for LocalHomeFix role journeys.
+ * Single product model for nutsumo role journeys.
  * Keep UI copy and gates aligned with this file.
  */
 
@@ -60,7 +60,7 @@ export const roleFeatures: Record<
       "Manage profile, addresses, security",
     ],
     cannot: [
-      "Pay LocalHomeFix a project fee (there is none)",
+      "Pay nutsumo a project fee (there is none)",
       "See the pro job board",
       "Start pro membership",
       "Quote other homeowners' jobs",

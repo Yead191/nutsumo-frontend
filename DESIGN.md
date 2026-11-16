@@ -1,6 +1,6 @@
-# LocalHomeFix design system
+# nutsumo design system
 
-Visual tokens taken from the Plumby template (`html.vecurosoft.com/plumby`), then tightened for a product UI. Content stays LocalHomeFix.
+Visual tokens taken from the Plumby template (`html.vecurosoft.com/plumby`), then tightened for a product UI. Content stays nutsumo.
 
 ## Color
 

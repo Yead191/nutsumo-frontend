@@ -1322,7 +1322,7 @@ export function RequestDetail({
                   className="mt-0.5 rounded border-line text-primary focus:ring-primary"
                 />
                 <span>
-                  I have inspected the finished work, tested all repaired fixtures, and confirm 100% satisfaction under the LocalHomeFix Workmanship Guarantee.
+                  I have inspected the finished work, tested all repaired fixtures, and confirm 100% satisfaction under the nutsumo Workmanship Guarantee.
                 </span>
               </label>
             </div>

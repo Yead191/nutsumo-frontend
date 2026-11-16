@@ -81,7 +81,7 @@ export function WorkOrderReceipt({
                 LH
               </span>
               <span className="font-display text-lg font-bold tracking-tight text-title">
-                LocalHomeFix
+                nutsumo
               </span>
               <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200 flex items-center gap-1">
                 <CheckCircle2 className="h-3 w-3" /> Paid &amp; Completed
@@ -211,7 +211,7 @@ export function WorkOrderReceipt({
                 <tr className="bg-emerald-50/40">
                   <td className="py-3 px-4">
                     <span className="font-medium text-emerald-800">
-                      LocalHomeFix Platform Fee
+                      nutsumo Platform Fee
                     </span>
                     <span className="block text-[11px] text-emerald-700">
                       Direct contractor model — $0 middleman fee
@@ -260,7 +260,7 @@ export function WorkOrderReceipt({
                 $1,000 Peace of Mind Guarantee
               </p>
               <p className="text-[11px] text-emerald-800 leading-snug">
-                Backed by LocalHomeFix Workmanship &amp; Property Protection.
+                Backed by nutsumo Workmanship &amp; Property Protection.
               </p>
             </div>
           </div>

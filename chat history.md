@@ -1,6 +1,6 @@
 # Nutsumo Marketplace — Conversation & Development History
 
-**Project:** Nutsumo (LocalHomeFix) Service Marketplace  
+**Project:** Nutsumo (nutsumo) Service Marketplace  
 **Workspace:** `nutsumo-frontend`  
 **Date:** November 10, 2026  
 **Objective:** End-to-End Escrow & Booking Lifecycle Sync (Large-Scale Enterprise Marketplace Architecture)
@@ -14,7 +14,7 @@
 > tmr ki amr ei project er requirement goal mone ache?
 
 **Assistant:**
-> হ্যাঁ, **Nutsumo** (LocalHomeFix) প্রজেক্টের রিকোয়ারমেন্ট এবং গোল আমার খুব ভালোভাবেই মনে আছে। 
+> হ্যাঁ, **Nutsumo** (nutsumo) প্রজেক্টের রিকোয়ারমেন্ট এবং গোল আমার খুব ভালোভাবেই মনে আছে। 
 > 
 > নিচে মূল বিষয়গুলোর একটি সংক্ষেপ তুলে ধরছি:
 > 
@@ -46,7 +46,7 @@
 > 
 > ### ৩. বর্তমান ফ্রন্টএন্ড আর্কিটেকচার ও ডিজাইন সিস্টেম
 > - **ফ্রন্টএন্ড স্ট্যাক:** Next.js (App Router), TypeScript, Tailwind CSS, Ant Design (কাস্টম থিম)।
-> - **ডিজাইন টোকেনস (LocalHomeFix / Plumby):** 
+> - **ডিজাইন টোকেনস (nutsumo / Plumby):** 
 >   - Primary: `#0D56D6`
 >   - Secondary/Hover: `#00A1DE`
 >   - Typography: Rubik (Headings / Buttons) ও Archivo (Body copy)।

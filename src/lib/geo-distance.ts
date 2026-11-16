@@ -1,7 +1,7 @@
 import type { Professional } from "@/types";
 
 /**
- * Coordinate lookup for Texas cities & ZIP codes used in LocalHomeFix
+ * Coordinate lookup for Texas cities & ZIP codes used in nutsumo
  */
 export const LOCATION_COORDINATES: Record<string, { lat: number; lng: number }> = {
   // Austin Central / Downtown & Neighborhoods

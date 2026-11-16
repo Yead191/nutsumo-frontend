@@ -13,7 +13,7 @@ export const homeownerFaqs = [
   },
   {
     q: "How do payments work?",
-    a: "You agree on the price and pay your contractor directly after the job is completed to your satisfaction—via credit card, check, cash, or digital transfer. LocalHomeFix never holds your funds or charges middleman checkout surcharges.",
+    a: "You agree on the price and pay your contractor directly after the job is completed to your satisfaction—via credit card, check, cash, or digital transfer. nutsumo never holds your funds or charges middleman checkout surcharges.",
   },
   {
     q: "What happens if I'm not satisfied or an issue arises?",
@@ -40,7 +40,7 @@ export const proFaqs = [
   },
   {
     q: "Do you take a cut of my earnings or charge for leads?",
-    a: "Never. Unlike Angi, Thumbtack, or Yelp that sell expensive, shared leads to 4+ pros or take a 15–25% cut of every project, LocalHomeFix operates on a transparent, flat monthly subscription. You keep 100% of every dollar you charge.",
+    a: "Never. Unlike Angi, Thumbtack, or Yelp that sell expensive, shared leads to 4+ pros or take a 15–25% cut of every project, nutsumo operates on a transparent, flat monthly subscription. You keep 100% of every dollar you charge.",
   },
   {
     q: "Do you sell the same lead to multiple contractors?",
@@ -60,7 +60,7 @@ export const proFaqs = [
   },
   {
     q: "How and when do homeowners pay me?",
-    a: "Homeowners pay you directly upon job completion using your preferred payment methods (cash, check, card, or direct transfer). LocalHomeFix never withholds your funds or charges checkout processing surcharges.",
+    a: "Homeowners pay you directly upon job completion using your preferred payment methods (cash, check, card, or direct transfer). nutsumo never withholds your funds or charges checkout processing surcharges.",
   },
   {
     q: "Can I pause or cancel my membership anytime?",

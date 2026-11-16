@@ -145,14 +145,14 @@ export const seedApplications: AdminApplication[] = [
     identityStatus: "verified",
     submittedAt: "2026-10-12",
     status: "needs_info",
-    reviewerNote: "COI coverage is $500k. We need $1M general liability and LocalHomeFix listed as certificate holder.",
+    reviewerNote: "COI coverage is $500k. We need $1M general liability and nutsumo listed as certificate holder.",
     history: [
       { id: "d-e1", at: "2026-10-12", action: "submitted", by: "System" },
       {
         id: "d-e2",
         at: "2026-10-14",
         action: "needs_info",
-        note: "COI coverage is $500k. We need $1M general liability and LocalHomeFix listed as certificate holder.",
+        note: "COI coverage is $500k. We need $1M general liability and nutsumo listed as certificate holder.",
         by: "Avery Cole",
       },
     ],

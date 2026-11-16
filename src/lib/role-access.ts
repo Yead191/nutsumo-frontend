@@ -105,7 +105,7 @@ export function resolveRoleAccess(
       canProMessage: false,
       canManageMembership: false,
       notice:
-        "Homeowner plan is free. No LocalHomeFix project fee or membership.",
+        "Homeowner plan is free. No nutsumo project fee or membership.",
       blockedReason: null,
     };
   }

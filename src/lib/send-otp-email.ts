@@ -9,9 +9,9 @@ export async function sendOtpEmail(email: string, code: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.EMAIL_FROM ?? "LocalHomeFix <noreply@localhomefix.com>",
+      from: process.env.EMAIL_FROM ?? "nutsumo <noreply@nutsumo.com>",
       to: [email],
-      subject: "Your LocalHomeFix password reset code",
+      subject: "Your nutsumo password reset code",
       text: `Your password reset code is ${code}. It expires in 10 minutes. If you did not ask for this, you can ignore the email.`,
     }),
   });

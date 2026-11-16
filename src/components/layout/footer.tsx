@@ -43,7 +43,7 @@ const groups = [
 
 const socials = [
   {
-    href: "https://www.facebook.com/localhomefix",
+    href: "https://www.facebook.com/nutsumo",
     label: "Facebook",
     icon: (
       <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
@@ -52,7 +52,7 @@ const socials = [
     ),
   },
   {
-    href: "https://www.instagram.com/localhomefix",
+    href: "https://www.instagram.com/nutsumo",
     label: "Instagram",
     icon: (
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -63,7 +63,7 @@ const socials = [
     ),
   },
   {
-    href: "https://www.linkedin.com/company/localhomefix",
+    href: "https://www.linkedin.com/company/nutsumo",
     label: "LinkedIn",
     icon: (
       <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
@@ -72,7 +72,7 @@ const socials = [
     ),
   },
   {
-    href: "https://x.com/localhomefix",
+    href: "https://x.com/nutsumo",
     label: "X",
     icon: (
       <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">

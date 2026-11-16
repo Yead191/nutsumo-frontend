@@ -126,7 +126,7 @@ export const demoProUser: User = {
 export const demoAdminUser: User = {
   id: "user-admin-1",
   name: "Avery Cole",
-  email: "ops@localhomefix.com",
+  email: "ops@nutsumo.com",
   role: "admin",
   phone: "(512) 555-0100",
   city: "Austin",
@@ -1468,7 +1468,7 @@ export const defaultProProfile: ProProfileData = {
     active: true,
     title: "$25 Off First Diagnostic Call",
     discount: "$25 OFF",
-    terms: "Valid for all first-time residential homeowners across Travis & Williamson counties. Mention LocalHomeFix on booking.",
+    terms: "Valid for all first-time residential homeowners across Travis & Williamson counties. Mention nutsumo on booking.",
   },
   services: [
     {
