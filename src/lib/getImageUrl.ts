@@ -7,7 +7,7 @@ export function getImageUrl(imageurl: unknown): string | undefined {
     const baseUrl = (
       process.env.IMAGE_BASE_URL ||
       process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
-      "https://api.ifundayiti.org"
+      "http://31.97.58.125:5005"
     ).replace("/files", "");
 
     return `${baseUrl}${imageurl}`;
@@ -20,7 +20,7 @@ export function getImageUrl(imageurl: unknown): string | undefined {
   const baseUrl =
     process.env.IMAGE_BASE_URL ||
     process.env.NEXT_PUBLIC_IMAGE_BASE_URL ||
-    "https://api.ifundayiti.org/files";
+    "http://31.97.58.125:5005/files";
 
   return `${baseUrl}${imageurl}`;
 }
