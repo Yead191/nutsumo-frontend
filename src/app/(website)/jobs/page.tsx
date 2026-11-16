@@ -46,7 +46,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const pagination = jobsRes.pagination || null;
 
   return (
-    <div className="container-site py-8 sm:py-12">
+    <div className="container-site py-8 sm:py-12 pt-24!">
       <JobsMarketplaceContainer
         initialJobs={jobs}
         categories={categories}

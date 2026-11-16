@@ -61,6 +61,7 @@ export function ArtisanOverview({
       (stripe.details_submitted || stripe.payouts_enabled || stripe.loginUrl),
   );
   const photo = getImageUrl(user?.image);
+  console.log(photo)
   const maxEarned = Math.max(...dashboard.monthly.map((point) => point.earned), 1);
   const yearEarned = dashboard.monthly.reduce((sum, point) => sum + point.earned, 0);
   const yearJobs = dashboard.monthly.reduce((sum, point) => sum + point.jobs, 0);

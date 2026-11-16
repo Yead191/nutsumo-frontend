@@ -11,11 +11,7 @@ export function JobsSearchHero() {
       <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
 
       <div className="relative z-10 max-w-3xl">
-        {/* EYEBROW */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-rose-300 backdrop-blur-md mb-4">
-          <Sparkles className="h-3.5 w-3.5 text-[#FE375D]" />
-          <span>Real-time Ghana Job Opportunities</span>
-        </div>
+    
 
         {/* HEADLINE */}
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
