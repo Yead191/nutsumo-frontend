@@ -14,15 +14,15 @@ export function TrustGuaranteeStrip() {
       badge: "Escrow Protection",
       title: "100% Escrow Milestone Safety",
       description:
-        "Your deposit is held safely in escrow. The artisan begins work immediately, but funds are released only after you inspect and approve completion.",
+        "Your deposit is held safely in escrow. The professional begins work immediately, but funds are released only after you inspect and approve completion.",
       color: "bg-emerald-50 text-emerald-600 border-emerald-100",
     },
     {
       icon: ShieldCheck,
       badge: "Identity Screening",
-      title: "Verified Craftsmen & Trade Credentials",
+      title: "Verified Workers & Professionals",
       description:
-        "Every artisan undergoes identity and credential screening. Browse verified customer ratings, completed job histories, and certified portfolios.",
+        "Every worker undergoes identity screening, whether their skill is formal or informal. Browse verified ratings, completed job histories, skills and portfolios.",
       color: "bg-blue-50 text-blue-600 border-blue-100",
     },
     {
@@ -54,8 +54,7 @@ export function TrustGuaranteeStrip() {
             Built for Trust, Security &amp; Fair Compensation
           </h2>
           <p className="text-sm sm:text-base text-copy font-sans">
-            We eliminated predatory middleman fees and shady unverified
-            contractors. Experience direct hiring backed by guaranteed escrow
+            We eliminated predatory middleman fees and unverified strangers. Experience direct hiring backed by guaranteed escrow
             protection.
           </p>
         </div>

@@ -134,7 +134,7 @@ export function BookingCard({ booking }: BookingCardProps) {
             Job Details
           </span>
           <h3 className="font-display text-base sm:text-lg font-bold text-title mt-0.5 line-clamp-1">
-            {booking.job?.title || "Home Repair Service"}
+            {booking.job?.title || "Professional Service"}
           </h3>
 
           <div className="mt-3 space-y-1.5 text-xs text-muted">

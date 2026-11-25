@@ -36,7 +36,7 @@ export function ServiceArtisanCard({
 }: ServiceArtisanCardProps) {
   const user = artisan.user || ({} as any);
   const avatarUrl = user.image ? getImageUrl(user.image) : null;
-  const displayName = artisan.businessName || user.name || "Master Artisan";
+  const displayName = artisan.businessName || user.name || "Top Professional";
   const trade = artisan.trade || "Craftsman";
   const location = artisan.location || artisan.city || user.location || "Location not set";
   const isAvailable =

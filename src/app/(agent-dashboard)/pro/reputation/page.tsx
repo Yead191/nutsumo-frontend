@@ -2,7 +2,7 @@ import { ArtisanReputationManager } from "@/components/web-pages/artisan-reputat
 
 export const metadata = {
   title: "Reputation & Badges | Nutsumo",
-  description: "View your verified platform badges, customer ratings, completed jobs, and Super Artisan status.",
+  description: "View your verified platform badges, customer ratings, completed jobs, and Super Pro status.",
 };
 
 export default function ProReputationPage() {

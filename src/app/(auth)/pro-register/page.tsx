@@ -78,8 +78,8 @@ export default function ProRegisterPage() {
         Join as a professional
       </h1>
       <p className="mt-1.5 font-sans text-sm leading-relaxed text-[#666]">
-        {step === 0 && "Create your professional account to connect directly with Austin homeowners."}
-        {step === 1 && "Tell homeowners about your trade specialty and craftsmanship experience."}
+        {step === 0 && "Create your professional account to connect directly with clients who need your skills."}
+        {step === 1 && "Tell clients about your skills, profession and experience."}
         {step === 2 && "Set your local service territory and service coverage radius."}
         {step === 3 && "Last step: verify credentials and authorize a quick identity screening."}
       </p>
@@ -148,13 +148,13 @@ export default function ProRegisterPage() {
               <TextField
                 value={form.businessName}
                 onChange={(e) => patch({ businessName: e.target.value })}
-                placeholder="Joe's Plumbing LLC"
+                placeholder="e.g. Ama's Kitchen, or your full name"
               />
             </Field>
-            <Field label="Primary trade *">
+            <Field label="Primary skill / profession *">
               <NativeSelect value={form.trade} onChange={(e) => patch({ trade: e.target.value })}>
                 <option value="" disabled>
-                  Select your primary trade
+                  Select your primary skill or profession
                 </option>
                 {categories.map((item) => (
                   <option key={item.id} value={item.slug}>
@@ -201,7 +201,7 @@ export default function ProRegisterPage() {
               <div className="min-w-0">
                 <h2 className="font-display text-base font-semibold text-title">Background check</h2>
                 <p className="mt-1 text-sm text-copy">
-                  Identity and safety screening required before your professional listing goes live to local homeowners.
+                  Identity and safety screening required before your professional listing goes live to local clients.
                 </p>
               </div>
             </div>

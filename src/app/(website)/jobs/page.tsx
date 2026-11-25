@@ -7,7 +7,7 @@ import { JobsMarketplaceContainer } from "@/components/web-pages/jobs-marketplac
 export const metadata: Metadata = {
   title: "Find Jobs & Opportunities in Ghana · Nutsumo",
   description:
-    "Browse real-time home repair, construction, and maintenance jobs posted by verified clients in Ghana. Submit quotes directly with zero commission.",
+    "Browse real-time jobs posted by verified clients in Ghana — domestic work, driving, catering, childcare, security, trades, office and creative roles. Submit quotes directly with zero commission.",
 };
 
 interface JobsPageProps {

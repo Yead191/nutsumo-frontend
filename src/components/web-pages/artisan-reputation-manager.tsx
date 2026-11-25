@@ -26,7 +26,7 @@ export function ArtisanReputationManager() {
     onTimeRate: 100,
     repeatClientRate: 46,
     superArtisanStatus: true,
-    reputationTier: "Top Rated Super Artisan",
+    reputationTier: "Top Rated Super Pro",
     memberSince: "May 2024",
   };
 
@@ -55,7 +55,7 @@ export function ArtisanReputationManager() {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <h2 className="font-display text-lg font-bold text-title">
-                  Super Artisan Status • Active
+                  Super Pro Status • Active
                 </h2>
                 <span className="rounded-md bg-amber-100 text-amber-800 px-2 py-0.5 text-[11px] font-bold">
                   Top 5% Platform Tier
@@ -130,7 +130,7 @@ export function ArtisanReputationManager() {
               {reputation.repeatClientRate}%
             </span>
           </div>
-          <p className="text-xs text-muted">Homeowners who re-hired you</p>
+          <p className="text-xs text-muted">Clients who re-hired you</p>
         </Card>
       </div>
 

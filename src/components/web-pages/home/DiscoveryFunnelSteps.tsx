@@ -15,7 +15,7 @@ export function DiscoveryFunnelSteps() {
       icon: Search,
       title: "Discover Verified Pros",
       description:
-        "Search through curated categories or compare top-rated craftsmen by customer reviews, trade licenses, and real portfolio photos.",
+        "Search across every profession — from tradespeople and chefs to drivers, nannies and office professionals — and compare by reviews, skills, credentials and past work.",
       highlight: "Pre-screened & Vetted",
     },
     {
@@ -23,7 +23,7 @@ export function DiscoveryFunnelSteps() {
       icon: FileText,
       title: "Request Custom Quotes",
       description:
-        "Describe your project and receive proposals with the full fee breakdown: VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% platform fee.",
+        "Describe the job you need done and receive proposals with the full fee breakdown: VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% platform fee.",
       highlight: "0% Hidden Fees",
     },
     {
@@ -31,7 +31,7 @@ export function DiscoveryFunnelSteps() {
       icon: Lock,
       title: "Fund Secure Escrow",
       description:
-        "Accept the quotation and fund escrow through Stripe. The artisan begins work immediately, but funds remain locked in neutral platform escrow.",
+        "Accept the quotation and fund escrow through Stripe. The professional begins work immediately, but funds remain locked in neutral platform escrow.",
       highlight: "100% Protected Deposit",
     },
     {
@@ -39,7 +39,7 @@ export function DiscoveryFunnelSteps() {
       icon: CheckCircle2,
       title: "Inspect & Release Payout",
       description:
-        "Inspect the completed work. When you confirm, Nutsumo can release the artisan's 77.5% net into their balance.",
+        "Review the completed work. When you confirm, Nutsumo releases the worker's 77.5% net into their balance.",
       highlight: "Guaranteed Satisfaction",
     },
   ];
@@ -52,12 +52,12 @@ export function DiscoveryFunnelSteps() {
             How It Works
           </span>
           <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-title tracking-tight">
-            The Safe Way to Hire Local Trade Pros
+            The Safe Way to Hire Skilled Workers & Professionals
           </h2>
           <p className="text-sm sm:text-base text-copy font-sans">
-            Our 4-step escrow-backed workflow protects homeowners from
-            unfinished jobs and guarantees fair, timely payouts for hardworking
-            craftsmen.
+            Our 4-step escrow-backed workflow protects clients from unfinished
+            jobs and guarantees fair, timely payouts for hardworking people in
+            every profession.
           </p>
         </div>
 

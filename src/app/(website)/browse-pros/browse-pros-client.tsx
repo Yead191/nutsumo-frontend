@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,10 +17,15 @@ import {
   ChevronRight,
   BadgeCheck,
   Clock,
+  Check,
+  ChevronDown,
+  LayoutGrid,
 } from "lucide-react";
-import type {
-  IArtisanProfileItem,
-  ICategoryItem,
+import {
+  getServicesByCategory,
+  type IArtisanProfileItem,
+  type ICategoryItem,
+  type IServiceItem,
 } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 import { getImageUrl } from "@/lib/getImageUrl";
 import { DirectQuoteModal } from "@/components/web-pages/DirectQuoteModal";
@@ -39,6 +44,8 @@ interface BrowseProsClientProps {
   filterParams: {
     searchTerm?: string;
     category?: string;
+    service?: string;
+    serviceName?: string;
     trade?: string;
     location?: string;
     availabilityStatus?: string;
@@ -130,12 +137,15 @@ export function BrowseProsClient({
   const currentSort = searchParams.get("sort") || filterParams.sort || "-rating";
   const currentRating = searchParams.get("rating") || filterParams.rating || "all";
   const categoryName = categories.find((item) => item._id === appliedCategory)?.name;
+  const appliedService = searchParams.get("service") || filterParams.service || "";
+  const serviceName = appliedService ? filterParams.serviceName || "Selected service" : "";
   const total = pagination?.total ?? artisans.length;
 
   const chips = [
     appliedQuery ? { key: "searchTerm", label: appliedQuery } : null,
     appliedLocation ? { key: "location", label: appliedLocation } : null,
     categoryName ? { key: "category", label: categoryName } : null,
+    serviceName ? { key: "service", label: serviceName } : null,
     appliedTrade ? { key: "trade", label: appliedTrade } : null,
     currentAvailability !== "all"
       ? { key: "availabilityStatus", label: currentAvailability }
@@ -154,6 +164,8 @@ export function BrowseProsClient({
     if (key === "location") setLocation("");
     updateServerFilters({
       [key]: null,
+      // A service belongs to its category, so removing the category drops the service too.
+      ...(key === "category" ? { service: null } : {}),
       ...(key === "searchTerm" ? { q: null } : {}),
       ...(key === "location" ? { zip: null } : {}),
     });
@@ -172,7 +184,7 @@ export function BrowseProsClient({
               type="text"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Try plumbing, garden, cleaning…"
+              placeholder="Try chef, driver, nanny, electrician…"
               className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-sm text-title outline-none transition focus:border-primary focus:bg-white"
             />
             {searchTerm ? (
@@ -218,28 +230,15 @@ export function BrowseProsClient({
           </button>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
-          <FilterPill
-            active={!appliedCategory}
-            onClick={() => updateServerFilters({ category: null, trade: null })}
-          >
-            All trades
-          </FilterPill>
-          {categories.map((category) => (
-            <FilterPill
-              key={category._id}
-              active={appliedCategory === category._id}
-              onClick={() =>
-                updateServerFilters({
-                  category: appliedCategory === category._id ? null : category._id,
-                  trade: null,
-                })
-              }
-            >
-              {category.name}
-            </FilterPill>
-          ))}
-        </div>
+        <CategoryFilter
+          categories={categories}
+          selectedId={appliedCategory}
+          onSelect={(id) => updateServerFilters({ category: id, service: null, trade: null })}
+          onSelectService={(categoryId, serviceId) =>
+            updateServerFilters({ category: categoryId, service: serviceId, trade: null })
+          }
+          selectedServiceId={appliedService}
+        />
 
         <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
@@ -401,27 +400,432 @@ function replyLabel(minutes: number) {
   return `${Math.max(1, Math.round(minutes / (60 * 24)))}d reply`;
 }
 
+const HOVER_OPEN_DELAY = 180;
+const HOVER_CLOSE_DELAY = 150;
+
+/**
+ * Fiverr-style hover intent for category pills: waits briefly before opening
+ * (so sweeping the mouse across pills doesn't flash panels), keeps the panel
+ * open while the pointer moves into it, and lazily loads + caches each
+ * category's services. Disabled on touch devices, where a tap just filters.
+ */
+function useCategoryHover() {
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [cache, setCache] = useState<Record<string, IServiceItem[]>>({});
+  const [failed, setFailed] = useState<Set<string>>(() => new Set());
+  const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requested = useRef(new Set<string>());
+
+  const clearTimers = () => {
+    if (openTimer.current) clearTimeout(openTimer.current);
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    openTimer.current = null;
+    closeTimer.current = null;
+  };
+
+  useEffect(() => clearTimers, []);
+
+  const load = useCallback((id: string) => {
+    if (requested.current.has(id)) return;
+    requested.current.add(id);
+    setFailed((prev) => {
+      if (!prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+
+    // Only cache real answers. A failed request (backend down, network error) must not be
+    // remembered as "no services", otherwise the category looks empty until a full reload.
+    const markFailed = () => {
+      requested.current.delete(id);
+      setFailed((prev) => new Set(prev).add(id));
+    };
+
+    getServicesByCategory(id)
+      .then((res) => {
+        if (!res?.success || !Array.isArray(res.data)) {
+          markFailed();
+          return;
+        }
+        const list = res.data;
+        setCache((prev) => ({ ...prev, [id]: list }));
+      })
+      .catch(markFailed);
+  }, []);
+
+  const scheduleOpen = (id: string) => {
+    if (typeof window !== "undefined" && !window.matchMedia("(hover: hover)").matches) return;
+    clearTimers();
+    load(id);
+    // Already showing a panel → switch instantly; otherwise wait for hover intent.
+    if (categoryId) {
+      setCategoryId(id);
+    } else {
+      openTimer.current = setTimeout(() => setCategoryId(id), HOVER_OPEN_DELAY);
+    }
+  };
+
+  const scheduleClose = () => {
+    if (openTimer.current) clearTimeout(openTimer.current);
+    openTimer.current = null;
+    closeTimer.current = setTimeout(() => setCategoryId(null), HOVER_CLOSE_DELAY);
+  };
+
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = null;
+  };
+
+  const close = () => {
+    clearTimers();
+    setCategoryId(null);
+  };
+
+  return {
+    categoryId,
+    services: categoryId ? cache[categoryId] || [] : [],
+    loading: Boolean(categoryId && !(categoryId in cache) && !failed.has(categoryId)),
+    error: Boolean(categoryId && failed.has(categoryId)),
+    servicesFor: (id: string) => cache[id] || [],
+    isLoading: (id: string) => !(id in cache) && !failed.has(id),
+    hasError: (id: string) => failed.has(id),
+    load,
+    scheduleOpen,
+    scheduleClose,
+    cancelClose,
+    close,
+  };
+}
+
+function ServicesLoadError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
+      Couldn’t load services right now.
+      <button
+        type="button"
+        onClick={onRetry}
+        className="font-semibold text-primary hover:underline"
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+
 function FilterPill({
   active,
+  highlighted = false,
   onClick,
+  onMouseEnter,
   children,
 }: {
   active: boolean;
+  highlighted?: boolean;
   onClick: () => void;
+  onMouseEnter?: () => void;
   children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
       className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
         active
           ? "bg-title text-white"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-title"
+          : highlighted
+            ? "bg-slate-200 text-title"
+            : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-title"
       }`}
     >
       {children}
     </button>
+  );
+}
+
+const VISIBLE_CATEGORY_COUNT = 8;
+
+/**
+ * One compact row of the most popular categories, plus a "More" toggle that
+ * opens a searchable panel with every category. Keeps the filter bar short
+ * no matter how many categories the backend returns.
+ */
+function CategoryFilter({
+  categories,
+  selectedId,
+  onSelect,
+  onSelectService,
+  selectedServiceId,
+}: {
+  categories: ICategoryItem[];
+  selectedId: string;
+  onSelect: (id: string | null) => void;
+  onSelectService: (categoryId: string, serviceId: string) => void;
+  selectedServiceId?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const hover = useCategoryHover();
+
+  // Categories arrive sorted by priority; pin the selected one to the front if it's hidden.
+  const topCategories = categories.slice(0, VISIBLE_CATEGORY_COUNT);
+  const selected = categories.find((item) => item._id === selectedId);
+  const visible =
+    selected && !topCategories.some((item) => item._id === selected._id)
+      ? [selected, ...topCategories.slice(0, VISIBLE_CATEGORY_COUNT - 1)]
+      : topCategories;
+  const hiddenCount = categories.length - visible.length;
+
+  const normalizedQuery = query.trim().toLowerCase();
+  const filtered = normalizedQuery
+    ? categories.filter((item) => item.name.toLowerCase().includes(normalizedQuery))
+    : categories;
+
+  const choose = (id: string | null) => {
+    onSelect(id);
+    setOpen(false);
+    setQuery("");
+    hover.close();
+  };
+
+  const hoveredCategory = categories.find((item) => item._id === hover.categoryId);
+
+  // "More" panel preview: hovered item, else the selected category, else the first match.
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const previewCategory =
+    filtered.find((item) => item._id === previewId) ||
+    filtered.find((item) => item._id === selectedId) ||
+    filtered[0];
+  const previewCategoryId = open ? previewCategory?._id : undefined;
+  const loadServices = hover.load;
+  useEffect(() => {
+    if (previewCategoryId) loadServices(previewCategoryId);
+  }, [previewCategoryId, loadServices]);
+
+  return (
+    <div className="relative mt-3">
+      <div className="relative flex items-center gap-2">
+        <div
+          className="-mx-1 flex min-w-0 flex-1 gap-2 overflow-x-auto px-1 pb-0.5 scrollbar-none [&::-webkit-scrollbar]:hidden"
+          onMouseLeave={hover.scheduleClose}
+        >
+          <FilterPill
+            active={!selectedId}
+            onMouseEnter={hover.scheduleClose}
+            onClick={() => choose(null)}
+          >
+            All
+          </FilterPill>
+          {visible.map((category) => (
+            <FilterPill
+              key={category._id}
+              active={selectedId === category._id}
+              highlighted={hover.categoryId === category._id}
+              onMouseEnter={() => {
+                // The "More" panel already shows a services preview; don't stack a second panel on it.
+                if (open) setPreviewId(category._id);
+                else hover.scheduleOpen(category._id);
+              }}
+              onClick={() => choose(selectedId === category._id ? null : category._id)}
+            >
+              {category.name}
+            </FilterPill>
+          ))}
+        </div>
+
+        {hiddenCount > 0 ? (
+          <button
+            type="button"
+            aria-expanded={open}
+            onClick={() => {
+              hover.close();
+              setPreviewId(null);
+              setOpen((value) => !value);
+            }}
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
+              open
+                ? "border-title bg-title text-white"
+                : "border-slate-200 bg-white text-title hover:border-slate-300 hover:bg-slate-50"
+            }`}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            {open ? "Close" : `More (${hiddenCount})`}
+            <ChevronDown className={`h-3.5 w-3.5 transition ${open ? "rotate-180" : ""}`} />
+          </button>
+        ) : null}
+
+        {hoveredCategory ? (
+          <div
+            role="menu"
+            aria-label={`${hoveredCategory.name} services`}
+            onMouseEnter={hover.cancelClose}
+            onMouseLeave={hover.scheduleClose}
+            className="absolute inset-x-0 top-full z-30 pt-2"
+          >
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_24px_48px_-20px_rgba(15,23,42,0.35)]">
+              <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <p className="font-display text-sm font-bold text-title">{hoveredCategory.name}</p>
+                <button
+                  type="button"
+                  onClick={() => choose(hoveredCategory._id)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                >
+                  All {hoveredCategory.name} pros
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              {hover.error ? (
+                <ServicesLoadError onRetry={() => hover.load(hoveredCategory._id)} />
+              ) : hover.loading ? (
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <span key={index} className="h-8 animate-pulse rounded-lg bg-slate-100" />
+                  ))}
+                </div>
+              ) : hover.services.length > 0 ? (
+                <div className="mt-2 grid max-h-64 grid-cols-2 gap-x-2 overflow-y-auto sm:grid-cols-3 lg:grid-cols-4">
+                  {hover.services.map((service) => (
+                    <button
+                      key={service._id}
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        onSelectService(hoveredCategory._id, service._id);
+                        hover.close();
+                      }}
+                      className={`truncate rounded-lg px-2.5 py-2 text-left text-sm transition ${
+                        selectedServiceId === service._id
+                          ? "bg-[#fff1f3] font-semibold text-[#d4234c]"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-title"
+                      }`}
+                    >
+                      {service.name}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-muted">No services listed in this category yet.</p>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {open ? (
+        <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-3">
+          <label className="relative block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              autoFocus
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={(event) => {
+                // Don't submit the outer search form; Enter picks the single match instead.
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  if (filtered.length === 1) choose(filtered[0]._id);
+                }
+                if (event.key === "Escape") setOpen(false);
+              }}
+              placeholder={`Search ${categories.length} categories…`}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-sm text-title outline-none transition focus:border-primary"
+            />
+          </label>
+
+          {filtered.length > 0 ? (
+            <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
+              {/* Left: every category. Hovering one previews its services on the right. */}
+              <div className="grid max-h-80 grid-cols-1 content-start gap-1 overflow-y-auto sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((category) => {
+                  const active = selectedId === category._id;
+                  const previewing = previewCategory?._id === category._id;
+                  return (
+                    <button
+                      key={category._id}
+                      type="button"
+                      onMouseEnter={() => setPreviewId(category._id)}
+                      onFocus={() => setPreviewId(category._id)}
+                      onClick={() => choose(active ? null : category._id)}
+                      className={`flex items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-sm transition ${
+                        active
+                          ? "bg-title font-semibold text-white"
+                          : previewing
+                            ? "bg-white text-title shadow-sm"
+                            : "text-slate-700 hover:bg-white hover:text-title"
+                      }`}
+                    >
+                      <span className="truncate">{category.name}</span>
+                      {active ? (
+                        <Check className="h-4 w-4 shrink-0" />
+                      ) : previewing ? (
+                        <ChevronRight className="hidden h-4 w-4 shrink-0 text-slate-400 lg:block" />
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Right: services of the previewed category (desktop only — touch has no hover). */}
+              {previewCategory ? (
+                <div className="hidden max-h-80 flex-col rounded-xl border border-slate-200 bg-white p-3 lg:flex">
+                  <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2">
+                    <p className="truncate font-display text-sm font-bold text-title">
+                      {previewCategory.name}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => choose(previewCategory._id)}
+                      className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                    >
+                      View all
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  {hover.hasError(previewCategory._id) ? (
+                    <ServicesLoadError onRetry={() => hover.load(previewCategory._id)} />
+                  ) : hover.isLoading(previewCategory._id) ? (
+                    <div className="mt-2 space-y-2">
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <span key={index} className="block h-7 animate-pulse rounded-lg bg-slate-100" />
+                      ))}
+                    </div>
+                  ) : hover.servicesFor(previewCategory._id).length > 0 ? (
+                    <div className="mt-1 overflow-y-auto">
+                      {hover.servicesFor(previewCategory._id).map((service) => (
+                        <button
+                          key={service._id}
+                          type="button"
+                          onClick={() => {
+                            onSelectService(previewCategory._id, service._id);
+                            setOpen(false);
+                            setQuery("");
+                          }}
+                          className={`block w-full truncate rounded-lg px-2.5 py-1.5 text-left text-sm transition ${
+                            selectedServiceId === service._id
+                              ? "bg-[#fff1f3] font-semibold text-[#d4234c]"
+                              : "text-slate-600 hover:bg-slate-50 hover:text-title"
+                          }`}
+                        >
+                          {service.name}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm text-muted">No services listed in this category yet.</p>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <p className="mt-3 px-1 text-sm text-muted">No category matches “{query}”.</p>
+          )}
+        </div>
+      ) : null}
+    </div>
   );
 }
 

@@ -86,7 +86,7 @@ export function RejectProposalModal({
         </div>
 
         <p className="text-xs text-muted mb-3">
-          Select or enter a reason for declining. This helps the artisan improve their future bids:
+          Select or enter a reason for declining. This helps the professional improve their future bids:
         </p>
 
         {/* REASON CHIPS */}

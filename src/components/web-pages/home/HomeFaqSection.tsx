@@ -16,31 +16,31 @@ export function HomeFaqSection({ faqs = [] }: HomeFaqSectionProps) {
       _id: "faq-1",
       question: "How does Nutsumo Escrow protect my money?",
       answer:
-        "When you accept a quotation, your payment is deposited into secure platform escrow via Stripe. The artisan begins working immediately knowing the funds are guaranteed. Crucially, the money is never released to the artisan until you inspect the delivered work and authorize the release.",
+        "When you accept a quotation, your payment is deposited into secure platform escrow via Stripe. The professional begins working immediately knowing the funds are guaranteed. Crucially, the money is never released to the professional until you inspect the delivered work and authorize the release.",
     },
     {
       _id: "faq-2",
       question: "What is the 22.5% fee shown on quotations?",
       answer:
-        "Every quote shows the full 22.5%: VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% Nutsumo platform fee. Homeowners pay the agreed contract price. Artisans receive 77.5% in their Nutsumo balance and withdraw it to a bank account or mobile money.",
+        "Every quote shows the full 22.5%: VAT 15%, NHIL 2.5%, GETFund 2.5%, and a 2.5% Nutsumo platform fee. Clients pay the agreed contract price. Workers and professionals receive 77.5% in their Nutsumo balance and withdraw it to a bank account or mobile money.",
     },
     {
       _id: "faq-3",
-      question: "How do I request a custom quotation from an artisan?",
+      question: "How do I request a custom quotation from a professional?",
       answer:
-        "You can browse categories or search for specific trade specialists. Once you find an artisan with the skills and reviews you need, simply click 'Request Custom Quote' on their profile or proposal card, describe your project, upload any photos of the issue, and they will send you a tailored proposal with proposed pricing and estimated duration.",
+        "Browse categories or search for the kind of worker you need — a chef, driver, nanny, technician, designer, office assistant and more. Once you find someone with the skills and reviews you need, click 'Request Custom Quote' on their profile, describe the job, add any helpful photos or details, and they will send you a tailored proposal with proposed pricing and estimated duration.",
     },
     {
       _id: "faq-4",
       question: "What happens if the delivered work needs revisions?",
       answer:
-        "When an artisan marks a job as delivered, you have the opportunity to inspect the work. If anything does not meet your expectations, you can click 'Request Revision' with notes and photos. Escrow remains held until the issues are rectified. If a mutual agreement cannot be reached, our 24/7 Resolution Desk steps in to review evidence and resolve the dispute.",
+        "When a professional marks a job as delivered, you have the opportunity to inspect the work. If anything does not meet your expectations, you can click 'Request Revision' with notes and photos. Escrow remains held until the issues are rectified. If a mutual agreement cannot be reached, our 24/7 Resolution Desk steps in to review evidence and resolve the dispute.",
     },
     {
       _id: "faq-5",
-      question: "Are all trade professionals identity-verified?",
+      question: "Are all workers and professionals identity-verified?",
       answer:
-        "Yes. Craftsmen on Nutsumo complete identity and credentials verification (National ID / Ghana Card, verified phone number, trade experience, and portfolio verification) before they can take client bookings.",
+        "Yes. Everyone offering services on Nutsumo — formal or informal — completes identity verification (National ID / Ghana Card and verified phone number) and shares their experience, skills and any certificates or portfolio before they can take client bookings.",
     },
   ];
 

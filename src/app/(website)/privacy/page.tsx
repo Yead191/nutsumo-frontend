@@ -11,16 +11,16 @@ const sections: LegalSection[] = [
   {
     title: "1. Information We Collect",
     body: "Nutsumo collects information necessary to facilitate safe marketplace transactions, including user names, email addresses, phone numbers, project addresses, job photographs, and Ghana Card verification records submitted during artisan screening.",
-    note: "Data Minimization: We collect only the information required to verify identity, match artisans, and secure escrow contracts.",
+    note: "Data Minimization: We collect only the information required to verify identity, match professionals, and secure escrow contracts.",
   },
   {
     title: "2. How We Use and Protect Your Data",
-    body: "Your information is used solely to coordinate service requests, audit artisan credentials, process escrow payments, notify you of project updates, and resolve disputes. We implement SSL/TLS encryption and strict database access controls.",
+    body: "Your information is used solely to coordinate service requests, audit professional credentials, process escrow payments, notify you of project updates, and resolve disputes. We implement SSL/TLS encryption and strict database access controls.",
     note: "Zero Spam Commitment: Your personal contact number is never sold or shared with third-party telemarketing networks.",
   },
   {
     title: "3. Identity Verification & Biometric Auditing",
-    body: "Artisan Ghana Card numbers and biometric details are processed through encrypted identity verification partners. Nutsumo stores only audit confirmation status and compliance records, not raw sensitive biometric hashes.",
+    body: "Professional Ghana Card numbers and biometric details are processed through encrypted identity verification partners. Nutsumo stores only audit confirmation status and compliance records, not raw sensitive biometric hashes.",
     note: "Screening Security: All identity audit data is strictly restricted to certified compliance officers.",
   },
   {
@@ -30,7 +30,7 @@ const sections: LegalSection[] = [
   },
   {
     title: "5. Information Sharing Between Parties",
-    body: "When a client requests a quote or accepts an offer, the relevant project address and contact details are shared only with the selected artisan to enable site visits and service delivery. Artisans are prohibited from retaining client data for purposes outside the contracted job.",
+    body: "When a client requests a quote or accepts an offer, the relevant project address and contact details are shared only with the selected professional to enable site visits and service delivery. Professionals are prohibited from retaining client data for purposes outside the contracted job.",
     note: "Project Isolation: Your project address is never broadcast publicly across the internet.",
   },
   {
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
             Nutsumo Privacy Policy
           </h1>
           <p className="text-sm sm:text-base text-muted max-w-2xl mx-auto">
-            How we protect, encrypt, and manage personal data and financial information for clients and artisans across Ghana.
+            How we protect, encrypt, and manage personal data and financial information for clients and professionals across Ghana.
           </p>
         </div>
       </section>

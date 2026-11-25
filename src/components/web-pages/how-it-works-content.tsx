@@ -26,7 +26,7 @@ export function HowItWorksContent() {
       step: "01",
       title: "Discover or Request Custom Quote",
       description:
-        "Browse verified Ghanaian master craftsmen by trade, view real project portfolios and ratings, or request a custom quote with your project description and photos.",
+        "Browse verified workers and professionals in any field — tradespeople, chefs, drivers, nannies, security, office and creative talent — view their profiles and ratings, or request a custom quote describing the job you need.",
       icon: Search,
       badge: "Free & Fast",
     },
@@ -34,7 +34,7 @@ export function HowItWorksContent() {
       step: "02",
       title: "Receive Itemized Quotations",
       description:
-        "Selected artisans review your project specs and submit clear, transparent quotes. Inspect proposed pricing, duration, and statutory tax breakdown before deciding.",
+        "Selected professionals review your job details and submit clear, transparent quotes. Inspect proposed pricing, duration, and statutory tax breakdown before deciding.",
       icon: FileCheck2,
       badge: "No Obligation",
     },
@@ -42,7 +42,7 @@ export function HowItWorksContent() {
       step: "03",
       title: "Fund 100% Secure Escrow",
       description:
-        "Accept your preferred quotation and fund the project via card or Mobile Money. Your funds are held securely in escrow—the artisan cannot withdraw them until you approve.",
+        "Accept your preferred quotation and fund the job via card or Mobile Money. Your funds are held securely in escrow—the professional cannot withdraw them until you approve.",
       icon: Lock,
       badge: "Zero Cash Risk",
     },
@@ -50,7 +50,7 @@ export function HowItWorksContent() {
       step: "04",
       title: "Inspect, Sign Off & Rate",
       description:
-        "The artisan completes the job according to your requirements. After inspecting the work, approve the release of funds and leave an authentic verified review.",
+        "The professional completes the job according to your requirements. After reviewing the work, approve the release of funds and leave an authentic verified review.",
       icon: Star,
       badge: "Satisfaction Guaranteed",
     },
@@ -59,9 +59,9 @@ export function HowItWorksContent() {
   const artisanSteps = [
     {
       step: "01",
-      title: "Biometric Identity & Skill Verification",
+      title: "Identity & Skill Verification",
       description:
-        "Sign up as an artisan, upload your Ghana Card and proof of trade craftsmanship. Our verification team reviews your credentials within 24 hours.",
+        "Sign up with any skill — formal or informal. Upload your Ghana Card and show your experience, certificates or past work. Our verification team reviews your profile within 24 hours.",
       icon: UserPlus,
       badge: "Verified Badge",
     },
@@ -69,7 +69,7 @@ export function HowItWorksContent() {
       step: "02",
       title: "Receive High-Intent Job Requests",
       description:
-        "Get instant notifications when clients in your coverage area request a custom quote or post a project matching your specialized trade.",
+        "Get instant notifications when clients in your coverage area request a custom quote or post a job matching your skills.",
       icon: ClipboardList,
       badge: "Direct Clients",
     },
@@ -104,7 +104,7 @@ export function HowItWorksContent() {
           </div>
 
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-title tracking-tight max-w-3xl mx-auto">
-            How Nutsumo Protects Both Clients and Craftsmen
+            How Nutsumo Protects Both Clients and Workers
           </h1>
 
           <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
@@ -123,7 +123,7 @@ export function HowItWorksContent() {
                     : "text-muted hover:text-title"
                 }`}
               >
-                For Homeowners & Clients
+                For Clients & Businesses
               </button>
               <button
                 type="button"
@@ -134,7 +134,7 @@ export function HowItWorksContent() {
                     : "text-muted hover:text-title"
                 }`}
               >
-                For Artisans & Trade Pros
+                For Workers & Professionals
               </button>
             </div>
           </div>
@@ -198,7 +198,7 @@ export function HowItWorksContent() {
               href="/pro-register"
               className="inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover text-white px-8 py-3.5 text-sm font-bold shadow-md hover:shadow-lg transition-all"
             >
-              <span>Apply to Join as an Artisan</span>
+              <span>Apply to Join as a Professional</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           )}
@@ -232,7 +232,7 @@ export function HowItWorksContent() {
               </div>
 
               <div className="grid grid-cols-12 p-4 items-center">
-                <div className="col-span-6 sm:col-span-5 font-semibold text-title">Artisan Identity Verification</div>
+                <div className="col-span-6 sm:col-span-5 font-semibold text-title">Professional Identity Verification</div>
                 <div className="col-span-3 text-center text-rose-600 font-bold">None (Unverified)</div>
                 <div className="col-span-3 sm:col-span-4 text-center text-emerald-600 font-bold">Ghana Card Biometric Audit</div>
               </div>

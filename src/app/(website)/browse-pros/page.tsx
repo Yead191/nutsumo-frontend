@@ -5,6 +5,7 @@ import { photos } from "@/lib/media";
 import { BrowseProsClient } from "./browse-pros-client";
 import {
   getMarketplaceCategories,
+  getServiceById,
   searchArtisansAction,
   type IArtisanProfileItem,
 } from "@/helpers/next-fetch/apiActions/marketplaceActions";
@@ -14,9 +15,9 @@ import { toQuoteViewer } from "@/lib/quoteViewer";
 export const revalidate = 60; // 1 minute ISR for live search/availability
 
 export const metadata: Metadata = {
-  title: "Browse Verified Trade Artisans & Contractors · Nutsumo",
+  title: "Browse Verified Workers & Professionals · Nutsumo",
   description:
-    "Discover and hire background-screened, verified master artisans across Ghana. Compare transparent rates and request custom quotes with 100% escrow protection.",
+    "Discover and hire verified skilled workers and professionals across Ghana — from tradespeople, chefs and drivers to nannies, security, office and creative talent. Compare transparent rates and request custom quotes with 100% escrow protection.",
 };
 
 interface BrowseProsPageProps {
@@ -24,6 +25,7 @@ interface BrowseProsPageProps {
     searchTerm?: string;
     q?: string;
     category?: string;
+    service?: string;
     trade?: string;
     location?: string;
     zip?: string;
@@ -44,16 +46,18 @@ export default async function BrowseProsPage({
   const location = resolvedParams.location || resolvedParams.zip || "";
   const trade = resolvedParams.trade || "";
   const category = resolvedParams.category || "";
+  const service = resolvedParams.service || "";
   const availabilityStatus = resolvedParams.availabilityStatus || "";
   const sort = resolvedParams.sort || "-rating";
 
   // 1. Parallel backend fetch: categories list + server-side filtered artisans
-  const [categoriesRes, artisansRes, user] = await Promise.all([
+  const [categoriesRes, artisansRes, user, serviceRes] = await Promise.all([
     getMarketplaceCategories(),
     searchArtisansAction({
       searchTerm: searchTerm || undefined,
       trade: trade || undefined,
       category: category || undefined,
+      service: service || undefined,
       location: location || undefined,
       availabilityStatus:
         availabilityStatus !== "all" ? availabilityStatus : undefined,
@@ -63,18 +67,21 @@ export default async function BrowseProsPage({
       limit: 12,
     }),
     getProfile(),
+    // Name for the active-filter chip (cached per service).
+    service ? getServiceById(service) : Promise.resolve(null),
   ]);
 
   const categories = categoriesRes?.data || [];
   const artisans = (artisansRes?.data || []) as IArtisanProfileItem[];
   const pagination = (artisansRes as any)?.pagination || null;
+  const serviceName = serviceRes?.data?.name || "";
 
   return (
     <div className="bg-slate-50/60 min-h-screen pt-18">
       <PageBanner
         eyebrow="Marketplace Directory"
-        title="Find &amp; Hire Verified Trade Pros"
-        description="Search screened craftsmen in Accra and across Ghana. Compare custom proposals and hire with 100% Escrow Milestone Protection."
+        title="Find &amp; Hire Verified Professionals"
+        description="Search verified workers in every profession across Ghana. Compare custom proposals and hire with 100% Escrow Milestone Protection."
         image={photos.banners.pros}
       />
       <Suspense
@@ -93,6 +100,8 @@ export default async function BrowseProsPage({
             searchTerm,
             trade,
             category,
+            service,
+            serviceName,
             location,
             availabilityStatus,
             sort,

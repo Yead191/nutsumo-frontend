@@ -26,12 +26,12 @@ export function ArtisanHeroIdentity({
 }: ArtisanHeroIdentityProps) {
   const user = profile.user || ({} as any);
   const avatarUrl = user.image ? getImageUrl(user.image) : null;
-  const displayName = profile.businessName || user.name || "Master Artisan";
+  const displayName = profile.businessName || user.name || "Top Professional";
   const categoryName =
     typeof profile.category === "object"
       ? profile.category?.name
       : profile.category;
-  const trade = profile.trade || categoryName || "Professional Artisan";
+  const trade = profile.trade || categoryName || "Verified Professional";
   const locationText =
     profile.location || profile.city || (user as any).location || "Accra, Ghana";
   const isAvailable =
@@ -156,7 +156,7 @@ export function ArtisanHeroIdentity({
             className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-title px-6 py-3 text-sm font-bold shadow-2xs transition-colors"
           >
             <MessageSquare className="h-4 w-4 text-slate-500" />
-            <span>Message Artisan</span>
+            <span>Message Professional</span>
           </Link>
 
           <div className="pt-2 text-center">

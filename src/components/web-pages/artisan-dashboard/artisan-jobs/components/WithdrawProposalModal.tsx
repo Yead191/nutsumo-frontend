@@ -76,7 +76,7 @@ export function WithdrawProposalModal({
         </div>
 
         <p className="text-xs sm:text-sm text-copy leading-relaxed bg-smoke/60 p-3.5 rounded-2xl border border-line/60">
-          Are you sure you want to withdraw your offer for this job? Your quotation will be cancelled, and the homeowner will be notified that your proposal was retracted.
+          Are you sure you want to withdraw your offer for this job? Your quotation will be cancelled, and the client will be notified that your proposal was retracted.
         </p>
 
         <div className="flex items-center justify-end gap-3 pt-2">

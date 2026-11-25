@@ -32,11 +32,11 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
               Top Rated Professionals
             </span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-title tracking-tight">
-              Featured Verified Craftsmen
+              Featured Verified Professionals
             </h2>
             <p className="mt-2 text-sm sm:text-base text-copy max-w-2xl font-sans">
-              Hand-picked specialists with proven track records, verified
-              customer reviews, and 100% escrow compliance.
+              Skilled workers across every field with proven track records,
+              verified client reviews, and 100% escrow compliance.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export function FeaturedArtisansGrid({ artisans }: FeaturedArtisansGridProps) {
             const avatarUrl = user.image ? getImageUrl(user.image) : null;
             const displayName =
               user.name || artisan.businessName || "Verified Pro";
-            const trade = artisan.trade || user.trade || "Craftsman";
+            const trade = artisan.trade || user.trade || "Skilled Professional";
             const location = artisan.location || user.location || "Location not set";
             const reviewsCount = Number(artisan.reviewsCount) || 0;
             const rating = reviewsCount > 0 ? Number(artisan.rating) || 0 : 0;

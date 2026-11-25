@@ -40,7 +40,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${service.name} Specialists in Ghana — Verified Artisans | Nutsumo`,
+    title: `${service.name} Specialists in Ghana — Verified Professionals | Nutsumo`,
     description:
       service.description?.slice(0, 160) ||
       `Find and hire top-rated ${service.name.toLowerCase()} professionals in Ghana. Escrow protected payments and upfront custom quotes.`,

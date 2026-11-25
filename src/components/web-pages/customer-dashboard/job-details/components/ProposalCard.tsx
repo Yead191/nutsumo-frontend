@@ -98,7 +98,7 @@ export function ProposalCard({
             </div>
 
             <p className="text-xs text-muted truncate mt-0.5">
-              {profile?.trade || profile?.businessName || "Professional Craftsman"}
+              {profile?.trade || profile?.businessName || "Skilled Professional"}
               {profile?.experienceYears ? ` · ${profile.experienceYears} yrs exp` : ""}
             </p>
 
@@ -171,7 +171,7 @@ export function ProposalCard({
               <span>Declined {proposal.rejectReason ? `(${proposal.rejectReason})` : ""}</span>
             </div>
           ) : isWithdrawn ? (
-            <span className="text-xs text-muted">Proposal withdrawn by artisan</span>
+            <span className="text-xs text-muted">Proposal withdrawn by professional</span>
           ) : isPending && jobStatus === "OPEN" ? (
             <>
               {/* Decline Button */}

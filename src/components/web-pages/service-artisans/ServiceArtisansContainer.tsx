@@ -61,7 +61,7 @@ export function ServiceArtisansContainer({
   };
 
   const serviceImg = service.image ? getImageUrl(service.image) : null;
-  const categoryName = category?.name || (service.category as any)?.name || "Trade Services";
+  const categoryName = category?.name || (service.category as any)?.name || "Professional Services";
   const categoryId = category?._id || (service.category as any)?._id;
 
   return (
@@ -107,7 +107,7 @@ export function ServiceArtisansContainer({
 
               <p className="text-sm sm:text-base text-copy leading-relaxed font-sans">
                 {service.description ||
-                  `Compare verified craftsmen offering professional ${service.name.toLowerCase()}. Request custom quotes, check customer ratings, and hire with 100% escrow protection.`}
+                  `Compare verified professionals offering professional ${service.name.toLowerCase()}. Request custom quotes, check customer ratings, and hire with 100% escrow protection.`}
               </p>
 
               {/* Trust Markers */}

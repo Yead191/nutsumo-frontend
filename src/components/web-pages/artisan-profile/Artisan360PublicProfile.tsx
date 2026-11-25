@@ -71,12 +71,12 @@ export function Artisan360PublicProfile({
   };
 
   const user = profile.user || ({} as any);
-  const displayName = profile.businessName || user.name || "Master Artisan";
+  const displayName = profile.businessName || user.name || "Top Professional";
   const categoryName =
     typeof profile.category === "object"
       ? profile.category?.name
       : profile.category;
-  const trade = profile.trade || categoryName || "Professional Artisan";
+  const trade = profile.trade || categoryName || "Verified Professional";
   const startingRate = profile.startingRate || profile.hourlyRate || 50;
 
   return (
@@ -255,7 +255,7 @@ export function Artisan360PublicProfile({
                       No Direct Cash Risk
                     </strong>
                     <span>
-                      Payment released to artisan only upon your explicit
+                      Payment released to professional only upon your explicit
                       approval.
                     </span>
                   </div>
@@ -268,7 +268,7 @@ export function Artisan360PublicProfile({
                       Fast Response Time
                     </strong>
                     <span>
-                      Artisans typically respond with itemized bids in 15–30
+                      Professionals typically respond with itemized bids in 15–30
                       mins.
                     </span>
                   </div>

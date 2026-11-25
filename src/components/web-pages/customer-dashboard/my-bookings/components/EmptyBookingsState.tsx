@@ -26,7 +26,7 @@ export function EmptyBookingsState({
       <p className="mx-auto mt-1.5 max-w-md text-xs sm:text-sm text-muted leading-relaxed">
         {isFiltered
           ? "No bookings match your current filter. Try clearing filters to view all your orders."
-          : "When you accept a quote from a local artisan, your confirmed contract, work schedule, and direct contact details will appear here."}
+          : "When you accept a quote from a verified professional, your confirmed contract, work schedule, and direct contact details will appear here."}
       </p>
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">

@@ -46,7 +46,7 @@ export default function ProApplicationPage() {
   const proProfile = defaultProProfile;
 
   const [licenseFile, setLicenseFile] = useState(
-    draft.licenseFile || "TX-M-42981-Master-Plumber-Certificate.pdf",
+    draft.licenseFile || "Professional-Certificate.pdf",
   );
   const [insuranceFile, setInsuranceFile] = useState(
     draft.insuranceFile || "Next-General-Liability-COI-2026.pdf",
@@ -126,7 +126,7 @@ export default function ProApplicationPage() {
             meta={backgroundClear ? "Clear" : "Not started"}
           />
           <DocRow
-            title="Trade license"
+            title="License / certificate"
             meta={licenseFile || proProfile?.licenseNumber || "Not uploaded"}
             action={replaceControl("license")}
           />

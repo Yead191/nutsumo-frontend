@@ -62,7 +62,7 @@ export default async function PaymentSuccessPage({
             Payment Successfully Held in Escrow!
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-muted max-w-md mx-auto leading-relaxed">
-            Your funds are safely protected under Nutsumo Assurance. The artisan has been notified to start work immediately.
+            Your funds are safely protected under Nutsumo Assurance. The professional has been notified to start work immediately.
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export default async function PaymentSuccessPage({
           <div className="text-xs text-blue-950 space-y-1">
             <p className="font-bold">How Nutsumo Escrow Protects You:</p>
             <ul className="list-disc pl-4 space-y-0.5 text-slate-600">
-              <li>The artisan begins work with guaranteed milestone funding.</li>
+              <li>The professional begins work with guaranteed milestone funding.</li>
               <li>Funds are NOT released until you inspect the delivered work.</li>
               <li>You have full control to approve completion or request adjustments.</li>
             </ul>

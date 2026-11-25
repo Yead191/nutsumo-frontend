@@ -71,7 +71,7 @@ export function CancelJobModal({
         </div>
 
         <p className="text-xs sm:text-sm text-copy leading-relaxed mb-6">
-          Are you sure you want to cancel this job? Once cancelled, active artisans will no longer be able to submit proposals, and current proposals will be closed.
+          Are you sure you want to cancel this job? Once cancelled, active professionals will no longer be able to submit proposals, and current proposals will be closed.
         </p>
 
         <div className="flex items-center justify-end gap-3">

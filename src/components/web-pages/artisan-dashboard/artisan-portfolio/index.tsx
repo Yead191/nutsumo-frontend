@@ -115,8 +115,8 @@ export function ArtisanPortfolioManager({
             </span>
           </div>
           <p className="text-xs text-muted">
-            Showcase your completed craftsmanship, before & after project
-            transformations, and verified client work.
+            Showcase your completed work, past jobs, before & after
+            results, and verified client work.
           </p>
         </div>
 

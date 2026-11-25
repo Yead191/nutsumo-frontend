@@ -24,26 +24,26 @@ const faqs: FaqItem[] = [
   {
     category: "homeowner",
     q: "Is it completely free for clients to request quotes and hire?",
-    a: "Yes. Posting a job, requesting custom quotes, and browsing verified artisan profiles on Nutsumo is 100% free with zero obligation. You only pay the exact agreed-upon quote amount into secure escrow when you hire.",
+    a: "Yes. Posting a job, requesting custom quotes, and browsing verified professional profiles on Nutsumo is 100% free with zero obligation. You only pay the exact agreed-upon quote amount into secure escrow when you hire.",
   },
   {
     category: "homeowner",
     q: "How does Nutsumo 100% Escrow Protection work?",
-    a: "When you accept a quotation, you fund the project via card or Mobile Money into our secure escrow vault. The artisan cannot withdraw these funds until the job is completed and you personally inspect and click 'Sign Off & Release'. If the artisan fails to deliver, our dispute desk issues a full refund.",
+    a: "When you accept a quotation, you fund the job via card or Mobile Money into our secure escrow vault. The professional cannot withdraw these funds until the job is completed and you personally review it and click 'Sign Off & Release'. If the professional fails to deliver, our dispute desk issues a full refund.",
   },
   {
     category: "homeowner",
-    q: "How are artisans on Nutsumo verified?",
-    a: "Every tradesperson on Nutsumo undergoes strict biometric verification against their national Ghana Card, criminal record auditing, and technical trade skill validation before they receive the 'Verified Pro' badge.",
+    q: "How are workers and professionals on Nutsumo verified?",
+    a: "Everyone offering services on Nutsumo — tradespeople, chefs, drivers, nannies, security personnel, office, creative and domestic workers — verifies their identity against their national Ghana Card and shares their skills and experience before they receive the 'Verified Pro' badge.",
   },
   {
     category: "homeowner",
     q: "What is the difference between posting a job and requesting a custom quote?",
-    a: "Requesting a Custom Quote lets you send your project directly to a specific verified artisan you selected from the directory. Posting a Public Job broadcasts your requirements to all cleared artisans in your trade and location so they can submit competitive bids.",
+    a: "Requesting a Custom Quote lets you send your job directly to a specific verified professional you selected from the directory. Posting a Public Job broadcasts your requirements to all verified workers in that category and location so they can submit competitive proposals.",
   },
   {
     category: "homeowner",
-    q: "What happens if the artisan's work is subpar or incomplete?",
+    q: "What happens if the work is subpar or incomplete?",
     a: "Because your payment remains locked in Nutsumo Escrow, you should never release payment for incomplete or substandard work. Simply open a dispute from your booking dashboard. Our Accra dispute resolution team will inspect the case and either require rework or refund your escrow deposit.",
   },
 
@@ -66,12 +66,12 @@ const faqs: FaqItem[] = [
   {
     category: "artisan",
     q: "How do I become a Verified Pro on Nutsumo?",
-    a: "Complete your artisan registration, upload your valid Ghana Card, and submit photos of past completed projects. Our compliance team verifies your identity and references within 24 business hours.",
+    a: "Complete your professional registration with any skill — formal or informal — upload your valid Ghana Card, and add your experience, certificates or examples of past work. Our compliance team verifies your identity within 24 business hours.",
   },
   {
     category: "artisan",
     q: "What if a client refuses to release escrow after I finished the work?",
-    a: "Nutsumo protects both sides! If you completed the agreed project scope and uploaded proof (photos, job milestones), but the customer refuses to respond, our Dispute Resolution Desk steps in, evaluates the job evidence, and releases your funds automatically.",
+    a: "Nutsumo protects both sides! If you completed the agreed job and uploaded proof (photos, job milestones), but the customer refuses to respond, our Dispute Resolution Desk steps in, evaluates the job evidence, and releases your funds automatically.",
   },
 ];
 
@@ -96,7 +96,7 @@ export default function FaqPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
-            Transparent answers about 100% escrow protection, verified artisan screening, statutory tax compliance, and fast payouts.
+            Transparent answers about 100% escrow protection, verified worker screening, statutory tax compliance, and fast payouts.
           </p>
 
           {/* Interactive Switcher */}
@@ -114,7 +114,7 @@ export default function FaqPage() {
                     : "text-muted hover:text-title"
                 }`}
               >
-                For Clients & Homeowners
+                For Clients & Businesses
               </button>
               <button
                 type="button"
@@ -128,7 +128,7 @@ export default function FaqPage() {
                     : "text-muted hover:text-title"
                 }`}
               >
-                For Artisans & Trade Pros
+                For Workers & Professionals
               </button>
             </div>
           </div>
@@ -181,7 +181,7 @@ export default function FaqPage() {
         {/* Still have questions card */}
         <div className="pt-10 text-center space-y-3">
           <p className="text-xs sm:text-sm text-muted">
-            Still have questions or need help with a custom project?
+            Still have questions or need help with a custom job?
           </p>
           <Link
             href="/contact"

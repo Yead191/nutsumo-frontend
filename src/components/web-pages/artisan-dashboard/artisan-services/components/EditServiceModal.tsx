@@ -91,7 +91,7 @@ function EditServiceForm({
             {/* Service Info Banner */}
             <div className="rounded-2xl bg-slate-50 border border-line/80 p-3.5 space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-                {service.categoryName || "Trade Category"}
+                {service.categoryName || "Service Category"}
               </span>
               {isCustom ? (
                 <TextField

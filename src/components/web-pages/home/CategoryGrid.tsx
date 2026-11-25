@@ -15,6 +15,12 @@ import {
   Droplets,
   ArrowRight,
   Briefcase,
+  ChefHat,
+  Car,
+  Baby,
+  Shield,
+  Laptop,
+  Camera,
 } from "lucide-react";
 import type { ICategoryItem } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 import { getImageUrl } from "@/lib/getImageUrl";
@@ -25,6 +31,17 @@ interface CategoryGridProps {
 
 function getCategoryIcon(name: string = "", slug: string = "") {
   const query = `${name} ${slug}`.toLowerCase();
+  if (query.includes("chef") || query.includes("cook") || query.includes("cater"))
+    return ChefHat;
+  if (query.includes("driv") || query.includes("chauffeur") || query.includes("deliver"))
+    return Car;
+  if (query.includes("nann") || query.includes("child") || query.includes("babysit") || query.includes("care"))
+    return Baby;
+  if (query.includes("secur") || query.includes("guard")) return Shield;
+  if (query.includes("office") || query.includes("admin") || query.includes("account") || query.includes("secretar"))
+    return Laptop;
+  if (query.includes("photo") || query.includes("video") || query.includes("design") || query.includes("creative") || query.includes("music"))
+    return Camera;
   if (query.includes("plumb") || query.includes("pipe")) return Droplets;
   if (query.includes("electr") || query.includes("wire")) return Zap;
   if (query.includes("clean") || query.includes("house")) return Sparkles;
@@ -38,7 +55,9 @@ function getCategoryIcon(name: string = "", slug: string = "") {
   if (query.includes("tile") || query.includes("mason")) return Layers;
   if (query.includes("code") || query.includes("soft") || query.includes("dev"))
     return Code;
-  return Wrench;
+  if (query.includes("repair") || query.includes("mechanic") || query.includes("technic"))
+    return Wrench;
+  return Briefcase;
 }
 
 export function CategoryGrid({ categories }: CategoryGridProps) {
@@ -57,14 +76,15 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-primary block mb-2 font-display">
-              Browse Specialties
+              Browse Skills & Professions
             </span>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-title tracking-tight">
-              Explore Services by Category
+              Explore Workers by Category
             </h2>
             <p className="mt-2 text-sm sm:text-base text-copy max-w-2xl font-sans">
-              From emergency repairs to planned installations, discover vetted
-              trade professionals ready to help.
+              From tradespeople and technicians to chefs, drivers, nannies, security
+              personnel, office and creative professionals — find verified
+              people for every kind of work.
             </p>
           </div>
 
@@ -110,7 +130,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                   </h3>
                   <p className="mt-1 text-xs text-muted line-clamp-2 leading-relaxed">
                     {cat.description ||
-                      "Verified trade specialists available for booking."}
+                      "Verified skilled workers available for hire."}
                   </p>
                 </div>
 

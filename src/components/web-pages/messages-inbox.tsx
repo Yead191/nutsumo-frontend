@@ -383,7 +383,7 @@ export function MessagesInbox({ role = "homeowner" }: { role?: "homeowner" | "pr
                       type="button"
                       onClick={() => setShowProDetails((prev) => !prev)}
                       className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-[#00a1de] font-display text-xs font-bold text-white shadow-xs hover:ring-2 hover:ring-primary/40 transition-all cursor-pointer"
-                      title="Click to view contractor details"
+                      title="Click to view professional details"
                     >
                       {initials(activeContactName)}
                     </button>
@@ -395,7 +395,7 @@ export function MessagesInbox({ role = "homeowner" }: { role?: "homeowner" | "pr
                           type="button"
                           onClick={() => setShowProDetails((prev) => !prev)}
                           className="truncate font-display text-[15px] font-semibold text-title hover:text-primary transition-colors text-left cursor-pointer"
-                          title="Click to view contractor details"
+                          title="Click to view professional details"
                         >
                           {activeContactName}
                         </button>
@@ -549,7 +549,7 @@ export function MessagesInbox({ role = "homeowner" }: { role?: "homeowner" | "pr
               <div className="space-y-5">
                 {/* Panel Header */}
                 <div className="flex items-center justify-between pb-3 border-b border-line/60">
-                  <p className="font-display text-sm font-bold text-title">Contractor Details</p>
+                  <p className="font-display text-sm font-bold text-title">Professional Details</p>
                   <button
                     type="button"
                     onClick={() => setShowProDetails(false)}

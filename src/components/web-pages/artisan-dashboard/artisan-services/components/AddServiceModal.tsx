@@ -341,7 +341,7 @@ export function AddServiceModal({
                   const catName =
                     typeof service.category === "object"
                       ? service.category.name
-                      : "Trade Service";
+                      : "General Service";
 
                   return (
                     <div

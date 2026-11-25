@@ -232,7 +232,7 @@ export function ServiceCategoryFilterModal({
             Filter by Service or Category
           </h2>
           <p className="text-xs text-muted mt-0.5">
-            Select a specific trade category or catalog service with live scroll search.
+            Select a specific category or catalog service with live scroll search.
           </p>
         </div>
 
@@ -281,7 +281,7 @@ export function ServiceCategoryFilterModal({
                 type="text"
                 value={serviceSearch}
                 onChange={(e) => setServiceSearch(e.target.value)}
-                placeholder="Search catalog services (e.g. plumbing, wiring, garden bed)..."
+                placeholder="Search catalog services (e.g. cooking, driving, babysitting, wiring)..."
                 className="w-full rounded-xl border border-line bg-smoke/50 pl-9 pr-3.5 py-2 text-xs text-title placeholder:text-muted focus:border-[#FE375D] focus:bg-white focus:outline-none"
               />
             </div>
@@ -364,7 +364,7 @@ export function ServiceCategoryFilterModal({
                 type="text"
                 value={categorySearch}
                 onChange={(e) => setCategorySearch(e.target.value)}
-                placeholder="Search categories (e.g. Landscaping, Construction)..."
+                placeholder="Search categories (e.g. Catering, Security, Driving)..."
                 className="w-full rounded-xl border border-line bg-smoke/50 pl-9 pr-3.5 py-2 text-xs text-title placeholder:text-muted focus:border-[#FE375D] focus:bg-white focus:outline-none"
               />
             </div>

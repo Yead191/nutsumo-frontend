@@ -5,7 +5,7 @@ import { MyBookingsManager } from "@/components/web-pages/customer-dashboard/my-
 export const metadata: Metadata = {
   title: "My Bookings · Nutsumo",
   description:
-    "View your confirmed service bookings, track work schedules, and contact your hired artisans.",
+    "View your confirmed service bookings, track work schedules, and contact your hired professionals.",
 };
 
 export default async function CustomerBookingsPage() {

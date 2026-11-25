@@ -22,7 +22,7 @@ export function ServicesCatalog({ categories }: ServicesCatalogProps) {
               All Service Categories
             </span>
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-title">
-              Specialized Trade Categories
+              Skills & Profession Categories
             </h2>
             <p className="text-xs sm:text-sm text-copy mt-1 max-w-xl">
               Choose a category to view specialized sub-services or explore verified local professionals.
@@ -64,7 +64,7 @@ export function ServicesCatalog({ categories }: ServicesCatalogProps) {
 
                   <p className="mt-1 text-xs text-copy line-clamp-2 leading-relaxed">
                     {category.description ||
-                      `Hire verified ${category.name.toLowerCase()} trade professionals with 100% escrow protection.`}
+                      `Hire verified ${category.name.toLowerCase()} professionals with 100% escrow protection.`}
                   </p>
                 </div>
 
@@ -93,7 +93,7 @@ export function ServicesCatalog({ categories }: ServicesCatalogProps) {
         <div className="mt-14 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border border-primary/20 bg-primary/5 p-6 sm:p-8 shadow-xs">
           <div>
             <h3 className="font-display text-lg sm:text-xl font-bold text-title">
-              Looking for a custom project or specialized trade?
+              Looking for a custom project or specialized skill?
             </h3>
             <p className="mt-1 text-xs sm:text-sm text-copy">
               Post your job details to receive transparent proposals with a 22.5% fee breakdown and 100% escrow protection.

@@ -27,7 +27,7 @@ export function ViewServiceModal({
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 text-primary px-2.5 py-0.5 text-xs font-bold">
               <Tag className="h-3 w-3" />
-              {service.categoryName || "Trade Category"}
+              {service.categoryName || "Service Category"}
             </span>
             <h3 className="font-display text-xl font-black text-title">
               {service.serviceName}

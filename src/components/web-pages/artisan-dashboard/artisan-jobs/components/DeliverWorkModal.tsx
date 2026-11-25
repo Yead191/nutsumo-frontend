@@ -146,7 +146,7 @@ export function DeliverWorkModal({
               rows={4}
               value={deliveryNotes}
               onChange={(e) => setDeliveryNotes(e.target.value)}
-              placeholder="Detail the work done, replacements made, water/pressure test results, and any maintenance advice for the homeowner..."
+              placeholder="Detail the work done, results delivered, and any notes or advice for the client..."
               className="w-full rounded-2xl border border-line bg-smoke/40 p-3 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
@@ -218,7 +218,7 @@ export function DeliverWorkModal({
           <div className="rounded-2xl bg-blue-50/70 p-3.5 border border-blue-100 text-xs text-blue-950 flex items-start gap-2.5">
             <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Once submitted, the homeowner is alerted to inspect the job. Escrow funds remain safely secured and will be disbursed once the client approves.
+              Once submitted, the client is alerted to inspect the job. Escrow funds remain safely secured and will be disbursed once the client approves.
             </p>
           </div>
 

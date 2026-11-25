@@ -8,7 +8,7 @@ import {
 export const metadata: Metadata = {
   title: "Portfolio Showcase · Nutsumo",
   description:
-    "Manage and showcase your completed artisan projects, before & after transformations, and verified craftsmanship.",
+    "Manage and showcase your completed work, past jobs, and verified skills.",
 };
 
 export default async function ProPortfolioPage() {

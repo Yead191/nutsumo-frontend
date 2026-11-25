@@ -11,11 +11,11 @@ const bricolage = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   title: {
-    default: "Nutsumo — The Trusted Marketplace for Artisans",
+    default: "Nutsumo — The Trusted Marketplace for Skilled Workers & Professionals",
     template: "%s · Nutsumo",
   },
   description:
-    "Find verified local artisans and job opportunities. Earned trust through good work with zero fake reviews and protected payments.",
+    "Hire verified skilled workers and professionals for any job — tradespeople, chefs, drivers, nannies, security, office, creative and domestic workers. Formal or informal, every skill has a place on Nutsumo, with real reviews and protected payments.",
 };
 
 export default function RootLayout({

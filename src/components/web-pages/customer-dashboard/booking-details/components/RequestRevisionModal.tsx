@@ -41,7 +41,7 @@ export function RequestRevisionModal({
 
       if (res.success) {
         toast.success(
-          "Revision requested! The artisan has been notified to make adjustments.",
+          "Revision requested! The professional has been notified to make adjustments.",
         );
         onSuccess();
         onClose();
@@ -83,7 +83,7 @@ export function RequestRevisionModal({
               Request Work Revisions
             </h3>
             <p className="text-xs text-muted">
-              Ask your craftsman to fix or adjust details before releasing
+              Ask your professional to fix or adjust details before releasing
               escrow.
             </p>
           </div>
@@ -109,7 +109,7 @@ export function RequestRevisionModal({
             <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong>Escrow remains 100% protected:</strong> Your funds will
-              not be released. The craftsman will review your notes and resubmit
+              not be released. The professional will review your notes and resubmit
               the delivered work once updated.
             </p>
           </div>

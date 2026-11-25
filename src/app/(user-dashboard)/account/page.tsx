@@ -5,7 +5,7 @@ import { MyJobsManager } from "@/components/web-pages/customer-dashboard/my-jobs
 export const metadata: Metadata = {
   title: "My Service Requests · Nutsumo",
   description:
-    "View and manage your service requests, review artisan quotes, and confirm home repair bookings.",
+    "View and manage your service requests, review professional quotes, and confirm bookings.",
 };
 
 export default async function AccountPage() {

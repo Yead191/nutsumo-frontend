@@ -18,7 +18,7 @@ export function ArtisanAboutCredentials({
 }: ArtisanAboutCredentialsProps) {
   const bio =
     profile.bio ||
-    `Certified professional dedicated to delivering premium, punctual craftsmanship. With extensive practical field experience across residential and commercial properties in Ghana, I ensure all installations, repairs, and finishing adhere to the highest engineering standards and safety codes.`;
+    `Dedicated professional committed to reliable, punctual and high-quality work. With practical experience serving individuals, households and businesses in Ghana, I take pride in doing every job to the highest standard.`;
 
   const skills: string[] = profile.skills?.length
     ? profile.skills
@@ -48,7 +48,7 @@ export function ArtisanAboutCredentials({
       desc: "Ghana Card & biometric identity audited through official registries.",
     },
     {
-      title: "Trade Skills & Track Record Audited",
+      title: "Skills & Track Record Audited",
       desc: "Field experience and previous project milestones independently checked.",
     },
     {

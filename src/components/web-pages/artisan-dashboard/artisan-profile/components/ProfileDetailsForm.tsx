@@ -58,7 +58,7 @@ export function ProfileDetailsForm({
             Professional & Business Information
           </h2>
           <p className="text-xs text-muted">
-            Configure your artisan identity, business contact details, and customer bio.
+            Configure your professional identity, business contact details, and customer bio.
           </p>
         </div>
         <span className="text-xs text-muted">
@@ -84,11 +84,11 @@ export function ProfileDetailsForm({
           />
         </Field>
 
-        <Field label="Primary Trade / Specialty">
+        <Field label="Primary Skill / Profession">
           <TextField
             value={form.trade}
             onChange={(e) => onChange("trade", e.target.value)}
-            placeholder="e.g. Master Plumber, Finish Carpenter"
+            placeholder="e.g. Private Chef, Driver, Nanny, Electrician"
           />
         </Field>
 
@@ -172,7 +172,7 @@ export function ProfileDetailsForm({
         </Field>
 
         <div className="sm:col-span-2">
-          <Field label="Professional Bio & Craftsmanship Statement">
+          <Field label="Professional Bio & Experience">
             <TextArea
               rows={4}
               value={form.bio}
@@ -185,7 +185,7 @@ export function ProfileDetailsForm({
 
       <div className="pt-4 border-t border-line flex items-center justify-between">
         <p className="text-xs text-muted">
-          Profile details update live across your artisan storefront and client quotes.
+          Profile details update live across your professional storefront and client quotes.
         </p>
         <Button
           type="button"

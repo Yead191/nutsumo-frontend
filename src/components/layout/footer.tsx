@@ -3,17 +3,17 @@ import { Logo } from "@/components/ui/logo";
 
 const groups = [
   {
-    title: "Popular Services",
+    title: "Popular Categories",
     links: [
-      { href: "/browse-pros?category=plumbing", label: "Plumbing Repair" },
-      { href: "/browse-pros?category=electrical", label: "Electrical" },
-      { href: "/browse-pros?category=hvac", label: "HVAC & Cooling" },
-      { href: "/browse-pros?category=handyman", label: "Handyman Services" },
-      { href: "/browse-pros?category=painting", label: "Painting" },
+      { href: "/browse-pros?q=Chef", label: "Chefs & Cooks" },
+      { href: "/browse-pros?q=Driver", label: "Drivers" },
+      { href: "/browse-pros?q=Nanny", label: "Nannies & Caregivers" },
+      { href: "/browse-pros?q=Security", label: "Security Personnel" },
+      { href: "/browse-pros?q=Technician", label: "Tradespeople & Technicians" },
     ],
   },
   {
-    title: "For Homeowners",
+    title: "For Clients",
     links: [
       { href: "/browse-pros", label: "Find a Pro" },
       { href: "/services", label: "All Services" },
@@ -22,12 +22,12 @@ const groups = [
     ],
   },
   {
-    title: "For Contractors",
+    title: "For Professionals",
     links: [
       { href: "/pro-register", label: "Join Pro Network" },
       { href: "/pro/jobs", label: "Available Jobs Board" },
       { href: "/pro/pricing", label: "Pro Membership" },
-      { href: "/pro", label: "Contractor Portal" },
+      { href: "/pro", label: "Professional Portal" },
     ],
   },
   {
@@ -89,7 +89,7 @@ export function Footer() {
         <div>
           <Logo variant="dark" size="lg" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-white/75">
-            Your trusted local home repair network. Compare itemized quotes from background-checked local specialists, message privately, and pay directly upon job completion.
+            The trusted marketplace connecting clients with all types of skilled workers and professionals — formal or informal. Compare quotes, message privately, and pay safely through escrow.
           </p>
           <div className="mt-6 flex gap-2">
             {socials.map((item) => (

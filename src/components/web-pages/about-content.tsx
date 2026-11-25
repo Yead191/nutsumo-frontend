@@ -21,34 +21,34 @@ export function AboutContent() {
       icon: Lock,
       title: "100% Escrow Protection",
       description:
-        "Every pesewa you deposit is securely held in platform escrow. The artisan only receives payout once you personally inspect and approve the completed job.",
+        "Every pesewa you deposit is securely held in platform escrow. The worker only receives payout once you personally review and approve the completed job.",
       bg: "bg-emerald-50 text-emerald-600 border-emerald-100",
     },
     {
       icon: ShieldCheck,
-      title: "Biometrically Audited Pros",
+      title: "Verified Workers & Professionals",
       description:
-        "Every tradesperson on Nutsumo completes Ghana Card biometric verification, criminal background auditing, and practical trade skill assessments.",
+        "Everyone offering services on Nutsumo — from tradespeople and technicians to chefs, drivers, nannies, security and office staff — completes Ghana Card identity verification before taking bookings.",
       bg: "bg-primary/5 text-primary border-primary/10",
     },
     {
       icon: TrendingUp,
       title: "Statutory Tax Compliance",
       description:
-        "We build formal trust in Ghana's skilled trades with a transparent 22.5% deduction (15% VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee), protecting both client and artisan.",
+        "We bring formal trust to every kind of work in Ghana with a transparent 22.5% deduction (15% VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee), protecting both client and worker.",
       bg: "bg-amber-50 text-amber-600 border-amber-100",
     },
     {
       icon: HeartHandshake,
-      title: "Fair Artisan Economics",
+      title: "Fair Pay for Every Worker",
       description:
-        "No predatory bidding wars, no charging craftsmen for dead leads. Independent Ghanaian artisans keep 77.5% net take-home earnings, then withdraw from their Nutsumo balance.",
+        "No predatory bidding wars, no charging workers for dead leads. Formal and informal professionals keep 77.5% net take-home earnings, then withdraw from their Nutsumo balance.",
       bg: "bg-indigo-50 text-indigo-600 border-indigo-100",
     },
   ];
 
   const metrics = [
-    { value: "500+", label: "Vetted Ghanaian Artisans" },
+    { value: "500+", label: "Verified Workers & Professionals" },
     { value: "GH₵ 2.4M+", label: "Escrow Protected Payouts" },
     { value: "99.4%", label: "Client Satisfaction Rate" },
     { value: "< 25 Mins", label: "Average Quote Turnaround" },
@@ -59,25 +59,26 @@ export function AboutContent() {
       {/* 1. HERO SECTION */}
       <section
         id="hero"
-        className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200 "
+        className="relative overflow-hidden bg-linear-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200 "
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Transforming Ghana's Home Services</span>
+              <span>Connecting Ghana's Skilled Workforce</span>
             </div>
 
             <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-title tracking-tight leading-tight">
-              Building Absolute Trust in Every Home Repair & Construction
-              Project
+              A Marketplace for Every Skill, Every Worker and Every
+              Job
             </h1>
 
             <p className="text-base sm:text-lg text-copy leading-relaxed font-sans max-w-2xl mx-auto">
-              Nutsumo is Ghana's first escrow-backed digital marketplace
-              connecting households and businesses directly with vetted, master
-              craftsmen—eliminating contractor ghosting, unsafe cash deals, and
-              surprise costs.
+              Nutsumo is an escrow-backed marketplace connecting clients with all
+              types of skilled workers and professionals — tradespeople, chefs,
+              drivers, nannies, security personnel, office, creative and
+              domestic workers. Formal or informal, every worker gets a place to
+              showcase their skills and get hired.
             </p>
 
             <div className="pt-4 flex flex-wrap justify-center gap-4">
@@ -92,7 +93,7 @@ export function AboutContent() {
                 href="/pro-register"
                 className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-title px-7 py-3.5 text-sm font-bold shadow-2xs transition-colors"
               >
-                <span>Join as an Artisan</span>
+                <span>Join as a Professional</span>
               </Link>
             </div>
           </div>
@@ -128,9 +129,10 @@ export function AboutContent() {
               Eliminating the Friction of Informal Service Hiring
             </h2>
             <p className="text-sm sm:text-base text-copy leading-relaxed">
-              Finding a reliable electrician, plumber, or mason in Accra has
-              historically depended on random word-of-mouth recommendations,
-              unverified workers, and risky advance cash payments.
+              Finding a reliable driver, nanny, chef, technician or office assistant
+              has historically depended on word-of-mouth, unverified strangers and
+              risky advance cash payments — while talented workers, especially in
+              informal jobs, had no place to showcase their skills.
             </p>
           </div>
 
@@ -148,22 +150,22 @@ export function AboutContent() {
                   <span className="text-rose-500 font-bold">✕</span>
                   <span>
                     <strong>Full Advance Cash Required:</strong> You pay cash
-                    upfront, but the artisan delays or never shows up.
+                    upfront, but the worker delays or never shows up.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-rose-500 font-bold">✕</span>
                   <span>
-                    <strong>Zero Recourse for Subpar Work:</strong> When pipes
-                    burst or wiring fails hours later, phone numbers go
+                    <strong>Zero Recourse for Subpar Work:</strong> When the
+                    job is left unfinished or done poorly, phone numbers go
                     unanswered.
                   </span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-rose-500 font-bold">✕</span>
                   <span>
-                    <strong>Unvetted Strangers in Your Home:</strong> No
-                    identity checks, no police clearance, and no safety audit.
+                    <strong>Unvetted Strangers:</strong> No identity checks,
+                    no reviews and no track record to rely on.
                   </span>
                 </li>
               </ul>
@@ -189,7 +191,7 @@ export function AboutContent() {
                   <span className="text-emerald-600 font-bold">✓</span>
                   <span>
                     <strong>Biometric Ghana Card Auditing:</strong> Every
-                    artisan's identity, national ID, and track record are
+                    worker's identity, national ID, and track record are
                     vetted.
                   </span>
                 </li>
@@ -215,7 +217,7 @@ export function AboutContent() {
               Our Core Principles
             </span>
             <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-title">
-              Built on Transparency, Safety & Craftsmanship
+              Built on Transparency, Safety & Opportunity
             </h2>
           </div>
 
@@ -254,11 +256,11 @@ export function AboutContent() {
             <div className="absolute top-0 right-0 -mt-8 -mr-8 h-48 w-48 rounded-full bg-primary/20 blur-2xl" />
             <div className="relative space-y-3 max-w-xl mx-auto">
               <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
-                Ready to Experience Stress-Free Home Repairs?
+                Ready to Hire — or Get Hired?
               </h2>
               <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                Browse verified local craftsmen in Accra, request a custom
-                quote, and hire with 100% escrow protection today.
+                Browse verified workers and professionals for any job, request a
+                custom quote, and hire with 100% escrow protection today.
               </p>
             </div>
 
@@ -267,14 +269,14 @@ export function AboutContent() {
                 href="/browse-pros"
                 className="inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover text-white px-8 py-3.5 text-xs sm:text-sm font-bold shadow-md transition-all"
               >
-                <span>Find an Artisan Now</span>
+                <span>Find a Professional Now</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/pro-register"
                 className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 hover:bg-white/20 text-white px-8 py-3.5 text-xs sm:text-sm font-bold transition-colors"
               >
-                <span>Join as an Artisan</span>
+                <span>Join as a Professional</span>
               </Link>
             </div>
           </div>

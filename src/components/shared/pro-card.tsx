@@ -70,7 +70,7 @@ export function ProCard({
             access.audience === "guest"
               ? "Create an account to save"
               : access.audience === "pro"
-                ? "Homeowner-only action"
+                ? "Client-only action"
                 : undefined
           }
           disabled={access.audience === "pro"}

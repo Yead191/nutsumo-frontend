@@ -68,7 +68,7 @@ export function JobMarketplaceFilters({
               type="text"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search active jobs (e.g. plumbing, wiring, garden bed)..."
+              placeholder="Search active jobs (e.g. chef, driver, cleaning, wiring)..."
               className="w-full rounded-2xl border border-line bg-smoke/50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-[#FE375D] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#FE375D] transition-colors"
             />
           </div>

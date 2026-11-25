@@ -58,8 +58,8 @@ function categoryId(category?: ServiceCategoryRef | string) {
 }
 
 function categoryName(category?: ServiceCategoryRef | string) {
-  if (!category || typeof category !== "object") return "Trade Service";
-  return category.name || "Trade Service";
+  if (!category || typeof category !== "object") return "General Service";
+  return category.name || "General Service";
 }
 
 function mapSelectedService(item: SelectedServiceRecord): ArtisanServiceItem {
@@ -73,9 +73,9 @@ function mapSelectedService(item: SelectedServiceRecord): ArtisanServiceItem {
     serviceName: service?.name || item.customName || "Service",
     category: categoryId(service?.category) || categoryId(item.category),
     categoryName:
-      categoryName(service?.category) !== "Trade Service"
+      categoryName(service?.category) !== "General Service"
         ? categoryName(service?.category)
-        : categoryName(item.category) !== "Trade Service"
+        : categoryName(item.category) !== "General Service"
           ? categoryName(item.category)
           : item.proposedCategory || "Uncategorized",
     rateType: asRateType(item.rateType),

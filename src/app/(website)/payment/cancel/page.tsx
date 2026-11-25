@@ -46,7 +46,7 @@ export default async function PaymentCancelPage({
             Checkout Incomplete
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-muted max-w-md mx-auto leading-relaxed">
-            You were not charged. Your booking reference is safely saved under your account, but the artisan cannot begin work until the escrow deposit is funded.
+            You were not charged. Your booking reference is safely saved under your account, but the professional cannot begin work until the escrow deposit is funded.
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default async function PaymentCancelPage({
         <div className="rounded-2xl bg-slate-50 p-4 border border-line text-left text-xs text-muted flex items-start gap-3">
           <ShieldCheck className="h-5 w-5 text-slate-500 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
-            You can complete the escrow deposit at any time. If you changed your mind or need to discuss project scope with the artisan, you can do so through your dashboard.
+            You can complete the escrow deposit at any time. If you changed your mind or need to discuss project scope with the professional, you can do so through your dashboard.
           </p>
         </div>
 

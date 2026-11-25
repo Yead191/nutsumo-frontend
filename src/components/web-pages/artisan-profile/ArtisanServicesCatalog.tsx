@@ -32,7 +32,7 @@ export function ArtisanServicesCatalog({
             Direct Custom Quotes Available
           </h3>
           <p className="text-xs sm:text-sm text-muted max-w-md mx-auto">
-            This artisan accepts custom job inquiries tailored to your exact
+            This professional accepts custom job inquiries tailored to your exact
             repair and maintenance needs.
           </p>
         </div>
@@ -77,7 +77,7 @@ export function ArtisanServicesCatalog({
           const serviceName =
             serviceItem.service?.name ||
             serviceItem.customName ||
-            "Professional Artisan Service";
+            "Professional Service";
           const rateFormatted = `GH₵ ${serviceItem.rateAmount}`;
           const rateTypeLabel =
             serviceItem.rateType?.toLowerCase() === "hourly"

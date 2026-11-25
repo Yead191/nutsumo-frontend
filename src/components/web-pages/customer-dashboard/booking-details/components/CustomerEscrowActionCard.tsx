@@ -83,7 +83,7 @@ export function CustomerEscrowActionCard({
                 Action Required: Fund Escrow Deposit
               </h3>
               <p className="text-xs text-muted">
-                Artisan work will begin immediately once escrow is held.
+                Professional work will begin immediately once escrow is held.
               </p>
             </div>
           </div>
@@ -103,7 +103,7 @@ export function CustomerEscrowActionCard({
             <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong>Nutsumo 100% Escrow Guarantee:</strong> Your deposit is
-              held securely in platform escrow. The artisan does NOT receive the
+              held securely in platform escrow. The professional does NOT receive the
               payout until you inspect the delivered work and confirm
               satisfaction.
             </p>
@@ -153,7 +153,7 @@ export function CustomerEscrowActionCard({
             </div>
             <div>
               <h3 className="font-display text-base sm:text-lg font-bold text-title">
-                Artisan Delivered the Work!
+                Professional Delivered the Work!
               </h3>
               <p className="text-xs text-muted">
                 Please inspect the job thoroughly and choose an action below.
@@ -296,7 +296,7 @@ export function CustomerEscrowActionCard({
                 Revisions In Progress
               </h3>
               <p className="text-xs text-muted">
-                The craftsman is addressing your requested adjustments.
+                The professional is addressing your requested adjustments.
               </p>
             </div>
           </div>
@@ -324,7 +324,7 @@ export function CustomerEscrowActionCard({
             onClick={() => setIsDisputeModalOpen(true)}
             className="text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
           >
-            Unresponsive artisan? Open dispute
+            Unresponsive professional? Open dispute
           </button>
         </div>
 
@@ -408,7 +408,7 @@ export function CustomerEscrowActionCard({
           {booking.customerConfirmedAt
             ? new Date(booking.customerConfirmedAt).toLocaleDateString()
             : "record"}
-          . Escrow funds have been successfully released to the craftsman.
+          . Escrow funds have been successfully released to the professional.
         </p>
 
         {booking.customerRating && (
@@ -490,9 +490,9 @@ export function CustomerEscrowActionCard({
       </div>
       <p className="text-xs text-copy leading-relaxed">
         Your payment of GH₵ {booking.totalAmount?.toLocaleString()} is securely
-        held in platform escrow. The artisan has been notified to execute the
+        held in platform escrow. The professional has been notified to execute the
         project scope. You will be prompted to review and authorize release once
-        the artisan delivers.
+        the professional delivers.
       </p>
     </div>
   );

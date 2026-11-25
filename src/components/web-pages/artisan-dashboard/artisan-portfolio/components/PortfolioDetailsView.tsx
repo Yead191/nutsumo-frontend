@@ -384,7 +384,7 @@ export function PortfolioDetailsView({
           {artisan && (
             <div className="rounded-3xl border border-line bg-white p-6 shadow-2xs space-y-4">
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted">
-                Craftsman & Verified Pro
+                Skilled & Verified Pro
               </h4>
               <div className="flex items-center gap-3.5">
                 <div className="h-14 w-14 rounded-2xl overflow-hidden bg-slate-100 border border-line shrink-0">

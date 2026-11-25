@@ -19,15 +19,15 @@ export function MarketplaceDualCta() {
             <div className="space-y-4 relative z-10">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200 border border-white/15">
                 <Briefcase className="h-3.5 w-3.5 text-primary" />
-                <span>For Homeowners &amp; Clients</span>
+                <span>For Clients &amp; Businesses</span>
               </div>
 
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-                Have a project that needs skilled hands?
+                Need someone skilled for a job?
               </h3>
 
               <p className="text-sm text-slate-300 leading-relaxed font-sans">
-                Post your job details or browse verified trade pros directly.
+                Post your job or browse verified workers and professionals directly.
                 Review transparent proposals and fund escrow with 100% milestone
                 protection.
               </p>
@@ -66,23 +66,23 @@ export function MarketplaceDualCta() {
             <div className="space-y-4 relative z-10">
               <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white border border-white/20">
                 <Wrench className="h-3.5 w-3.5 text-amber-300" />
-                <span>For Craftsmen &amp; Trade Specialists</span>
+                <span>For Every Skilled Worker &amp; Professional</span>
               </div>
 
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
-                Are you a skilled professional looking for verified work?
+                Have a skill? Showcase it and get hired.
               </h3>
 
               <p className="text-sm text-blue-100 leading-relaxed font-sans">
-                Join Nutsumo as a verified pro. Connect with high-intent local
-                clients, submit custom quotes, and enjoy guaranteed escrow
-                payouts without chasing unpaid invoices.
+                Tradesperson, chef, driver, nanny, security guard, office, creative
+                or domestic worker — formal or informal, join Nutsumo, showcase
+                your skills, connect with clients and get paid securely.
               </p>
 
               <ul className="space-y-2 text-xs text-blue-100 pt-2">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-emerald-300 shrink-0" />
-                  <span>Client escrow held before you lift a single tool</span>
+                  <span>Client payment secured in escrow before you start</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-emerald-300 shrink-0" />

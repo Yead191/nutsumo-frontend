@@ -93,7 +93,7 @@ export function ServiceArtisansFilterBar({
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by artisan or business name..."
+            placeholder="Search by professional or business name..."
             className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:border-primary focus:outline-none transition-colors"
           />
         </div>
@@ -155,7 +155,7 @@ export function ServiceArtisansFilterBar({
                 : "bg-slate-100 text-muted hover:text-title"
             }`}
           >
-            All Artisans
+            All Professionals
           </button>
 
           <button

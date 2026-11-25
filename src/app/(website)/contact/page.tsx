@@ -51,7 +51,7 @@ export default function ContactPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
-            Have questions about an escrow payment, artisan verification, or need assistance with a job? Contact our Accra team anytime.
+            Have questions about an escrow payment, professional verification, or need assistance with a job? Contact our Accra team anytime.
           </p>
         </div>
       </section>
@@ -229,7 +229,7 @@ export default function ContactPage() {
                       >
                         <option value="General Support Inquiry">General Support Inquiry</option>
                         <option value="Escrow & Payment Question">Escrow & Payment Question</option>
-                        <option value="Artisan Verification & Application">Artisan Verification & Application</option>
+                        <option value="Professional Verification & Application">Professional Verification & Application</option>
                         <option value="Dispute Resolution Desk">Dispute Resolution Desk</option>
                         <option value="Partnership / Corporate Request">Partnership / Corporate Request</option>
                       </select>

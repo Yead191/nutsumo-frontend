@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "Pricing & Transparent Platform Fees | Nutsumo",
   description:
-    "100% free for clients to browse and request quotes. Zero upfront lead fees for artisans. Learn about the 22.5% fee: statutory levies plus a 2.5% platform fee.",
+    "100% free for clients to browse and request quotes. Zero upfront lead fees for professionals. Learn about the 22.5% fee: statutory levies plus a 2.5% platform fee.",
 };
 
 export default function PricingPage() {
@@ -26,7 +26,7 @@ export default function PricingPage() {
     { name: "GETFund (Ghana Education Trust)", rate: "2.5%", note: "National education support levy" },
     { name: "Nutsumo platform fee", rate: "2.5%", note: "Charged only on a completed funded job" },
     { name: "Total deduction", rate: "22.5%", isTotal: true },
-    { name: "Artisan net take-home", rate: "77.5%", isArtisan: true },
+    { name: "Professional net take-home", rate: "77.5%", isArtisan: true },
   ];
 
   return (
@@ -44,7 +44,7 @@ export default function PricingPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
-            Nutsumo operates on complete transparency. Clients hire for free with 100% escrow protection. Artisans pay zero upfront membership or per-lead fees.
+            Nutsumo operates on complete transparency. Clients hire for free with 100% escrow protection. Professionals pay zero upfront membership or per-lead fees.
           </p>
         </div>
       </section>
@@ -56,7 +56,7 @@ export default function PricingPage() {
           <div className="rounded-3xl border border-slate-200 bg-white p-8 sm:p-10 shadow-sm flex flex-col justify-between space-y-8 relative overflow-hidden">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700">
-                <span>For Homeowners & Businesses</span>
+                <span>For Clients & Businesses</span>
               </div>
 
               <div>
@@ -67,7 +67,7 @@ export default function PricingPage() {
                   </span>
                 </div>
                 <p className="text-xs sm:text-sm text-copy mt-2 leading-relaxed">
-                  Post requests, browse verified artisan profiles, and receive custom quotes without spending a pesewa.
+                  Post requests, browse verified professional profiles, and receive custom quotes without spending a pesewa.
                 </p>
               </div>
 
@@ -95,7 +95,7 @@ export default function PricingPage() {
               href="/browse-pros"
               className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-title hover:bg-slate-800 text-white py-3.5 text-xs sm:text-sm font-bold shadow-md transition-colors"
             >
-              <span>Browse Artisans Free</span>
+              <span>Browse Professionals Free</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -104,7 +104,7 @@ export default function PricingPage() {
           <div className="rounded-3xl border-2 border-primary bg-primary/5 p-8 sm:p-10 shadow-md flex flex-col justify-between space-y-8 relative overflow-hidden">
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs font-bold text-primary">
-                <span>For Artisans & Trade Pros</span>
+                <span>For Workers & Professionals</span>
               </div>
 
               <div>
@@ -143,7 +143,7 @@ export default function PricingPage() {
               href="/pro-register"
               className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3.5 text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all"
             >
-              <span>Join as an Artisan</span>
+              <span>Join as a Professional</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

@@ -84,7 +84,7 @@ export function ArtisanPortfolioShowcase({
           Portfolio Projects Being Added
         </h3>
         <p className="text-xs sm:text-sm text-muted max-w-md mx-auto">
-          This artisan is actively completing verified customer jobs under
+          This professional is actively completing verified customer jobs under
           Nutsumo escrow. Customer project photos will be published here upon
           client sign-off.
         </p>
@@ -115,7 +115,7 @@ export function ArtisanPortfolioShowcase({
             <span>Past Projects &amp; Before / After Showcase</span>
           </h2>
           <p className="text-xs text-muted mt-1">
-            Real craftsmanship and verified project transformations in Ghana.
+            Real work and verified completed jobs in Ghana.
           </p>
         </div>
         <span className="text-xs font-semibold text-muted bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">

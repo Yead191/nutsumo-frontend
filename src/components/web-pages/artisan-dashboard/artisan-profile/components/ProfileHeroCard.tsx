@@ -101,14 +101,14 @@ export function ProfileHeroCard({
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="font-display text-xl sm:text-2xl font-black tracking-tight text-title">
-                {form.name || form.businessName || "Artisan Profile"}
+                {form.name || form.businessName || "Professional Profile"}
               </h1>
 
               {/* Identity Verification Badges */}
               {form.identityStatus === "verified" ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 text-xs font-bold text-emerald-700 shadow-2xs">
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                  Verified Artisan
+                  Verified Professional
                 </span>
               ) : form.identityStatus === "pending" ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 text-xs font-bold text-amber-700 shadow-2xs">
@@ -140,7 +140,7 @@ export function ProfileHeroCard({
 
             <p className="text-sm font-semibold text-primary flex items-center gap-1.5">
               <Briefcase className="h-4 w-4 shrink-0" />
-              {form.trade || "No trade specified"} • {form.experienceYears || 0}{" "}
+              {form.trade || "No profession specified"} • {form.experienceYears || 0}{" "}
               Years Experience
             </p>
 

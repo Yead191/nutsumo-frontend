@@ -33,21 +33,21 @@ export function NotFoundContent() {
   const quickLinks = [
     {
       title: "Browse Available Jobs",
-      description: "Explore active requests and submit quotes to homeowners.",
+      description: "Explore active requests and submit quotes to clients.",
       href: "/jobs",
       icon: Briefcase,
       color: "bg-blue-50 text-blue-600 border-blue-100",
     },
     {
       title: "Post a Service Request",
-      description: "Need repair or renovation? Get quotes from verified pros.",
+      description: "Need help with any job? Get quotes from verified pros.",
       href: "/account/post-job",
       icon: PlusCircle,
       color: "bg-rose-50 text-[#FE375D] border-rose-100",
     },
     {
       title: "Explore All Services",
-      description: "Browse plumbing, electrical, carpentry, HVAC & more.",
+      description: "Browse chefs, drivers, nannies, tradespeople & more.",
       href: "/services",
       icon: Wrench,
       color: "bg-emerald-50 text-emerald-600 border-emerald-100",
@@ -118,7 +118,7 @@ export function NotFoundContent() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search jobs or services (e.g. plumbing, electrical)..."
+              placeholder="Search jobs or services (e.g. chef, driver, electrician)..."
               className="w-full bg-transparent px-3 text-xs sm:text-sm text-title placeholder:text-muted focus:outline-none"
             />
             <button

@@ -13,8 +13,8 @@ export default async function ServicesPage() {
     <>
       <PageBanner
         eyebrow="Services Catalog"
-        title="Explore Verified Trade Services"
-        description="Discover screened craftsmen and specialists in every trade category. 100% Escrow Protected."
+        title="Explore Verified Skills & Services"
+        description="Discover verified workers and professionals in every category — formal and informal. 100% Escrow Protected."
         image={photos.banners.pros}
       />
       <ServicesCatalog categories={categories} />

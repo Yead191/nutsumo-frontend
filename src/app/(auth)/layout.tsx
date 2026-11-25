@@ -13,7 +13,7 @@ export default function AuthLayout({
       <aside className="hidden lg:block fixed inset-y-0 left-0 w-1/2 z-10 overflow-hidden bg-slate-900 select-none">
         <Image
           src="/images/auth/auth-img.png"
-          alt="Nutsumo Artisans & Home Services"
+          alt="Nutsumo — Skilled Workers & Professionals"
           fill
           priority
           sizes="50vw"
@@ -53,7 +53,7 @@ export default function AuthLayout({
         <div className="absolute bottom-10 left-8 xl:left-12 right-8 z-20 max-w-lg">
           <div className="rounded-3xl bg-slate-950/70 backdrop-blur-xl p-7 border border-white/20 text-white shadow-2xl">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#FE375D]/25 text-[#FE375D] border border-[#FE375D]/30 mb-3">
-              Verified Artisan Network
+              Verified Professional Network
             </span>
             <h3 className="text-2xl font-bold font-display text-white mb-2 leading-tight">
               Trust is earned through good work.

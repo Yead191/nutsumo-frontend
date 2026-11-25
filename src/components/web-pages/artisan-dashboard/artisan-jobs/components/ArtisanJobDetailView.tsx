@@ -579,7 +579,7 @@ export function ArtisanJobDetailView({
                       <span>Revisions Requested by Client</span>
                     </div>
                     <p className="leading-relaxed">
-                      The homeowner reviewed your delivery and requested the
+                      The client reviewed your delivery and requested the
                       following modifications before releasing funds:
                     </p>
                     {booking.revisionNotes && (

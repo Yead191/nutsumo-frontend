@@ -199,7 +199,7 @@ export function ArtisanJobsFeed({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search available jobs (e.g. plumbing, wiring, garden bed)..."
+              placeholder="Search available jobs (e.g. chef, driver, cleaning, wiring)..."
               className="w-full rounded-2xl border border-line bg-smoke/50 pl-10 pr-4 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-primary focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
             />
           </form>
@@ -304,7 +304,7 @@ export function ArtisanJobsFeed({
           <p className="mt-1 text-xs sm:text-sm text-muted max-w-md mx-auto">
             {hasActiveFilter
               ? "No active requests match your current search or filter. Try clearing filters to see more opportunities."
-              : "We notify Job Seekers as soon as new client requests matching your trades are posted. Check back soon!"}
+              : "We notify Job Seekers as soon as new client requests matching your skills are posted. Check back soon!"}
           </p>
           {hasActiveFilter ? (
             <button

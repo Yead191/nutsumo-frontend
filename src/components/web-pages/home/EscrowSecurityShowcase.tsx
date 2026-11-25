@@ -14,7 +14,7 @@ export function EscrowSecurityShowcase() {
     {
       feature: "Payment Timing",
       traditional:
-        "Pay cash upfront before work begins; risk contractor ghosting",
+        "Pay cash upfront before work begins; risk the worker never showing up",
       nutsumo:
         "Deposit held in secure Stripe Escrow; released only upon completion",
     },
@@ -34,7 +34,7 @@ export function EscrowSecurityShowcase() {
       feature: "Identity & Trust",
       traditional: "Unverified numbers from classified ads with fake reviews",
       nutsumo:
-        "Identity-verified craftsmen with authentic client job histories",
+        "Identity-verified workers and professionals with authentic client job histories",
     },
   ];
 

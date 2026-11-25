@@ -276,7 +276,7 @@ export function AddEditPortfolioModal({
                 <TextField
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. Master Bathroom Tile & Vanity Renovation"
+                  placeholder="e.g. Wedding Catering for 200 Guests"
                   required
                 />
               </Field>
@@ -310,7 +310,7 @@ export function AddEditPortfolioModal({
             </Field>
 
             <div className="sm:col-span-2">
-              <Field label="Project Scope & Craftsmanship Statement">
+              <Field label="Job Scope & Work Description">
                 <TextArea
                   rows={4}
                   value={form.description}

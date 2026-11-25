@@ -20,7 +20,7 @@ export function JobsSearchHero() {
 
         {/* SUBTITLE */}
         <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-          Browse active repair, construction, and service requests from verified clients across Ghana.
+          Browse active job requests from verified clients across Ghana — domestic, driving, catering, trades, office, creative and more.
           Review job specifications, submit competitive quotations in Ghana Cedis (GH₵), and get hired directly.
         </p>
 

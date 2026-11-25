@@ -53,7 +53,7 @@ export function ArtisanStatsStrip({
       bg: "bg-primary/5 border-primary/10",
       label: "Experience",
       value: experienceYears > 0 ? `${experienceYears} yrs` : "Not added",
-      subtext: "Master craftsman trade",
+      subtext: "Skilled professional",
     },
     {
       icon: Banknote,

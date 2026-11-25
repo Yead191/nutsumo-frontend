@@ -193,7 +193,7 @@ function resolveProposalStatus(
         description:
           quotation.rejectReason ||
           (isAnotherArtisanHired
-            ? "The homeowner awarded this job to another verified artisan."
+            ? "The client awarded this job to another verified artisan."
             : "The client decided not to proceed with this proposal."),
       },
       isActionableAsContract: false,

@@ -15,7 +15,7 @@ export async function generateMetadata({
   }
   return {
     title: `Booking #${res.data.bookingNumber} · Nutsumo`,
-    description: `Confirmed booking with ${res.data.artisan?.name || "verified artisan"}`,
+    description: `Confirmed booking with ${res.data.artisan?.name || "verified professional"}`,
   };
 }
 

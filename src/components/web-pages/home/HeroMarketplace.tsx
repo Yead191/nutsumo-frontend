@@ -7,8 +7,6 @@ import {
   Search,
   MapPin,
   ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
   Star,
   Users,
   Lock,
@@ -35,12 +33,12 @@ export function HeroMarketplace({
   };
 
   const defaultPopular = [
-    { name: "Plumbing", slug: "plumbing" },
-    { name: "Electrical", slug: "electrical" },
-    { name: "House Cleaning", slug: "house-cleaning" },
-    { name: "Painting", slug: "painting" },
-    { name: "Carpentry", slug: "carpentry" },
-    { name: "Appliance Repair", slug: "appliance-repair" },
+    { name: "Chef", slug: "chef" },
+    { name: "Driver", slug: "driver" },
+    { name: "Nanny", slug: "nanny" },
+    { name: "Security", slug: "security" },
+    { name: "Electrician", slug: "electrician" },
+    { name: "Graphic Designer", slug: "graphic-designer" },
   ];
 
   const chips =
@@ -56,16 +54,6 @@ export function HeroMarketplace({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
         <div className="text-center max-w-3xl mx-auto space-y-5">
-          {/* Top Trust Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary shadow-2xs">
-            <ShieldCheck className="h-4 w-4 text-primary" />
-            <span>Nutsumo Escrow Guarantee: 100% Protected Milestones</span>
-            <span className="hidden sm:inline-block text-slate-300">•</span>
-            <span className="hidden sm:inline-flex items-center gap-1 text-emerald-600 font-bold">
-              <CheckCircle2 className="h-3.5 w-3.5" /> 0% Hidden Client Fees
-            </span>
-          </div>
-
           {/* Main Title */}
           <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-title tracking-tight leading-[1.12]">
             Find the Right Professional for Any Job with{" "}
@@ -76,9 +64,10 @@ export function HeroMarketplace({
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-copy max-w-2xl mx-auto leading-relaxed font-sans">
-            Connect with top-rated local professionals. Request custom quotes,
-            review transparent pricing, and release funds only after the work is
-            delivered to your exact satisfaction.
+            Tradespeople, chefs, drivers, nannies, security personnel, office,
+            creative and domestic workers — formal or informal, find verified
+            people for any job. Request quotes, review transparent pricing, and
+            release funds only after the work is done to your satisfaction.
           </p>
 
           {/* Hero Interactive Search Box */}
@@ -94,7 +83,7 @@ export function HeroMarketplace({
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="What service do you need? (e.g. Plumber, Cleaner)"
+                  placeholder="Who do you need? (e.g. Chef, Driver, Nanny, Electrician)"
                   className="w-full bg-transparent text-sm font-medium text-title placeholder:text-slate-400 focus:outline-none"
                 />
               </div>
@@ -150,7 +139,7 @@ export function HeroMarketplace({
               2,500+
             </strong>
             <span className="text-xs text-muted block font-medium">
-              Screened &amp; Verified Pros
+              Verified Workers &amp; Professionals
             </span>
           </div>
 

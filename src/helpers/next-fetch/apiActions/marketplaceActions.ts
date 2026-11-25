@@ -342,6 +342,8 @@ export async function getFeaturedArtisans(
 export async function searchArtisansAction(params?: {
   searchTerm?: string;
   category?: string;
+  /** Catalog service id — only artisans who listed this exact service. */
+  service?: string;
   trade?: string;
   location?: string;
   availabilityStatus?: string;
@@ -355,6 +357,7 @@ export async function searchArtisansAction(params?: {
     if (params?.searchTerm) q.append("searchTerm", params.searchTerm);
     if (params?.trade) q.append("trade", params.trade);
     if (params?.category) q.append("category", params.category);
+    if (params?.service) q.append("service", params.service);
     if (params?.location) q.append("location", params.location);
     if (params?.availabilityStatus) q.append("availabilityStatus", params.availabilityStatus);
     if (params?.sort) q.append("sort", params.sort);

@@ -94,7 +94,7 @@ export function MyJobsManager({
             </span>
           </div>
           <p className="mt-1 text-xs sm:text-sm text-copy">
-            Manage your repair and improvement requests, review artisan quotes,
+            Manage your job requests, review professional quotes,
             and confirm bookings.
           </p>
         </div>

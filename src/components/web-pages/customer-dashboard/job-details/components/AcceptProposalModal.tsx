@@ -112,13 +112,13 @@ export function AcceptProposalModal({
                   {artisan?.name}
                 </h4>
                 {artisan?.verified && (
-                  <span title="Verified Artisan">
+                  <span title="Verified Professional">
                     <ShieldCheck className="h-4 w-4 text-emerald-600 inline" />
                   </span>
                 )}
               </div>
               <p className="text-xs text-muted">
-                {artisan?.artisanProfileData?.trade || "Verified Craftsman"}
+                {artisan?.artisanProfileData?.trade || "Verified Professional"}
               </p>
             </div>
           </div>
@@ -165,8 +165,8 @@ export function AcceptProposalModal({
           </p>
           <ul className="list-disc pl-5 space-y-1 text-slate-600">
             <li>Your payment is deposited safely into <strong>Nutsumo Escrow</strong> via Stripe.</li>
-            <li>Artisan begins work only after escrow is confirmed.</li>
-            <li>Funds are released to the artisan only after you inspect and approve completion.</li>
+            <li>Professional begins work only after escrow is confirmed.</li>
+            <li>Funds are released to the professional only after you inspect and approve completion.</li>
           </ul>
         </div>
 

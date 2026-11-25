@@ -168,7 +168,7 @@ export function DirectQuoteModal({
     }
 
     if (!artisanUserId) {
-      toast.error("Unable to identify target artisan.");
+      toast.error("Unable to identify target professional.");
       return;
     }
 

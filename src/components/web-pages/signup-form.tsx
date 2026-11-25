@@ -171,13 +171,13 @@ export function SignupForm() {
           )}
         >
           <Wrench className="h-3.5 w-3.5 text-[#FE375D]" />
-          <span>Artisan / Pro</span>
+          <span>Professional / Worker</span>
         </button>
       </div>
 
       {/* Red Eyebrow */}
       <span className="block text-xs font-bold uppercase tracking-wider text-[#FE375D] mb-1.5">
-        {role === "USER" ? "YOUR CUSTOMER ACCOUNT" : "ARTISAN REGISTRATION"}
+        {role === "USER" ? "YOUR CUSTOMER ACCOUNT" : "PROFESSIONAL REGISTRATION"}
       </span>
 
       {/* Main Headline */}
@@ -189,7 +189,7 @@ export function SignupForm() {
       <p className="text-sm text-slate-500 mb-6">
         {role === "USER"
           ? "Sign up to find trusted Job Seekers, compare quotes and manage your services with ease."
-          : "Sign up as an Artisan to connect with clients, get verified, and grow your trade business."}
+          : "Sign up as a Professional to showcase your skills — formal or informal — connect with clients, get verified, and grow your work."}
       </p>
 
       {error && (
@@ -245,7 +245,7 @@ export function SignupForm() {
               htmlFor="trade"
               className="block text-xs font-bold text-slate-800 mb-1"
             >
-              Primary Trade / Skill *
+              Primary Skill / Profession *
             </label>
             <select
               id="trade"

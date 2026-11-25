@@ -113,7 +113,7 @@ export function ConfirmCompletionModal({
               Confirm Completion & Release Escrow
             </h3>
             <p className="text-xs text-muted">
-              Rate your craftsman and authorize the final milestone payout.
+              Rate your professional and authorize the final milestone payout.
             </p>
           </div>
         </div>
@@ -190,7 +190,7 @@ export function ConfirmCompletionModal({
               rows={3}
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Share what impressed you most with this craftsman to help other homeowners..."
+              placeholder="Share what impressed you most with this professional to help other clients..."
               className="w-full rounded-2xl border border-line bg-smoke/40 p-3 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
             />
           </div>
@@ -199,7 +199,7 @@ export function ConfirmCompletionModal({
           <div className="rounded-2xl bg-emerald-50/70 p-3.5 border border-emerald-100 text-xs text-emerald-950 flex items-start gap-2.5">
             <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              By confirming, you acknowledge that you have inspected the delivered work and authorize the platform to disburse the held escrow funds to the craftsman.
+              By confirming, you acknowledge that you have inspected the delivered work and authorize the platform to disburse the held escrow funds to the professional.
             </p>
           </div>
 

@@ -45,7 +45,7 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
               ({booking.rateType} Pricing)
             </span>
             <span className="text-[9px] text-slate-500 block mt-1 font-medium">
-              Artisan payout deducts VAT, NHIL, GETFund, and the platform fee
+              Professional payout deducts VAT, NHIL, GETFund, and the platform fee
             </span>
           </div>
 
@@ -97,7 +97,7 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
         <div className="rounded-2xl border border-line bg-smoke/50 p-4 space-y-3">
           <div>
             <h4 className="font-display text-sm font-bold text-title">
-              {job?.title || "Home Repair Project"}
+              {job?.title || "Service Job"}
             </h4>
           </div>
 
@@ -136,7 +136,7 @@ export function BookingContractCard({ booking }: BookingContractCardProps) {
         <div className="text-xs text-blue-950 space-y-1">
           <strong className="block font-bold">Nutsumo Direct Work Assurance:</strong>
           <p className="text-slate-600 leading-relaxed">
-            All work is protected under our verified craftsmanship guarantee. If you have any inquiries, schedule adjustments, or need support, contact our 24/7 resolution desk.
+            All work is protected under our verified quality guarantee. If you have any inquiries, schedule adjustments, or need support, contact our 24/7 resolution desk.
           </p>
         </div>
       </div>

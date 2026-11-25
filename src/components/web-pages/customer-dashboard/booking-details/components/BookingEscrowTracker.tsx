@@ -27,7 +27,7 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
     },
     {
       id: "scheduled",
-      title: "2. Artisan Scheduled",
+      title: "2. Professional Scheduled",
       description: isPaid ? "Assigned & Ready" : "Pending Deposit",
       icon: Check,
       isCompleted:
@@ -54,7 +54,7 @@ export function BookingEscrowTracker({ booking }: BookingEscrowTrackerProps) {
                 "COMPLETED",
                 "DISPUTED",
               ].includes(status)
-            ? "Artisan Working"
+            ? "Professional Working"
             : "Pending Start",
       icon: isRevision ? RefreshCw : Play,
       isCompleted: [

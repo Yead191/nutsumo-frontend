@@ -26,7 +26,7 @@ export async function generateMetadata({
     title: `${res.data.title} · Portfolio · Nutsumo`,
     description:
       res.data.description?.slice(0, 160) ||
-      "View completed artisan project details, craftsmanship statement, and before/after photos.",
+      "View completed work details, job description, and photos.",
   };
 }
 

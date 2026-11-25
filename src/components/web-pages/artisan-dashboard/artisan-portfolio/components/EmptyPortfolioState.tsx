@@ -24,7 +24,7 @@ export function EmptyPortfolioState({ onOpenAdd }: EmptyPortfolioStateProps) {
             No Portfolio Projects Yet
           </h3>
           <p className="text-xs sm:text-sm text-muted leading-relaxed">
-            Showcase your completed craftsmanship, before & after transformations, and high-quality job photos to attract prospective clients.
+            Showcase your completed work, past jobs, and high-quality photos to attract prospective clients.
           </p>
         </div>
 

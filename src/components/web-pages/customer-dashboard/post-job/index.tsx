@@ -26,7 +26,7 @@ import type { PostJobWizardProps, PostJobFormData } from "./types";
 import { createJobAction } from "@/helpers/next-fetch/apiActions/jobActions";
 
 const STEPS = [
-  { id: 1, title: "Job Scope", subtitle: "Trade & Details" },
+  { id: 1, title: "Job Scope", subtitle: "Category & Details" },
   { id: 2, title: "When & Where", subtitle: "Location & Date" },
   { id: 3, title: "Budget & Photos", subtitle: "Pricing & Media" },
   { id: 4, title: "Review & Post", subtitle: "Confirm Details" },
@@ -301,7 +301,7 @@ export function PostJobWizard({
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={5}
-                placeholder="Describe the issue, dimensions, current condition, or any specific requirements for the artisan..."
+                placeholder="Describe the issue, dimensions, current condition, or any specific requirements for the professional..."
                 className="w-full rounded-xl border border-line bg-white p-3.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-[#FE375D] focus:outline-none focus:ring-1 focus:ring-[#FE375D] shadow-2xs resize-none"
               />
             </div>
@@ -354,7 +354,7 @@ export function PostJobWizard({
                           ? current.location
                           : "Shared from this device",
                       }));
-                      toast.success("Job location pinned for nearby artisans");
+                      toast.success("Job location pinned for nearby professionals");
                     },
                     () => toast.error("Location permission was blocked"),
                     { enableHighAccuracy: true, timeout: 8000 },
@@ -364,7 +364,7 @@ export function PostJobWizard({
               >
                 {typeof formData.latitude === "number"
                   ? "Location pinned for nearby matching"
-                  : "Use my location so nearby artisans can match"}
+                  : "Use my location so nearby professionals can match"}
               </button>
             </div>
 
@@ -416,7 +416,7 @@ export function PostJobWizard({
                 3. What is your estimated budget?
               </h2>
               <p className="text-xs text-muted">
-                Artisans will propose competitive quotes based on this target amount.
+                Professionals will propose competitive quotes based on this target amount.
               </p>
             </div>
 
@@ -526,7 +526,7 @@ export function PostJobWizard({
               <Sparkles className="h-5 w-5 text-[#FE375D] shrink-0 mt-0.5" />
               <div className="text-xs text-rose-950 leading-relaxed">
                 <strong className="block font-bold">Instant Marketplace Matching:</strong>
-                As soon as you click Publish, verified local Job Seekers matching this trade will receive real-time push alerts and email notifications. You can expect proposals right in your dashboard!
+                As soon as you click Publish, verified local Job Seekers matching this category will receive real-time push alerts and email notifications. You can expect proposals right in your dashboard!
               </div>
             </div>
           </div>

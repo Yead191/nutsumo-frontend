@@ -26,9 +26,9 @@ interface ReviewCardProps {
 }
 
 const QUICK_TEMPLATES = [
-  "Thank you for your business! Glad we could deliver quality work for your home.",
+  "Thank you for your business! Glad we could deliver quality work for you.",
   "Appreciate your trust and recommendation. Always here if you need anything in the future!",
-  "Thanks for the kind words! We take pride in clean, reliable, and timely craftsmanship.",
+  "Thanks for the kind words! We take pride in clean, reliable, and timely service.",
 ];
 
 function getInitials(name?: string): string {

@@ -3,8 +3,8 @@ import { ArtisanIdentityFlow } from "@/components/web-pages/artisan-identity-flo
 import { Loader2 } from "lucide-react";
 
 export const metadata = {
-  title: "Verify Identity - Nutsumo Artisan",
-  description: "Verify your National ID Card and Live Selfie to start offering services as a verified Nutsumo artisan.",
+  title: "Verify Identity - Nutsumo Professional",
+  description: "Verify your National ID Card and Live Selfie to start offering services as a verified Nutsumo professional.",
 };
 
 export default function VerifyIdentityPage() {

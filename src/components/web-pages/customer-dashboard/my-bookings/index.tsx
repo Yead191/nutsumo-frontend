@@ -84,7 +84,7 @@ export function MyBookingsManager({
             </span>
           </div>
           <p className="mt-1 text-xs sm:text-sm text-copy">
-            Track confirmed contracts, contact hired artisans directly, and view service execution schedules.
+            Track confirmed contracts, contact hired professionals directly, and view service execution schedules.
           </p>
         </div>
 

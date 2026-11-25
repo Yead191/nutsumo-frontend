@@ -26,7 +26,7 @@ export async function generateMetadata({
 
   if (!profile) {
     return {
-      title: "Artisan Profile · Nutsumo",
+      title: "Professional Profile · Nutsumo",
     };
   }
 

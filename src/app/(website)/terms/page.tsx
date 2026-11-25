@@ -4,34 +4,34 @@ import { LegalSections, type LegalSection } from "@/components/web-pages/legal-s
 export const metadata: Metadata = {
   title: "Terms & Conditions — Nutsumo Marketplace",
   description:
-    "Review our Terms of Service governing client quote requests, verified artisan contracts, escrow payment policies, and statutory compliance in Ghana.",
+    "Review our Terms of Service governing client quote requests, verified professional contracts, escrow payment policies, and statutory compliance in Ghana.",
 };
 
 const sections: LegalSection[] = [
   {
     title: "1. The Nutsumo Marketplace Role",
-    body: "Nutsumo provides a verified online platform connecting clients (homeowners, property developers, and businesses) with independent, vetted skilled artisans and contractors. Nutsumo facilitates discovery, direct custom quote submissions, identity auditing, and secure escrow payment mediation under Ghanaian law.",
-    note: "Nutsumo provides the trust and escrow framework. Independent trade artisans perform the work according to agreed-upon scopes and milestones.",
+    body: "Nutsumo provides a verified online platform connecting clients (individuals, households, and businesses) with independent, verified skilled workers and professionals across all occupations, formal and informal. Nutsumo facilitates discovery, direct custom quote submissions, identity auditing, and secure escrow payment mediation under Ghanaian law.",
+    note: "Nutsumo provides the trust and escrow framework. Independent workers and professionals perform the work according to agreed-upon scopes and milestones.",
   },
   {
     title: "2. 100% Escrow Financial Protection",
     body: "All project bookings on Nutsumo are mediated through our secure Escrow Payment System. Clients fund escrow upon quotation acceptance. Funds remain locked in escrow until the client reviews the completed work and triggers a milestone release or final sign-off.",
-    note: "Escrow Protection Guarantee: Artisans do not receive client payout until work is signed off. Direct off-platform cash transactions void all escrow warranties.",
+    note: "Escrow Protection Guarantee: Professionals do not receive client payout until work is signed off. Direct off-platform cash transactions void all escrow warranties.",
   },
   {
     title: "3. Direct Custom Quotations & Statutory Deductions",
-    body: "Artisans submit transparent quotations specifying proposed labor, materials, and timeframes. Completed orders deduct 22.5% in total: 15% Ghana VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee. Artisans receive 77.5% in their Nutsumo balance and withdraw it to a bank account or mobile money.",
-    note: "Statutory Transparency: Both client and artisan receive a fully itemized receipt detailing statutory levies upon payment completion.",
+    body: "Professionals submit transparent quotations specifying proposed labor, materials, and timeframes. Completed orders deduct 22.5% in total: 15% Ghana VAT, 2.5% NHIL, 2.5% GETFund, and a 2.5% Nutsumo platform fee. Professionals receive 77.5% in their Nutsumo balance and withdraw it to a bank account or mobile money.",
+    note: "Statutory Transparency: Both client and professional receive a fully itemized receipt detailing statutory levies upon payment completion.",
   },
   {
-    title: "4. Artisan Auditing & Biometric Verification",
-    body: "All participating artisans must pass biometric verification against the National Ghana Card registry, criminal background audits, and practical trade skill reviews before earning the 'Verified Pro' badge.",
+    title: "4. Professional Auditing & Biometric Verification",
+    body: "All participating workers and professionals must pass biometric verification against the National Ghana Card registry, criminal background audits, and skill and experience reviews before earning the 'Verified Pro' badge.",
     note: "Identity Integrity: Nutsumo strictly prohibits account sharing or substituting unvetted personnel on client job sites.",
   },
   {
     title: "5. Dispute Resolution & Customer Protection",
-    body: "In the event of incomplete or substandard workmanship, clients or artisans may escalate the matter to the Nutsumo Dispute Desk prior to funds release. Our arbitration officers examine submitted milestones, photos, and project communication to issue binding resolutions, rework orders, or full escrow refunds.",
-    note: "Zero Risk Policy: If an artisan abandons a project or fails to meet the agreed scope, client escrow funds are refunded in full.",
+    body: "In the event of incomplete or substandard work, clients or professionals may escalate the matter to the Nutsumo Dispute Desk prior to funds release. Our arbitration officers examine submitted milestones, photos, and project communication to issue binding resolutions, rework orders, or full escrow refunds.",
+    note: "Zero Risk Policy: If a professional abandons a project or fails to meet the agreed scope, client escrow funds are refunded in full.",
   },
   {
     title: "6. Platform Code of Conduct",
@@ -52,7 +52,7 @@ export default function TermsPage() {
             Terms & Conditions of Service
           </h1>
           <p className="text-sm sm:text-base text-muted max-w-2xl mx-auto">
-            Operating standards, escrow warranties, and responsibilities governing clients and artisans on Nutsumo.
+            Operating standards, escrow warranties, and responsibilities governing clients and professionals on Nutsumo.
           </p>
         </div>
       </section>

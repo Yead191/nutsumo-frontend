@@ -23,7 +23,7 @@ export function EmptyJobsState({ isFiltered, onResetFilters }: EmptyJobsStatePro
       <p className="mx-auto mt-1.5 max-w-md text-xs sm:text-sm text-muted leading-relaxed">
         {isFiltered
           ? "No jobs match your current search or status filter. Try clearing the filters to view all your requests."
-          : "Need a plumber, electrician, carpenter, or painter? Post your job in 2 minutes and receive proposals from top verified local artisans."}
+          : "Need a chef, driver, nanny, electrician or designer? Post your job in 2 minutes and receive proposals from top verified professionals."}
       </p>
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">

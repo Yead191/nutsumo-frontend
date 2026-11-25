@@ -14,25 +14,25 @@ export function HomeTestimonialsSection({
     {
       _id: "t1",
       name: "Kwame Mensah",
-      role: "Homeowner in Accra",
+      role: "Client in Accra",
       comment:
-        "The escrow system gave me total peace of mind. The electrician knew exactly what needed to be done, completed the rewiring promptly, and I only released the payment once we tested every single outlet. Absolutely flawless experience!",
+        "The escrow system gave me total peace of mind. I hired a private chef for my daughter's birthday party — the food was excellent, everything was on time, and I only released the payment after the event went perfectly.",
       rating: 5,
     },
     {
       _id: "t2",
       name: "Esi Boateng",
-      role: "Property Manager",
+      role: "Working Parent",
       comment:
-        "Finding reliable plumbers used to take days of calling around. On Nutsumo, I submitted a custom quote request, got a transparent proposal within 30 minutes, and the pipe leak was repaired the very next morning. No hidden fees!",
+        "Finding a trustworthy nanny used to take weeks of asking around. On Nutsumo, I could see verified IDs, real reviews and experience, got a clear proposal within hours, and she started the very next week. No hidden fees!",
       rating: 5,
     },
     {
       _id: "t3",
       name: "Samuel Osei",
-      role: "Homeowner",
+      role: "Small Business Owner",
       comment:
-        "What I love most is the fee breakdown. Everything was upfront — VAT, NHIL, GETFund, and the platform fee were itemized on the proposal. The craftsman was professional, tidy, and did an outstanding tiling job.",
+        "What I love most is the fee breakdown. Everything was upfront — VAT, NHIL, GETFund, and the platform fee were itemized on the proposal. The driver I hired for our deliveries was punctual, professional and reliable.",
       rating: 5,
     },
   ];
@@ -47,11 +47,11 @@ export function HomeTestimonialsSection({
             Customer Stories
           </span>
           <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-title tracking-tight">
-            Loved by Homeowners &amp; Property Owners
+            Loved by Clients Across Every Need
           </h2>
           <p className="text-sm sm:text-base text-copy font-sans">
-            Real experiences from clients who hired verified trade pros with
-            Nutsumo&apos;s escrow protection guarantee.
+            Real experiences from clients who hired verified workers and
+            professionals with Nutsumo&apos;s escrow protection guarantee.
           </p>
         </div>
 

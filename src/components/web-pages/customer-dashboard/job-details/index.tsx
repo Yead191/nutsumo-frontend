@@ -83,7 +83,7 @@ export function JobDetailsManager({
           <div className="flex items-center gap-2.5">
             <h2 className="font-display text-xl font-bold text-title flex items-center gap-2">
               <FileText className="h-5 w-5 text-[#FE375D]" />
-              <span>Artisan Proposals</span>
+              <span>Professional Proposals</span>
             </h2>
             <span className="rounded-full bg-[#FE375D]/10 px-2.5 py-0.5 text-xs font-bold text-[#FE375D]">
               {activeQuotations.length} {activeQuotations.length === 1 ? "Offer" : "Offers"}
@@ -92,7 +92,7 @@ export function JobDetailsManager({
 
           {job.status === "OPEN" && activeQuotations.length > 0 && (
             <p className="text-xs text-muted">
-              Select the best proposal to book and hire your artisan.
+              Select the best proposal to book and hire your professional.
             </p>
           )}
         </div>
@@ -130,10 +130,10 @@ export function JobDetailsManager({
               <Inbox className="h-7 w-7 stroke-[1.6]" />
             </div>
             <h3 className="font-display text-base font-bold text-title">
-              Waiting for Artisan Proposals
+              Waiting for Professional Proposals
             </h3>
             <p className="mx-auto mt-1 max-w-md text-xs sm:text-sm text-muted leading-relaxed">
-              Your service request is active in the marketplace. We have automatically notified matching verified artisans in your area. Proposals typically arrive within 10 to 30 minutes.
+              Your service request is active in the marketplace. We have automatically notified matching verified professionals in your area. Proposals typically arrive within 10 to 30 minutes.
             </p>
           </div>
         ) : (

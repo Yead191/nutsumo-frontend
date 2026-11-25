@@ -311,7 +311,7 @@ export function CategorySelector({
                 setServiceSearch(e.target.value);
                 setIsServiceDropdownOpen(true);
               }}
-              placeholder="e.g. Plumbing, Garden Bed Design, AC Servicing, Electrician..."
+              placeholder="e.g. Private Chef, Driver, Nanny, Electrician, Graphic Design..."
               className="w-full rounded-xl border border-line bg-white pl-10 pr-9 py-2.5 text-xs sm:text-sm text-title placeholder:text-muted focus:border-[#FE375D] focus:outline-none focus:ring-1 focus:ring-[#FE375D] shadow-2xs"
             />
             {isLoadingServices ? (
