@@ -7,7 +7,7 @@ import { JobsMarketplaceContainer } from "@/components/web-pages/jobs-marketplac
 export const metadata: Metadata = {
   title: "Find Jobs & Opportunities in Ghana · Nutsumo",
   description:
-    "Browse real-time jobs posted by verified clients in Ghana — domestic work, driving, catering, childcare, security, trades, office and creative roles. Submit quotes directly with zero commission.",
+    "Browse real-time jobs posted by verified clients in Ghana  domestic work, driving, catering, childcare, security, trades, office and creative roles. Submit quotes directly with zero commission.",
 };
 
 interface JobsPageProps {
@@ -46,7 +46,7 @@ export default async function JobsPage({ searchParams }: JobsPageProps) {
   const pagination = jobsRes.pagination || null;
 
   return (
-    <div className="container-site py-8 sm:py-12 pt-24!">
+    <div className="mx-auto max-w-7xl px-4 pt-24 pb-20 sm:px-6 sm:pb-28 lg:px-8">
       <JobsMarketplaceContainer
         initialJobs={jobs}
         categories={categories}

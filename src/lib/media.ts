@@ -25,7 +25,7 @@ export const photos = {
     about: "/images/about/banner.jpg",
     legal: u("photo-1504328345606-18bbc8c9d7d1", 1800),
   },
-  /** Cover / card image per trade — must match the craft visually */
+  /** Cover / card image per trade  must match the craft visually */
   services: {
     "appliance-repair": "/images/services/appliance-repair.jpg",
     electrical: "/images/services/electrical.jpg",
@@ -38,7 +38,7 @@ export const photos = {
     roofing: "/images/services/roofing.jpg",
     "house-cleaning": u("photo-1581578731548-c64695cc6952", 1600),
   } as Record<string, string>,
-  /** Extra portfolio shots — kept trade-pure */
+  /** Extra portfolio shots  kept trade-pure */
   portfolio: {
     plumbing: [
       u("photo-1585704032915-c3400ca199e7", 1200),

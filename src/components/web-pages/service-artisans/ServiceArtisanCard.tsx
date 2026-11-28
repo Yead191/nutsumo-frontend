@@ -2,18 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Star,
-  ShieldCheck,
-  CheckCircle2,
-  MapPin,
-  Sparkles,
-  ArrowRight,
-  Lock,
-  Briefcase,
-  Banknote,
-} from "lucide-react";
+import { Star, BadgeCheck, MapPin, Briefcase } from "lucide-react";
 import { getImageUrl } from "@/lib/getImageUrl";
+import { categoryPhoto } from "@/lib/stock-photos";
 import type { IArtisanProfileItem } from "@/helpers/next-fetch/apiActions/marketplaceActions";
 
 interface ServiceArtisanCardProps {
@@ -27,9 +18,9 @@ interface ServiceArtisanCardProps {
   onRequestQuote: () => void;
 }
 
+/** Fiverr gig-style card: work cover photo, pro identity, rating and starting price. */
 export function ServiceArtisanCard({
   artisan,
-  serviceId,
   serviceName,
   customRate,
   onRequestQuote,
@@ -38,13 +29,13 @@ export function ServiceArtisanCard({
   const avatarUrl = user.image ? getImageUrl(user.image) : null;
   const displayName = artisan.businessName || user.name || "Top Professional";
   const trade = artisan.trade || "Craftsman";
-  const location = artisan.location || artisan.city || user.location || "Location not set";
+  const location = artisan.location || artisan.city || user.location || "";
   const isAvailable =
     artisan.availability !== "BOOKED" &&
     artisan.availabilityStatus?.toLowerCase() !== "booked";
 
   const reviewsCount = artisan.reviewsCount || 0;
-  const rating = reviewsCount > 0 ? Number(artisan.rating || 0).toFixed(1) : "New";
+  const rating = reviewsCount > 0 ? Number(artisan.rating || 0).toFixed(1) : null;
   const completedJobs = artisan.completedJobs || 0;
 
   const rateAmount =
@@ -55,11 +46,11 @@ export function ServiceArtisanCard({
     0;
   const rateType = customRate?.type
     ? customRate.type.toLowerCase() === "hourly"
-      ? "/ hr"
+      ? "/hr"
       : customRate.type.toLowerCase() === "daily"
-        ? "/ day"
+        ? "/day"
         : " fixed"
-    : "/ hr";
+    : "/hr";
 
   const initials = (user.name || displayName || "A")
     .split(" ")
@@ -69,146 +60,97 @@ export function ServiceArtisanCard({
     .join("");
 
   const profileHref = `/job-seeker/${user._id || artisan._id}`;
+  // Cover shows the kind of work (stock photo); falls back to the pro's avatar.
+  const cover = categoryPhoto(serviceName, trade) || avatarUrl;
+  const title = artisan.bio || (serviceName ? `${serviceName} by a verified ${trade.toLowerCase()} pro` : trade);
 
   return (
-    <div className="group rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xs hover:shadow-lg hover:border-primary/40 transition-all flex flex-col justify-between space-y-5">
-      <div className="space-y-4">
-        {/* Top Header: Avatar, Name, Status, Rate */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-start gap-3.5">
-            {/* Avatar */}
-            <div className="relative h-16 w-16 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-              {avatarUrl ? (
-                <Image
-                  src={avatarUrl}
-                  alt={displayName}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform"
-                />
-              ) : (
-                <div className="h-full w-full grid place-items-center bg-primary/10 text-primary font-bold text-lg font-display">
-                  {initials}
-                </div>
-              )}
-              {user.verified && (
-                <div
-                  title="Verified Pro"
-                  className="absolute bottom-1 right-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-white shadow-xs"
-                >
-                  <ShieldCheck className="h-3.5 w-3.5 stroke-[2.5]" />
-                </div>
-              )}
-            </div>
-
-            {/* Name, Trade, Availability */}
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <Link
-                  href={profileHref}
-                  className="font-display text-base font-bold text-title group-hover:text-primary transition-colors hover:underline"
-                >
-                  {displayName}
-                </Link>
-                {user.verified && (
-                  <span className="inline-flex items-center text-emerald-600">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                  </span>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 text-xs">
-                <span className="font-semibold text-primary rounded-md bg-primary/10 px-2 py-0.5 text-[11px]">
-                  {trade}
-                </span>
-
-                {/* Status Pill */}
-                {isAvailable ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Available
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                    Booked
-                  </span>
-                )}
-              </div>
-            </div>
+    <article className="group flex h-full flex-col">
+      {/* Cover */}
+      <Link href={profileHref} className="relative block aspect-[16/10] overflow-hidden rounded-xl bg-slate-100">
+        {cover ? (
+          <Image
+            src={cover}
+            alt=""
+            fill
+            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center bg-linear-to-br from-[#4A0D1E] to-primary font-display text-3xl font-semibold text-white">
+            {initials}
           </div>
+        )}
+        <span
+          className={`absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold shadow-sm ${
+            isAvailable ? "text-emerald-700" : "text-amber-700"
+          }`}
+        >
+          <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? "bg-emerald-500" : "bg-amber-500"}`} />
+          {isAvailable ? "Available" : "Booked"}
+        </span>
+      </Link>
 
-          {/* Rate Display */}
-          <div className="text-right shrink-0">
-            <span className="text-[10px] uppercase font-bold text-muted block tracking-wider">
-              {customRate ? "Service Rate" : "Starting At"}
-            </span>
-            <div className="font-display text-lg font-black text-title">
-              {rateAmount ? `GH₵ ${rateAmount}` : "Quote"}
-              {rateAmount ? (
-                <span className="text-xs font-normal text-muted ml-0.5">
-                  {rateType}
-                </span>
-              ) : null}
-            </div>
-          </div>
+      {/* Identity */}
+      <div className="mt-3 flex items-center gap-2.5">
+        <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-primary/10">
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt={displayName} fill sizes="32px" className="object-cover" />
+          ) : (
+            <span className="grid h-full w-full place-items-center text-xs font-semibold text-primary">{initials}</span>
+          )}
         </div>
-
-        {/* Bio / Summary Snippet */}
-        {artisan.bio ? (
-          <p className="text-xs text-copy line-clamp-2 leading-relaxed">{artisan.bio}</p>
-        ) : null}
-
-        {/* Badges / Metrics Strip */}
-        <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-muted border-t border-slate-100">
-          {/* Star Rating */}
-          <div className="flex items-center gap-1 font-bold text-title">
-            <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400" />
-            <span>{rating}</span>
-            {reviewsCount > 0 ? (
-              <span className="text-muted font-normal text-[11px]">
-                ({reviewsCount})
-              </span>
-            ) : null}
-          </div>
-
-          <span>•</span>
-
-          {/* Completed Jobs */}
-          <div className="flex items-center gap-1 text-slate-700 font-medium">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-            <span>{completedJobs} jobs done</span>
-          </div>
-
-          <span>•</span>
-
-          {/* Location */}
-          <div className="flex items-center gap-1 text-slate-700 font-medium">
-            <MapPin className="h-3.5 w-3.5 text-slate-400" />
-            <span className="line-clamp-1">{location}</span>
-          </div>
-        </div>
+        <Link href={profileHref} className="min-w-0 truncate text-sm font-semibold text-title hover:underline">
+          {displayName}
+        </Link>
+        {user.verified ? <BadgeCheck className="h-4 w-4 shrink-0 text-primary" aria-label="Verified" /> : null}
       </div>
 
-      {/* Action Buttons: View Profile & Request Quote */}
-      <div className="pt-4 border-t border-slate-100 flex items-center gap-2.5">
-        <Link
-          href={profileHref}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-2xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-title py-2.5 text-xs font-bold transition-colors"
-        >
-          <span>View Profile</span>
-          <ArrowRight className="h-3.5 w-3.5 text-slate-400" />
-        </Link>
+      <Link href={profileHref} className="mt-2 line-clamp-2 text-[15px] leading-snug text-title transition-colors hover:text-primary">
+        {title}
+      </Link>
 
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-copy">
+        <span className="inline-flex items-center gap-1 font-semibold text-title">
+          <Star className="h-3.5 w-3.5 fill-title text-title" />
+          {rating ?? "New"}
+          {reviewsCount > 0 ? <span className="font-normal text-copy">({reviewsCount})</span> : null}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Briefcase className="h-3.5 w-3.5" />
+          {completedJobs} jobs
+        </span>
+        {location ? (
+          <span className="inline-flex min-w-0 items-center gap-1">
+            <MapPin className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{location}</span>
+          </span>
+        ) : null}
+      </div>
+
+      <div className="min-h-3 flex-1" />
+
+      {/* Price + CTA */}
+      <div className="mt-3 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
+        <p className="text-[13px] text-copy">
+          {rateAmount ? (
+            <>
+              {customRate ? "Rate" : "From"}{" "}
+              <span className="font-display text-base font-semibold text-title">GH₵ {rateAmount.toLocaleString()}</span>
+              {rateType}
+            </>
+          ) : (
+            <span className="font-semibold text-title">Custom quote</span>
+          )}
+        </p>
         <button
           type="button"
           onClick={onRequestQuote}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-2xl bg-primary hover:bg-primary-hover text-white py-2.5 text-xs font-bold shadow-xs hover:shadow-md transition-all cursor-pointer transform active:scale-95"
+          className="rounded-lg bg-title px-3.5 py-2 text-sm font-semibold text-white! transition-colors hover:bg-primary cursor-pointer"
         >
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>Request Quote</span>
+          Request quote
         </button>
       </div>
-    </div>
+    </article>
   );
 }
-

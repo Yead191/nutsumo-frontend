@@ -1,16 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import {
-  MapPin,
-  Calendar,
-  Clock,
-  ArrowRight,
-  ShieldCheck,
-  Tag,
-  MessageSquare,
-  Sparkles,
-} from "lucide-react";
+import Image from "next/image";
+import { MapPin, Calendar, Clock, ArrowRight, Sparkles, Briefcase } from "lucide-react";
+import { categoryPhoto } from "@/lib/stock-photos";
 import type { IJobItem } from "../types";
 
 interface JobMarketplaceCardProps {
@@ -50,101 +43,99 @@ export function JobMarketplaceCard({
       })
     : "";
 
+  // Illustrative cover for the kind of work (stock photo), not the client's own image.
+  const cover = categoryPhoto(serviceName, categoryName, job.title);
+  const href = `/jobs/${job._id}`;
+
   return (
-    <div className="group relative rounded-3xl border border-line/80 bg-white p-5 sm:p-6 shadow-xs hover:shadow-lg hover:border-[#FE375D]/40 transition-all duration-200 flex flex-col justify-between">
-      <div>
-        {/* TOP ROW: CATEGORY & STATUS */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {categoryName ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">
-                <Tag className="h-3 w-3 text-slate-500" />
-                <span>{categoryName}</span>
-              </span>
-            ) : null}
-            {serviceName ? (
-              <span className="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-semibold text-[#FE375D]">
-                {serviceName}
-              </span>
-            ) : null}
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 transition-shadow hover:shadow-[0_18px_40px_-20px_rgba(15,23,42,0.35)]">
+      {/* Cover */}
+      <Link href={href} className="relative block aspect-video overflow-hidden bg-slate-100">
+        {cover ? (
+          <Image
+            src={cover}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center bg-linear-to-br from-[#4A0D1E] to-primary">
+            <Briefcase className="h-10 w-10 text-white/80" strokeWidth={1.5} />
           </div>
+        )}
+        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-emerald-700 shadow-sm">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+          Open for proposals
+        </span>
+      </Link>
 
-          <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Open for Proposals</span>
-          </div>
-        </div>
+      <div className="flex flex-1 flex-col p-5">
+        {/* Category / service */}
+        {categoryName || serviceName ? (
+          <p className="truncate text-xs font-semibold uppercase tracking-[0.08em] text-primary">
+            {[categoryName, serviceName].filter(Boolean).join(" · ")}
+          </p>
+        ) : null}
 
-        {/* TITLE */}
-        <Link
-          href={`/jobs/${job._id}`}
-          className="group-hover:text-[#FE375D] transition-colors"
-        >
-          <h3 className="font-display text-lg sm:text-xl font-bold text-title tracking-tight line-clamp-2">
+        <Link href={href}>
+          <h3 className="mt-1.5 line-clamp-2 text-lg font-semibold leading-snug text-title transition-colors group-hover:text-primary">
             {job.title}
           </h3>
         </Link>
 
-        {/* DESCRIPTION */}
-        <p className="mt-2 text-xs sm:text-sm text-copy line-clamp-3 leading-relaxed">
-          {job.description}
-        </p>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-copy">{job.description}</p>
 
-        {/* META BADGES */}
-        <div className="mt-4 flex flex-wrap items-center gap-y-2 gap-x-4 text-xs text-muted border-t border-line/50 pt-3">
-          <div className="flex items-center gap-1 text-slate-700 font-medium">
-            <MapPin className="h-3.5 w-3.5 text-muted shrink-0" />
-            <span className="truncate max-w-[180px]">{job.location}</span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Calendar className="h-3.5 w-3.5 text-muted shrink-0" />
-            <span>Target: {formattedDate}</span>
-          </div>
-
-          {postedAgo ? (
-            <div className="flex items-center gap-1 ml-auto text-[11px] text-muted">
-              <Clock className="h-3 w-3" />
-              <span>Posted {postedAgo}</span>
-            </div>
-          ) : null}
-        </div>
-      </div>
-
-      {/* BOTTOM ACTION ROW */}
-      <div className="mt-5 pt-4 border-t border-line flex flex-wrap items-center justify-between gap-3">
-        {/* BUDGET */}
-        <div>
-          <span className="block text-[10px] font-bold uppercase tracking-wider text-muted">
-            Estimated Budget
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[13px] text-copy">
+          <span className="inline-flex min-w-0 items-center gap-1">
+            <MapPin className="h-3.5 w-3.5 shrink-0" />
+            <span className="max-w-[170px] truncate">{job.location}</span>
           </span>
-          <div className="font-display text-xl font-black text-[#FE375D] tracking-tight">
-            GH₵{job.budget?.toLocaleString() || "Negotiable"}
+          <span className="inline-flex items-center gap-1">
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            {formattedDate}
+          </span>
+          {postedAgo ? (
+            <span className="inline-flex items-center gap-1">
+              <Clock className="h-3.5 w-3.5 shrink-0" />
+              Posted {postedAgo}
+            </span>
+          ) : null}
+        </div>
+
+        {/* Spacer keeps the footer pinned to the bottom of equal-height cards */}
+        <div className="min-h-5 flex-1" />
+
+        {/* Budget + actions */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+          <div>
+            <span className="block text-[11px] font-semibold uppercase tracking-wider text-copy">Budget</span>
+            <span className="font-display text-xl font-semibold text-title">
+              {job.budget ? `GH₵ ${job.budget.toLocaleString()}` : "Negotiable"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {isArtisan && onSendProposal ? (
+              <button
+                type="button"
+                onClick={() => onSendProposal(job)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover cursor-pointer"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                Send proposal
+              </button>
+            ) : null}
+            <Link
+              href={href}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-2 text-sm font-semibold text-title transition-colors hover:border-title"
+            >
+              Details
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
-
-        {/* ACTIONS */}
-        <div className="flex items-center gap-2">
-          {isArtisan && onSendProposal ? (
-            <button
-              type="button"
-              onClick={() => onSendProposal(job)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#FE375D] hover:bg-[#e0284e] text-white px-4 py-2 text-xs font-semibold shadow-xs transition-all hover:scale-[1.02] cursor-pointer"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Send Proposal</span>
-            </button>
-          ) : null}
-
-          <Link
-            href={`/jobs/${job._id}`}
-            className="inline-flex items-center gap-1.5 rounded-full border border-line bg-smoke/60 hover:bg-white hover:border-title px-3.5 py-2 text-xs font-semibold text-title transition-all"
-          >
-            <span>Details</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
       </div>
-    </div>
+    </article>
   );
 }

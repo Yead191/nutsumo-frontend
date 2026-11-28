@@ -110,7 +110,7 @@ export interface IGetBookingsParams {
 }
 
 /**
- * GET /booking/my-bookings — Fetch authenticated user's confirmed bookings (Customer or Artisan)
+ * GET /booking/my-bookings  Fetch authenticated user's confirmed bookings (Customer or Artisan)
  */
 export async function getMyBookingsAction(
   params?: IGetBookingsParams,
@@ -135,7 +135,7 @@ export async function getMyBookingsAction(
 }
 
 /**
- * GET /booking/:id — Fetch single booking details
+ * GET /booking/:id  Fetch single booking details
  */
 export async function getBookingDetailsAction(
   id: string,
@@ -148,7 +148,7 @@ export async function getBookingDetailsAction(
 }
 
 /**
- * POST /booking/:id/checkout-session — Customer initiates Stripe Escrow Checkout
+ * POST /booking/:id/checkout-session  Customer initiates Stripe Escrow Checkout
  */
 export async function createBookingCheckoutSessionAction(
   bookingId: string,
@@ -162,7 +162,7 @@ export async function createBookingCheckoutSessionAction(
 }
 
 /**
- * GET /booking/verify-payment?session_id=... — Instant UI verification callback after Stripe redirect
+ * GET /booking/verify-payment?session_id=...  Instant UI verification callback after Stripe redirect
  */
 export async function verifyBookingPaymentAction(
   sessionId: string,
@@ -177,7 +177,7 @@ export async function verifyBookingPaymentAction(
 }
 
 /**
- * PATCH /booking/:id/start-work — Artisan starts work once escrow is held
+ * PATCH /booking/:id/start-work  Artisan starts work once escrow is held
  */
 export async function startBookingWorkAction(
   bookingId: string,
@@ -198,7 +198,7 @@ export async function startBookingWorkAction(
 }
 
 /**
- * PATCH /booking/:id/deliver — Artisan delivers completed work with proof notes & photos
+ * PATCH /booking/:id/deliver  Artisan delivers completed work with proof notes & photos
  * Accepts either FormData (with files in 'deliveryProof' or 'images') or JSON payload
  */
 export async function deliverBookingWorkAction(
@@ -222,7 +222,7 @@ export async function deliverBookingWorkAction(
 }
 
 /**
- * PATCH /booking/:id/request-revision — Customer requests adjustments from the artisan
+ * PATCH /booking/:id/request-revision  Customer requests adjustments from the artisan
  */
 export async function requestBookingRevisionAction(
   bookingId: string,
@@ -248,7 +248,7 @@ export async function requestBookingRevisionAction(
 }
 
 /**
- * PATCH /booking/:id/dispute — Customer or Artisan initiates formal mediation by Admin
+ * PATCH /booking/:id/dispute  Customer or Artisan initiates formal mediation by Admin
  */
 export async function disputeBookingAction(
   bookingId: string,
@@ -274,7 +274,7 @@ export async function disputeBookingAction(
 }
 
 /**
- * PATCH /booking/:id/confirm-completion — Customer inspects and approves completed work
+ * PATCH /booking/:id/confirm-completion  Customer inspects and approves completed work
  */
 export async function confirmBookingCompletionAction(
   bookingId: string,

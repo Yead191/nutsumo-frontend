@@ -2,7 +2,7 @@
 
 import { nextFetch } from "../core/NextFetch";
 
-/** POST /application — submits a grant application as FormData */
+/** POST /application  submits a grant application as FormData */
 export async function submitApplication(formData: FormData) {
   // FormData handling is automatically done by NextFetch (it skips Content-Type: application/json)
   const result = await nextFetch("/application", {
@@ -13,7 +13,7 @@ export async function submitApplication(formData: FormData) {
   return result;
 }
 
-/** GET /application/track — fetches a specific application by email, dob and optional periodId */
+/** GET /application/track  fetches a specific application by email, dob and optional periodId */
 export async function trackApplicationStatus(
   email: string,
   dob: string,

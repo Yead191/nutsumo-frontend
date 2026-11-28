@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalSections, type LegalSection } from "@/components/web-pages/legal-sections";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Nutsumo Marketplace",
+  title: "Privacy Policy  Nutsumo Marketplace",
   description:
     "Learn how Nutsumo protects and handles your personal data, biometric verification records, and transaction security under Ghanaian privacy regulations.",
 };

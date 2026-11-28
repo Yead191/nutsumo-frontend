@@ -214,7 +214,7 @@ export function WorkOrderReceipt({
                       nutsumo Platform Fee
                     </span>
                     <span className="block text-[11px] text-emerald-700">
-                      Direct contractor model — $0 middleman fee
+                      Direct contractor model  $0 middleman fee
                     </span>
                   </td>
                   <td className="py-3 px-4 text-center text-emerald-700 font-semibold">

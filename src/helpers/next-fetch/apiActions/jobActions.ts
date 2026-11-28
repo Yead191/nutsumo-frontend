@@ -66,7 +66,7 @@ export interface IGetJobsParams {
 }
 
 /**
- * GET /job — Fetch public/active marketplace jobs with search, category ID, service ID, sorting & pagination
+ * GET /job  Fetch public/active marketplace jobs with search, category ID, service ID, sorting & pagination
  */
 export async function getActiveJobsMarketplaceAction(
   params?: IGetJobsParams,
@@ -92,7 +92,7 @@ export async function getActiveJobsMarketplaceAction(
 }
 
 /**
- * POST /job — Create a new service job request (multipart/form-data or json)
+ * POST /job  Create a new service job request (multipart/form-data or json)
  */
 export async function createJobAction(
   formData: FormData,
@@ -112,7 +112,7 @@ export async function createJobAction(
 }
 
 /**
- * GET /job/my-jobs — Fetch authenticated customer's posted jobs
+ * GET /job/my-jobs  Fetch authenticated customer's posted jobs
  */
 export async function getMyJobsAction(
   params?: IGetJobsParams,
@@ -151,7 +151,7 @@ export async function refreshCustomerJobView(jobId: string) {
 }
 
 /**
- * GET /job/:id — Fetch single job details
+ * GET /job/:id  Fetch single job details
  */
 export async function getJobDetailsAction(
   id: string,
@@ -164,7 +164,7 @@ export async function getJobDetailsAction(
 }
 
 /**
- * PATCH /job/:id/cancel — Customer cancels an open job
+ * PATCH /job/:id/cancel  Customer cancels an open job
  */
 export async function cancelJobAction(
   id: string,

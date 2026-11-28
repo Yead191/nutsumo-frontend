@@ -56,7 +56,7 @@ function getPlanIcon(name: string) {
 export function PricingPlans({
   eyebrow = "Transparent Pricing",
   title = "100% free for homeowners. Simple subscription for pros.",
-  description = "Homeowners never pay any commissions, booking fees, or hidden markups — it's completely free. Service professionals simply choose a flat subscription and keep 100% of their earnings.",
+  description = "Homeowners never pay any commissions, booking fees, or hidden markups  it's completely free. Service professionals simply choose a flat subscription and keep 100% of their earnings.",
 }: {
   eyebrow?: string;
   title?: string;

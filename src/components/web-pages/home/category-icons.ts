@@ -1,0 +1,93 @@
+import {
+  Wrench,
+  Zap,
+  Code,
+  Sparkles,
+  TreePine,
+  Layers,
+  Home,
+  Tv,
+  Hammer,
+  Paintbrush,
+  Wind,
+  Droplets,
+  Briefcase,
+  ChefHat,
+  Car,
+  Baby,
+  Shield,
+  Laptop,
+  Camera,
+  Bug,
+  Brain,
+  Cloud,
+  Globe,
+  Smartphone,
+  ShoppingCart,
+  ChartColumn,
+  Network,
+  Palette,
+  FlaskConical,
+  Lock,
+  Monitor,
+  Megaphone,
+  Languages,
+  Truck,
+  Scissors,
+  Dumbbell,
+  GraduationCap,
+  Calculator,
+  type LucideIcon,
+} from "lucide-react";
+
+/**
+ * Ordered rules: first match wins, so specific phrases come before broad ones
+ * (e.g. "phone & tablet repair" must hit Smartphone before the generic "repair").
+ * Use word boundaries where a short token could hide inside another word
+ * ("air" in "repair", "ai" in "maintain").
+ */
+const RULES: Array<[RegExp, LucideIcon]> = [
+  [/\bai\b|machine learning|artificial/, Brain],
+  [/data|analytic/, ChartColumn],
+  [/devops|cloud/, Cloud],
+  [/cyber/, Lock],
+  [/quality assurance|\bqa\b|testing/, FlaskConical],
+  [/e-?commerce|shop/, ShoppingCart],
+  [/mobile app|phone|tablet/, Smartphone],
+  [/computer|laptop/, Monitor],
+  [/it support|network/, Network],
+  [/web/, Globe],
+  [/\bui\b|\bux\b|graphic|design/, Palette],
+  [/software|code|develop|program/, Code],
+  [/market|seo|social media/, Megaphone],
+  [/translat|languag/, Languages],
+  [/account|bookkeep|financ|tax/, Calculator],
+  [/tutor|teach|educat/, GraduationCap],
+  [/fitness|trainer|gym/, Dumbbell],
+  [/hair|barber|beauty|salon|makeup/, Scissors],
+  [/photo|video|creative|music/, Camera],
+  [/chef|cook|cater/, ChefHat],
+  [/moving|mover|logistic/, Truck],
+  [/driv|chauffeur|deliver/, Car],
+  [/nann|child|babysit|elder ?care|caregiv/, Baby],
+  [/secur|guard/, Shield],
+  [/office|admin|secretar|virtual assist/, Laptop],
+  [/plumb|pipe/, Droplets],
+  [/electr|wiring/, Zap],
+  [/pest|fumigat/, Bug],
+  [/clean|housekeep/, Sparkles],
+  [/paint/, Paintbrush],
+  [/carpent|wood|handyman/, Hammer],
+  [/roof/, Home],
+  [/appliance|\btv\b/, Tv],
+  [/hvac|\bair\b|air ?con|heating|cooling/, Wind],
+  [/landscap|garden|lawn/, TreePine],
+  [/tile|mason/, Layers],
+  [/repair|mechanic|technic/, Wrench],
+];
+
+/** Maps a category name/slug to a matching lucide icon. */
+export function getCategoryIcon(name: string = "", slug: string = ""): LucideIcon {
+  const q = `${name} ${slug.replace(/-/g, " ")}`.toLowerCase();
+  return RULES.find(([pattern]) => pattern.test(q))?.[1] ?? Briefcase;
+}

@@ -13,6 +13,45 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
+import Link from "next/link";
+import { PageBanner } from "@/components/layout/page-banner";
+import { stock } from "@/lib/stock-photos";
+
+const CHANNELS = [
+  {
+    icon: Mail,
+    title: "Email support",
+    value: "support@nutsumo.com",
+    href: "mailto:support@nutsumo.com",
+    note: "Average response time: < 2 hours",
+    tone: "bg-primary/10 text-primary",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Escrow dispute desk",
+    value: "disputes@nutsumo.com",
+    href: "mailto:disputes@nutsumo.com",
+    note: "Fast resolution for escrow & milestone disputes",
+    tone: "bg-emerald-50 text-emerald-600",
+  },
+  {
+    icon: Phone,
+    title: "Telephone / WhatsApp",
+    value: "+233 (0) 55 000 0000",
+    href: undefined,
+    note: "Monday to Saturday: 8:00 AM – 6:00 PM GMT",
+    tone: "bg-amber-50 text-amber-600",
+  },
+  {
+    icon: MapPin,
+    title: "Accra headquarters",
+    value: "Airport Residential Area, Accra, Ghana",
+    href: undefined,
+    note: "Our support and dispute resolution team",
+    tone: "bg-indigo-50 text-indigo-600",
+  },
+];
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,115 +76,75 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen pb-24">
+    <div className="bg-white min-h-screen pb-20 sm:pb-28">
       {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>24/7 Dedicated Support & Dispute Desk</span>
-          </div>
+      <PageBanner
+        eyebrow="24/7 support & dispute desk"
+        title="We’re here to help you succeed"
+        description="Questions about an escrow payment, professional verification, or a job in progress? Our Accra team is ready to help."
+        image={stock.womenMeeting}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "Contact" }]}
+      />
 
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-title tracking-tight max-w-3xl mx-auto">
-            We’re Here to Help You Succeed
-          </h1>
-
-          <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
-            Have questions about an escrow payment, professional verification, or need assistance with a job? Contact our Accra team anytime.
-          </p>
+      {/* 2. CHANNEL CARDS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {CHANNELS.map(({ icon: Icon, title, value, href, note, tone }) => (
+            <div
+              key={title}
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-24px_rgba(15,23,42,0.45)]"
+            >
+              <span className={`grid h-11 w-11 place-items-center rounded-xl ${tone}`}>
+                <Icon className="h-5 w-5" />
+              </span>
+              <p className="mt-5 text-sm font-semibold text-copy">{title}</p>
+              {href ? (
+                <a href={href} className="mt-1 block break-words font-display text-lg font-semibold text-title hover:text-primary">
+                  {value}
+                </a>
+              ) : (
+                <p className="mt-1 font-display text-lg font-semibold text-title">{value}</p>
+              )}
+              <p className="mt-2 text-sm text-copy">{note}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* 2. CONTACT GRID */}
-      <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          {/* Left Column: Direct Channels & Office Info */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-2xs space-y-6">
-              <div>
-                <h2 className="font-display text-xl font-bold text-title">
-                  Direct Support Channels
-                </h2>
-                <p className="text-xs sm:text-sm text-muted mt-1 leading-relaxed">
-                  Reach our dedicated trust officers and dispute resolution team directly.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary shrink-0">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-title block">Email Support</span>
-                    <a
-                      href="mailto:support@nutsumo.com"
-                      className="text-xs sm:text-sm font-semibold text-primary hover:underline"
-                    >
-                      support@nutsumo.com
-                    </a>
-                    <span className="text-[11px] text-muted block mt-0.5">
-                      Average response time: &lt; 2 hours
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shrink-0">
-                    <ShieldCheck className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-title block">Escrow Dispute Desk</span>
-                    <a
-                      href="mailto:disputes@nutsumo.com"
-                      className="text-xs sm:text-sm font-semibold text-emerald-700 hover:underline"
-                    >
-                      disputes@nutsumo.com
-                    </a>
-                    <span className="text-[11px] text-muted block mt-0.5">
-                      Fast resolution for escrow & milestone disputes
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100 shrink-0">
-                    <Phone className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-title block">Telephone / WhatsApp</span>
-                    <span className="text-xs sm:text-sm font-semibold text-title">
-                      +233 (0) 55 000 0000
-                    </span>
-                    <span className="text-[11px] text-muted block mt-0.5">
-                      Monday to Saturday: 8:00 AM – 6:00 PM GMT
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 shrink-0">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-title block">Accra Headquarters</span>
-                    <span className="text-xs sm:text-sm text-copy block">
-                      Airport Residential Area, Accra, Ghana
-                    </span>
-                  </div>
-                </div>
-              </div>
+      {/* 3. PHOTO + FORM */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+          <div className="lg:col-span-5 relative min-h-[360px] overflow-hidden rounded-3xl">
+            <Image
+              src={stock.consultation}
+              alt="A Nutsumo support officer helping a client"
+              fill
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-[#2A0A12]/90 via-[#2A0A12]/25 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+              <p className="font-display text-2xl font-semibold leading-snug text-white!">
+                Real people in Accra, ready to help with any job, payment or dispute.
+              </p>
+              <ul className="mt-5 space-y-2.5 text-sm text-white/85">
+                {["Escrow & payment questions", "Pro verification & applications", "Business & partnership requests"].map((item) => (
+                  <li key={item} className="flex items-center gap-2.5">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
-          {/* Right Column: Send a Message Form */}
           <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-10 shadow-sm space-y-6">
+            <div className="h-full rounded-3xl border border-slate-200 bg-white p-6 sm:p-10 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] space-y-6">
               <div>
-                <h2 className="font-display text-xl sm:text-2xl font-bold text-title">
-                  Send Us a Direct Message
+                <h2 className="font-display text-2xl sm:text-3xl font-semibold text-title">
+                  Send us a message
                 </h2>
-                <p className="text-xs sm:text-sm text-muted mt-1 leading-relaxed">
+                <p className="text-sm sm:text-base text-copy mt-2 leading-relaxed">
                   Fill out the form below and an agent will contact you promptly.
                 </p>
               </div>
@@ -173,10 +172,10 @@ export default function ContactPage() {
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-title uppercase font-display">
+                      <label className="text-sm font-semibold text-title">
                         Full Name *
                       </label>
                       <input
@@ -185,12 +184,12 @@ export default function ContactPage() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="e.g. Kwame Mensah"
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[15px] text-title placeholder:text-slate-400 focus:border-title focus:outline-none focus:ring-4 focus:ring-slate-100 transition"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-title uppercase font-display">
+                      <label className="text-sm font-semibold text-title">
                         Email Address *
                       </label>
                       <input
@@ -199,14 +198,14 @@ export default function ContactPage() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="kwame@example.com"
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[15px] text-title placeholder:text-slate-400 focus:border-title focus:outline-none focus:ring-4 focus:ring-slate-100 transition"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-title uppercase font-display">
+                      <label className="text-sm font-semibold text-title">
                         Phone Number (Optional)
                       </label>
                       <input
@@ -214,18 +213,18 @@ export default function ContactPage() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+233 24 000 0000"
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[15px] text-title placeholder:text-slate-400 focus:border-title focus:outline-none focus:ring-4 focus:ring-slate-100 transition"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-title uppercase font-display">
+                      <label className="text-sm font-semibold text-title">
                         Inquiry Topic *
                       </label>
                       <select
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                        className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[15px] text-title placeholder:text-slate-400 focus:border-title focus:outline-none focus:ring-4 focus:ring-slate-100 transition"
                       >
                         <option value="General Support Inquiry">General Support Inquiry</option>
                         <option value="Escrow & Payment Question">Escrow & Payment Question</option>
@@ -237,7 +236,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-title uppercase font-display">
+                    <label className="text-sm font-semibold text-title">
                       Message Details *
                     </label>
                     <textarea
@@ -246,14 +245,14 @@ export default function ContactPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Please describe how we can assist you..."
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-xs sm:text-sm text-title focus:border-primary focus:bg-white focus:outline-none transition-colors"
+                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[15px] text-title placeholder:text-slate-400 focus:border-title focus:outline-none focus:ring-4 focus:ring-slate-100 transition"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3.5 text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer disabled:opacity-50"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-white py-4 text-base font-semibold transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
@@ -263,7 +262,7 @@ export default function ContactPage() {
                     ) : (
                       <>
                         <Send className="h-4 w-4" />
-                        <span>Submit Message to Support Desk</span>
+                        <span>Send message</span>
                       </>
                     )}
                   </button>
@@ -271,6 +270,27 @@ export default function ContactPage() {
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 4. QUICK ANSWERS STRIP */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <div className="flex flex-col gap-5 rounded-3xl bg-slate-50 px-6 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+          <div className="flex items-center gap-4">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-primary shadow-sm">
+              <Sparkles className="h-5 w-5" />
+            </span>
+            <div>
+              <p className="font-display text-lg font-semibold text-title">Looking for a quick answer?</p>
+              <p className="text-sm text-copy">Most questions about escrow, fees and verification are answered in our FAQ.</p>
+            </div>
+          </div>
+          <Link
+            href="/faq"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-title px-5 py-3 text-sm font-semibold text-white! hover:bg-black transition-colors"
+          >
+            Visit the help centre <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     </div>

@@ -13,7 +13,7 @@ export const homeownerFaqs = [
   },
   {
     q: "How do payments work?",
-    a: "You agree on the price and pay your contractor directly after the job is completed to your satisfaction—via credit card, check, cash, or digital transfer. nutsumo never holds your funds or charges middleman checkout surcharges.",
+    a: "You agree on the price and pay your contractor directly after the job is completed to your satisfactionvia credit card, check, cash, or digital transfer. nutsumo never holds your funds or charges middleman checkout surcharges.",
   },
   {
     q: "What happens if I'm not satisfied or an issue arises?",
@@ -100,7 +100,7 @@ export const plans: PlanItem[] = [
     cta: "Post a request ↗",
     featured: false,
     features: [
-      { text: "100% free — zero commissions or service fees", icon: "shield" },
+      { text: "100% free  zero commissions or service fees", icon: "shield" },
       { text: "Post unlimited repair requests for $0", icon: "clipboard" },
       { text: "Browse verified local contractor profiles", icon: "search" },
       { text: "Compare itemized quotes side-by-side", icon: "layers" },

@@ -59,7 +59,7 @@ export async function getCurrentApplicationPeriod(): Promise<ApiGrantPeriod | nu
   return null;
 }
 
-/** GET /period — fetches all application periods for dropdown selection */
+/** GET /period  fetches all application periods for dropdown selection */
 export async function getAllApplicationPeriods() {
   const result = await nextFetch<ApiGrantPeriod[]>("/period", {
     method: "GET",

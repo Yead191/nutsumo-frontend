@@ -13,7 +13,7 @@ export default function AuthLayout({
       <aside className="hidden lg:block fixed inset-y-0 left-0 w-1/2 z-10 overflow-hidden bg-slate-900 select-none">
         <Image
           src="/images/auth/auth-img.png"
-          alt="Nutsumo — Skilled Workers & Professionals"
+          alt="Nutsumo  Skilled Workers & Professionals"
           fill
           priority
           sizes="50vw"

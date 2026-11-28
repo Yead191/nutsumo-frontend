@@ -71,7 +71,7 @@ function buildDirectThread(proId: string): MessageThread | null {
         id: `${threadId}-0`,
         sender: "pro",
         senderName: pro.name,
-        body: `Hi — thanks for reaching out. I'm ${pro.name} (${pro.trade}). Share a few details or photos and I’ll follow up.`,
+        body: `Hi  thanks for reaching out. I'm ${pro.name} (${pro.trade}). Share a few details or photos and I’ll follow up.`,
         sentAt: "Just now",
         read: true,
       },

@@ -51,7 +51,7 @@ export const roleFeatures: Record<
     ],
   },
   homeowner: {
-    landsOn: "/account — Your requests",
+    landsOn: "/account  Your requests",
     can: [
       "Post a request (free)",
       "See your own jobs, quotes, messages, reviews",
@@ -67,7 +67,7 @@ export const roleFeatures: Record<
     ],
   },
   admin: {
-    landsOn: "/admin — Queue, then disputes, then directory",
+    landsOn: "/admin  Queue, then disputes, then directory",
     can: [
       "Review applications: approve, request info, or reject with a note",
       "Suspend or restore public listings",
@@ -81,7 +81,7 @@ export const roleFeatures: Record<
     ],
   },
   pro: {
-    landsOn: "/pro — Overview, then Application → Membership → Jobs",
+    landsOn: "/pro  Overview, then Application → Membership → Jobs",
     can: [
       "Track application / clearance",
       "Start $19.99 membership (3 free months)",
@@ -105,7 +105,7 @@ export const roleFeatures: Record<
  * Matching, accept/decline, and dispute notes are client-side so the marketplace loop can be exercised.
  */
 export const implementationGaps = {
-  persistence: "Browser localStorage only — not a multi-user production database.",
+  persistence: "Browser localStorage only  not a multi-user production database.",
   notifications: "In-app notification records only. No real email/SMS/push.",
   payments: "HomeFix never charges homeowners or invoices repair work. Pros pay a subscription in the demo membership UI.",
   identity: "The signed-in demo pro is always pro-1. Other directory pros cannot log in.",
@@ -175,6 +175,6 @@ export const postRequiredHints = {
   zip: "Used for nearby matching. Exact street stays private until contact unlock.",
   urgency: "Helps pros prioritize.",
   photos: "Optional but improves quote quality.",
-  budget: "Optional range — not a checkout price.",
+  budget: "Optional range  not a checkout price.",
   propertyType: "Optional context for the pro.",
 };

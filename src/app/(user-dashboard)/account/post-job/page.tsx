@@ -8,7 +8,7 @@ import { PostJobWizard } from "@/components/web-pages/customer-dashboard/post-jo
 export const metadata: Metadata = {
   title: "Post a Service Request · Nutsumo",
   description:
-    "Post any job — household help, driving, catering, childcare, security, repairs, office or creative work — and receive fast competitive quotes from verified professionals.",
+    "Post any job  household help, driving, catering, childcare, security, repairs, office or creative work  and receive fast competitive quotes from verified professionals.",
 };
 
 export default async function PostJobPage() {

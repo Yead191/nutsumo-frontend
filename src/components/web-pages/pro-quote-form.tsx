@@ -119,7 +119,7 @@ export function ProQuoteForm({
           <h2 className="text-lg">Homeowner counter</h2>
           <p className="mt-2 text-sm text-copy">
             They proposed <span className="font-semibold text-title">${quote.counterAmount}</span>
-            {quote.counterNote ? ` — “${quote.counterNote}”` : ""}. Your original was ${quote.amount}.
+            {quote.counterNote ? `  “${quote.counterNote}”` : ""}. Your original was ${quote.amount}.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <Button
@@ -189,8 +189,8 @@ export function ProQuoteForm({
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Materials included?">
               <NativeSelect name="materials" defaultValue="yes" disabled={locked}>
-                <option value="yes">Yes — all parts &amp; fittings included</option>
-                <option value="no">No — labor only (materials billed separately)</option>
+                <option value="yes">Yes  all parts &amp; fittings included</option>
+                <option value="no">No  labor only (materials billed separately)</option>
               </NativeSelect>
             </Field>
             <div>

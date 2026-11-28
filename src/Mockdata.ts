@@ -1147,7 +1147,7 @@ export const quotes: Quote[] = [
     estimatedDuration: "1–2 hours",
     proposedSchedule: "Thu 1–3 PM or Fri morning",
     expiresAt: "2026-10-20",
-    paymentTerms: "Pay the pro directly after the visit — card or cash.",
+    paymentTerms: "Pay the pro directly after the visit  card or cash.",
     status: "pending",
   },
   {
@@ -1180,7 +1180,7 @@ export const quotes: Quote[] = [
     estimatedDuration: "2 hours",
     proposedSchedule: "Tomorrow 2–4 PM",
     expiresAt: "2026-10-17",
-    paymentTerms: "Fixed price — pay the pro when work is done.",
+    paymentTerms: "Fixed price  pay the pro when work is done.",
     status: "pending",
   },
 ];
@@ -1201,7 +1201,7 @@ export const threads: MessageThread[] = [
         id: "m1-1",
         sender: "homeowner",
         senderName: "Maya Chen",
-        body: "Hi Luis — can you look at the leak under the kitchen sink this week?",
+        body: "Hi Luis  can you look at the leak under the kitchen sink this week?",
         sentAt: "Oct 13 · 9:40 AM",
       },
       {
@@ -1234,7 +1234,7 @@ export const threads: MessageThread[] = [
     otherParty: "Shah Electric Co.",
     proId: "pro-1",
     unread: 0,
-    lastMessage: "Sounds good — I’ll review the quote tonight.",
+    lastMessage: "Sounds good  I’ll review the quote tonight.",
     lastSender: "homeowner",
     updatedAt: "Oct 13 · 6:40 PM",
     messages: [
@@ -1249,7 +1249,7 @@ export const threads: MessageThread[] = [
         id: "m2-2",
         sender: "homeowner",
         senderName: "Maya Chen",
-        body: "Sounds good — I’ll review the quote tonight.",
+        body: "Sounds good  I’ll review the quote tonight.",
         sentAt: "Oct 13 · 6:40 PM",
       },
     ],
@@ -1386,7 +1386,7 @@ export const seedReviews: ReviewItem[] = [
     rating: 5,
     body: "Fixed the leak the same afternoon. Clean work and clear price.",
     createdAt: "Sep 2026",
-    reply: "Thanks Maya — glad the cabinet dried out cleanly.",
+    reply: "Thanks Maya  glad the cabinet dried out cleanly.",
   },
   {
     id: "rev-2",

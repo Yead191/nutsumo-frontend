@@ -160,6 +160,16 @@ export function ProposalCard({
 
         {/* STATUS / ACTION BUTTONS */}
         <div className="flex items-center gap-2.5">
+          {/* Chat with this pro (opens or reuses the conversation) */}
+          {artisan?._id ? (
+            <Link
+              href={`/account/messages?to=${artisan._id}&job=${typeof proposal.job === "string" ? proposal.job : proposal.job?._id ?? ""}`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-4 py-2 text-xs font-semibold text-title transition-colors hover:border-[#FE375D]/50 hover:text-[#FE375D]"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span>Message</span>
+            </Link>
+          ) : null}
           {isAccepted ? (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 px-4 py-1.5 text-xs font-bold border border-emerald-200">
               <CheckCircle2 className="h-4 w-4" />

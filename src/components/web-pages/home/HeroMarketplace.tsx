@@ -1,183 +1,131 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  Search,
-  MapPin,
-  ArrowRight,
-  Star,
-  Users,
-  Lock,
-  Sparkles,
-} from "lucide-react";
+import { Search, ArrowRight, ShieldCheck, Star, Users } from "lucide-react";
 
 interface HeroMarketplaceProps {
   popularCategories?: Array<{ name: string; slug: string }>;
 }
 
-export function HeroMarketplace({
-  popularCategories = [],
-}: HeroMarketplaceProps) {
+const DEFAULT_POPULAR = [
+  { name: "Chef", slug: "chef" },
+  { name: "Driver", slug: "driver" },
+  { name: "Nanny", slug: "nanny" },
+  { name: "Electrician", slug: "electrician" },
+  { name: "Plumber", slug: "plumber" },
+];
+
+export function HeroMarketplace({ popularCategories = [] }: HeroMarketplaceProps) {
   const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [location, setLocation] = useState("");
+
+  // Respect users who prefer reduced motion: keep the poster frame instead.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mq.matches) video.pause();
+    else video.play().catch(() => {});
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchTerm.trim()) params.append("q", searchTerm.trim());
-    if (location.trim()) params.append("location", location.trim());
-    router.push(`/browse-pros?${params.toString()}`);
+    const q = searchTerm.trim();
+    router.push(q ? `/browse-pros?q=${encodeURIComponent(q)}` : "/browse-pros");
   };
 
-  const defaultPopular = [
-    { name: "Chef", slug: "chef" },
-    { name: "Driver", slug: "driver" },
-    { name: "Nanny", slug: "nanny" },
-    { name: "Security", slug: "security" },
-    { name: "Electrician", slug: "electrician" },
-    { name: "Graphic Designer", slug: "graphic-designer" },
-  ];
-
-  const chips =
-    popularCategories.length > 0
-      ? popularCategories.slice(0, 6)
-      : defaultPopular;
+  const chips = popularCategories.length > 0 ? popularCategories.slice(0, 5) : DEFAULT_POPULAR;
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 pt-8 pb-16 sm:pt-14  sm:pb-24 border-b border-slate-200/70">
-      {/* Background Subtle Gradient Blobs */}
-      <div className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-      <div className="pointer-events-none absolute top-1/2 -left-32 h-80 w-80 rounded-full bg-[#00A1DE]/5 blur-3xl" />
+    <section
+      id="hero"
+      className="relative isolate overflow-hidden bg-[#0a0708] min-h-[640px] sm:min-h-[720px] flex items-center"
+    >
+      {/* Background video */}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 -z-20 h-full w-full object-cover"
+        src="/videos/hero.mp4"
+        poster="/videos/hero-poster.jpg"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+      />
+      {/* Readability wash */}
+      <div className="absolute inset-0 -z-10 bg-linear-to-r from-black/85 via-black/60 to-black/25" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-black/60 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
-        <div className="text-center max-w-3xl mx-auto space-y-5">
-          {/* Main Title */}
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-title tracking-tight leading-[1.12]">
-            Find the Right Professional for Any Job with{" "}
-            <span className="text-primary underline decoration-primary/20 decoration-wavy underline-offset-4">
-              Escrow Protection
-            </span>
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 sm:pt-36 sm:pb-20">
+        <div className="max-w-2xl">
+          <h1 className="font-display text-[40px] leading-[1.08] sm:text-6xl sm:leading-[1.05] font-semibold text-white! tracking-tight">
+            Our verified pros will{" "}
+            <span className="text-primary">take it from here</span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg text-copy max-w-2xl mx-auto leading-relaxed font-sans">
-            Tradespeople, chefs, drivers, nannies, security personnel, office,
-            creative and domestic workers — formal or informal, find verified
-            people for any job. Request quotes, review transparent pricing, and
-            release funds only after the work is done to your satisfaction.
+          <p className="mt-5 text-base sm:text-lg text-white/80 max-w-xl">
+            Chefs, drivers, nannies, tradespeople, office and creative talent 
+            hire with confidence and pay only when the job is done.
           </p>
 
-          {/* Hero Interactive Search Box */}
-          <div className="pt-3 max-w-3xl mx-auto">
-            <form
-              onSubmit={handleSearch}
-              className="rounded-2xl sm:rounded-full bg-white p-2.5 sm:p-2 border border-slate-200 shadow-[0_12px_40px_-15px_rgba(13,86,214,0.12)] flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-1"
+          {/* Search */}
+          <form
+            onSubmit={handleSearch}
+            className="mt-8 flex items-stretch rounded-xl bg-white p-1 shadow-2xl max-w-xl"
+            role="search"
+          >
+            <label htmlFor="hero-search" className="sr-only">
+              Search for any service
+            </label>
+            <input
+              id="hero-search"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search for any service…"
+              className="min-w-0 flex-1 bg-transparent px-4 text-base text-title placeholder:text-slate-400 focus:outline-none"
+            />
+            <button
+              type="submit"
+              aria-label="Search"
+              className="grid h-10 w-10 sm:h-11 sm:w-11 shrink-0 place-items-center rounded-lg bg-primary text-white hover:bg-primary-hover transition-colors cursor-pointer"
             >
-              {/* Search Query Input */}
-              <div className="flex-1 flex items-center gap-3 pl-3 sm:pl-4 py-2 sm:py-0">
-                <Search className="h-5 w-5 text-slate-400 shrink-0" />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Who do you need? (e.g. Chef, Driver, Nanny, Electrician)"
-                  className="w-full bg-transparent text-sm font-medium text-title placeholder:text-slate-400 focus:outline-none"
-                />
-              </div>
+              <Search className="h-5 w-5" />
+            </button>
+          </form>
 
-              {/* Divider */}
-              <div className="hidden sm:block h-7 w-px bg-slate-200 shrink-0" />
-
-              {/* Location Input */}
-              <div className="flex-1 flex items-center gap-3 pl-3 sm:pl-3 py-2 sm:py-0">
-                <MapPin className="h-5 w-5 text-slate-400 shrink-0" />
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Location or Postcode (e.g. Accra, 10001)"
-                  className="w-full bg-transparent text-sm font-medium text-title placeholder:text-slate-400 focus:outline-none"
-                />
-              </div>
-
-              {/* Submit CTA */}
-              <button
-                type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-xl sm:rounded-full bg-primary hover:bg-primary-hover text-white px-7 py-3.5 text-sm font-bold shadow-md transition-all active:scale-[0.99] cursor-pointer shrink-0"
-              >
-                <span>Find Pros</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </form>
-          </div>
-
-          {/* Popular Category Chips */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs">
-            <span className="text-muted font-semibold">Popular:</span>
-            {chips.map((cat: any) => (
+          {/* Popular chips */}
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            {chips.map((cat) => (
               <Link
-                key={cat._id || cat.slug}
+                key={cat.slug}
                 href={`/browse-pros?q=${encodeURIComponent(cat.name)}`}
-                className="rounded-full bg-white border border-slate-200/90 px-3 py-1 text-copy font-medium hover:border-primary hover:text-primary hover:bg-primary/5 transition-all shadow-2xs"
+                className="group inline-flex items-center gap-1.5 rounded-lg border border-white/40 bg-white/5 px-3.5 py-1.5 text-sm font-medium text-white backdrop-blur-sm hover:bg-white hover:text-title! transition-colors"
               >
                 {cat.name}
+                <ArrowRight className="h-3.5 w-3.5 opacity-70 transition-transform group-hover:translate-x-0.5" />
               </Link>
             ))}
           </div>
         </div>
 
-        {/* Live Marketplace Trust Highlights Grid */}
-        <div className="mt-14 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-slate-200/70">
-          <div className="rounded-2xl bg-white/90 p-4 sm:p-5 border border-slate-200/80 shadow-2xs text-center space-y-1">
-            <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary mb-1">
-              <Users className="h-5 w-5" />
-            </div>
-            <strong className="block font-display text-xl sm:text-2xl font-bold text-title">
-              2,500+
-            </strong>
-            <span className="text-xs text-muted block font-medium">
-              Verified Workers &amp; Professionals
-            </span>
-          </div>
-
-          <div className="rounded-2xl bg-white/90 p-4 sm:p-5 border border-slate-200/80 shadow-2xs text-center space-y-1">
-            <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600 mb-1">
-              <Lock className="h-5 w-5" />
-            </div>
-            <strong className="block font-display text-xl sm:text-2xl font-bold text-title">
-              100% Escrow
-            </strong>
-            <span className="text-xs text-muted block font-medium">
-              Safe Milestone Payments
-            </span>
-          </div>
-
-          <div className="rounded-2xl bg-white/90 p-4 sm:p-5 border border-slate-200/80 shadow-2xs text-center space-y-1">
-            <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-amber-50 text-amber-600 mb-1">
-              <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
-            </div>
-            <strong className="block font-display text-xl sm:text-2xl font-bold text-title">
-              4.9 / 5.0
-            </strong>
-            <span className="text-xs text-muted block font-medium">
-              Verified Client Satisfaction
-            </span>
-          </div>
-
-          <div className="rounded-2xl bg-white/90 p-4 sm:p-5 border border-slate-200/80 shadow-2xs text-center space-y-1">
-            <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-600 mb-1">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <strong className="block font-display text-xl sm:text-2xl font-bold text-title">
-              22.5% fees
-            </strong>
-            <span className="text-xs text-muted block font-medium">
-              Transparent Ghana Levies
-            </span>
-          </div>
+        {/* Trust strip */}
+        <div className="mt-14 sm:mt-20 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-white/70">
+          <span className="font-semibold text-white/50">Trusted for:</span>
+          <span className="inline-flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" /> 2,500+ verified pros
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" /> 100% escrow-protected payments
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <Star className="h-4 w-4 fill-primary text-primary" /> 4.9/5 client satisfaction
+          </span>
         </div>
       </div>
     </section>

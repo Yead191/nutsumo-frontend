@@ -80,7 +80,7 @@ export function ServiceArtisansFilterBar({
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-sm space-y-4">
+    <div className="bg-white rounded-2xl ring-1 ring-slate-200 p-3 sm:p-4 shadow-[0_8px_30px_-18px_rgba(15,23,42,0.35)] space-y-3">
       {/* 1. TOP BAR: Search & Location Form */}
       <form
         onSubmit={handleSearchSubmit}
@@ -94,7 +94,7 @@ export function ServiceArtisansFilterBar({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by professional or business name..."
-            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:border-primary focus:outline-none transition-colors"
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-[15px] text-title placeholder:text-copy/70 focus:bg-white focus:border-primary focus:outline-none transition-colors"
           />
         </div>
 
@@ -106,7 +106,7 @@ export function ServiceArtisansFilterBar({
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="City, neighborhood, or postcode (e.g. Accra, Osu)..."
-            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm text-title placeholder:text-muted focus:bg-white focus:border-primary focus:outline-none transition-colors"
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-[15px] text-title placeholder:text-copy/70 focus:bg-white focus:border-primary focus:outline-none transition-colors"
           />
         </div>
 
@@ -115,14 +115,14 @@ export function ServiceArtisansFilterBar({
           <button
             type="submit"
             disabled={isPending}
-            className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-primary hover:bg-primary-hover text-white py-3 px-5 text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50"
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-title hover:bg-black text-white! py-3 px-5 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Search className="h-4 w-4" />
             )}
-            <span>Apply Filters</span>
+            <span>Search</span>
           </button>
 
           {hasActiveFilters && (
@@ -130,7 +130,7 @@ export function ServiceArtisansFilterBar({
               type="button"
               onClick={handleReset}
               title="Reset all filters"
-              className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer shrink-0"
+              className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-500 transition-colors cursor-pointer shrink-0"
             >
               <X className="h-4 w-4" />
             </button>
@@ -139,7 +139,7 @@ export function ServiceArtisansFilterBar({
       </form>
 
       {/* 2. BOTTOM BAR: Filter Chips & Server Sorting */}
-      <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="px-1 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-sm">
         {/* Availability Switchers */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-semibold text-muted text-[11px] uppercase tracking-wider font-display mr-1">
@@ -149,9 +149,9 @@ export function ServiceArtisansFilterBar({
           <button
             type="button"
             onClick={() => applyFilters({ availability: "all" })}
-            className={`px-3 py-1.5 rounded-full font-bold transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer ${
               currentAvailability === "all"
-                ? "bg-title text-white shadow-2xs"
+                ? "bg-title text-white!"
                 : "bg-slate-100 text-muted hover:text-title"
             }`}
           >
@@ -161,7 +161,7 @@ export function ServiceArtisansFilterBar({
           <button
             type="button"
             onClick={() => applyFilters({ availability: "Available" })}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-all cursor-pointer ${
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-semibold transition-all cursor-pointer ${
               currentAvailability === "Available"
                 ? "bg-emerald-600 text-white shadow-2xs"
                 : "bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
@@ -182,7 +182,7 @@ export function ServiceArtisansFilterBar({
             <select
               value={currentRating}
               onChange={(e) => applyFilters({ rating: e.target.value })}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-title focus:border-title focus:outline-none cursor-pointer"
             >
               <option value="all">Any Rating</option>
               <option value="4.5">4.5 ★ & Above</option>
@@ -198,7 +198,7 @@ export function ServiceArtisansFilterBar({
             <select
               value={currentSort}
               onChange={(e) => applyFilters({ sort: e.target.value })}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-title focus:bg-white focus:outline-none cursor-pointer"
+              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-title focus:border-title focus:outline-none cursor-pointer"
             >
               <option value="-rating">Top Rated ★</option>
               <option value="-completedJobs">Most Completed Jobs</option>
@@ -207,8 +207,8 @@ export function ServiceArtisansFilterBar({
             </select>
           </div>
 
-          <span className="text-[11px] font-bold text-muted bg-slate-100 px-2.5 py-1 rounded-full">
-            {totalFound} {totalFound === 1 ? "Artisan" : "Artisans"} Available
+          <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+            {totalFound} {totalFound === 1 ? "pro" : "pros"} available
           </span>
         </div>
       </div>

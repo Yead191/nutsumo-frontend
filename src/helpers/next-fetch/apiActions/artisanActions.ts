@@ -13,7 +13,7 @@ const ONE_DAY = ONE_HOUR * 24;
 const ONE_WEEK = ONE_DAY * 7;
 
 /**
- * GET /user/profile — fetch authenticated artisan/user profile
+ * GET /user/profile  fetch authenticated artisan/user profile
  * Uses Data Cache ('force-cache') with 24h fallback + instant on-demand tag revalidation.
  */
 export async function getArtisanProfile() {
@@ -28,7 +28,7 @@ export async function getArtisanProfile() {
 }
 
 /**
- * PATCH /user/profile — update authenticated artisan/user profile
+ * PATCH /user/profile  update authenticated artisan/user profile
  * Purges 'user-profile' tag from Next.js Data Cache upon successful update.
  */
 export async function updateArtisanProfile(
@@ -48,7 +48,7 @@ export async function updateArtisanProfile(
 }
 
 /**
- * GET /service-category — fetch admin service categories with predefined services
+ * GET /service-category  fetch admin service categories with predefined services
  * Supports optional pagination & search; falls back to cached data when called without params.
  */
 export async function getServiceCategories(params?: {
@@ -80,7 +80,7 @@ export async function getServiceCategories(params?: {
 }
 
 /**
- * GET /portfolio/my-portfolio — fetch authenticated artisan's portfolio
+ * GET /portfolio/my-portfolio  fetch authenticated artisan's portfolio
  * Cached with 'force-cache' and invalidated on any portfolio mutation.
  */
 export async function getMyPortfolio() {
@@ -95,7 +95,7 @@ export async function getMyPortfolio() {
 }
 
 /**
- * GET /portfolio/artisan/:artisanId — fetch public portfolio for a specific artisan
+ * GET /portfolio/artisan/:artisanId  fetch public portfolio for a specific artisan
  */
 export async function getArtisanPortfolio(artisanId: string) {
   return nextFetch(`/portfolio/artisan/${artisanId}`, {
@@ -109,7 +109,7 @@ export async function getArtisanPortfolio(artisanId: string) {
 }
 
 /**
- * GET /portfolio/:id — fetch single portfolio item details
+ * GET /portfolio/:id  fetch single portfolio item details
  */
 export async function getSinglePortfolioItem(id: string) {
   return nextFetch(`/portfolio/${id}`, {
@@ -123,7 +123,7 @@ export async function getSinglePortfolioItem(id: string) {
 }
 
 /**
- * POST /portfolio — create new portfolio project
+ * POST /portfolio  create new portfolio project
  * Invalidates 'artisan-portfolio' cache so fresh projects are immediately visible.
  */
 export async function createPortfolioItem(
@@ -142,7 +142,7 @@ export async function createPortfolioItem(
 }
 
 /**
- * PATCH /portfolio/:id — update existing portfolio item
+ * PATCH /portfolio/:id  update existing portfolio item
  * Purges both global portfolio list and specific item caches.
  */
 export async function updatePortfolioItem(
@@ -162,7 +162,7 @@ export async function updatePortfolioItem(
 }
 
 /**
- * DELETE /portfolio/:id — delete portfolio item
+ * DELETE /portfolio/:id  delete portfolio item
  * Invalidates portfolio cache tag on successful deletion.
  */
 export async function deletePortfolioItem(id: string) {
@@ -178,7 +178,7 @@ export async function deletePortfolioItem(id: string) {
 }
 
 /**
- * GET /service — fetch catalog services with pagination & search
+ * GET /service  fetch catalog services with pagination & search
  */
 export async function getCatalogServices(
   params: {
@@ -202,7 +202,7 @@ export async function getCatalogServices(
 }
 
 /**
- * GET /artisan-service/my-services — fetch authenticated artisan's services
+ * GET /artisan-service/my-services  fetch authenticated artisan's services
  */
 export async function getArtisanSelectedServices() {
   return nextFetch("/artisan-service/my-services", {
@@ -216,7 +216,7 @@ export async function getArtisanSelectedServices() {
 }
 
 /**
- * POST /artisan-service — add a service selection for the artisan
+ * POST /artisan-service  add a service selection for the artisan
  */
 export async function addArtisanService(payload: {
   service?: string;
@@ -242,7 +242,7 @@ export async function addArtisanService(payload: {
 }
 
 /**
- * PATCH /artisan-service/:id — update artisan service rate or status
+ * PATCH /artisan-service/:id  update artisan service rate or status
  */
 export async function updateArtisanService(
   id: string,
@@ -268,7 +268,7 @@ export async function updateArtisanService(
 }
 
 /**
- * DELETE /artisan-service/:id — remove artisan service selection
+ * DELETE /artisan-service/:id  remove artisan service selection
  */
 export async function deleteArtisanService(id: string) {
   const result = await nextFetch(`/artisan-service/${id}`, {

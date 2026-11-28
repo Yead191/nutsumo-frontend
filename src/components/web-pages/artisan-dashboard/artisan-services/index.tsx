@@ -221,7 +221,7 @@ export function ArtisanServicesManager({
               { label: "Your specialties", value: String(stats.custom) },
               {
                 label: "Starting at",
-                value: stats.from ? `GH₵ ${stats.from}` : "—",
+                value: stats.from ? `GH₵ ${stats.from}` : "",
               },
             ].map((item) => (
               <div key={item.label} className="bg-white px-5 py-4">

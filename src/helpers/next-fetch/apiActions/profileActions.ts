@@ -3,7 +3,7 @@
 import { nextFetch } from "../core/NextFetch";
 import { revalidateTags } from "../core/revalidateTags";
 
-/** PATCH /user/profile — form-data (name, contact, image, …) */
+/** PATCH /user/profile  form-data (name, contact, image, …) */
 export async function updateUserProfile(formData: FormData) {
   const result = await nextFetch("/user/profile", {
     method: "PATCH",
@@ -29,7 +29,7 @@ export async function changePassword(body: {
   });
 }
 
-/** GET /user/profile — fetch authenticated user profile */
+/** GET /user/profile  fetch authenticated user profile */
 export async function getMyProfile() {
   return nextFetch("/user/profile", {
     method: "GET",

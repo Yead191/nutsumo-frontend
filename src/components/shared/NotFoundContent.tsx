@@ -101,7 +101,7 @@ export function NotFoundContent() {
             Oops! This project took an unexpected turn
           </h2>
           <p className="text-xs sm:text-sm text-muted leading-relaxed">
-            The page you are looking for might have been moved, renamed, or is temporarily unavailable. Don&apos;t worry — our marketplace of verified artisans is ready to assist you.
+            The page you are looking for might have been moved, renamed, or is temporarily unavailable. Don&apos;t worry  our marketplace of verified artisans is ready to assist you.
           </p>
         </div>
 

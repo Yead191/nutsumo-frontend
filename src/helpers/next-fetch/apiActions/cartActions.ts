@@ -4,7 +4,7 @@ import { nextFetch } from "../core/NextFetch";
 import { revalidateTags } from "../core/revalidateTags";
 import type { CartData, AddToCartPayload } from "@/types";
 
-/** GET /cart — fetch authenticated user's cart & price breakdown */
+/** GET /cart  fetch authenticated user's cart & price breakdown */
 export async function getCart() {
   const result = await nextFetch<CartData>("/cart", {
     method: "GET",
@@ -14,7 +14,7 @@ export async function getCart() {
   return result;
 }
 
-/** POST /cart — add product to cart with variant (size & color) */
+/** POST /cart  add product to cart with variant (size & color) */
 export async function addToCart(body: AddToCartPayload) {
   const result = await nextFetch<CartData>("/cart", {
     method: "POST",
@@ -28,7 +28,7 @@ export async function addToCart(body: AddToCartPayload) {
   return result;
 }
 
-/** PATCH /cart/:cartId — adjust quantity (+1 or -1) */
+/** PATCH /cart/:cartId  adjust quantity (+1 or -1) */
 export async function updateCartQuantity(cartId: string, quantity: 1 | -1) {
   const result = await nextFetch<CartData>(`/cart/${cartId}`, {
     method: "PATCH",
@@ -42,7 +42,7 @@ export async function updateCartQuantity(cartId: string, quantity: 1 | -1) {
   return result;
 }
 
-/** DELETE /cart/:cartId — remove single line item */
+/** DELETE /cart/:cartId  remove single line item */
 export async function removeCartItem(cartId: string) {
   const result = await nextFetch<null>(`/cart/${cartId}`, {
     method: "DELETE",
@@ -55,7 +55,7 @@ export async function removeCartItem(cartId: string) {
   return result;
 }
 
-/** DELETE /cart/clear — clear entire cart */
+/** DELETE /cart/clear  clear entire cart */
 export async function clearCart() {
   const result = await nextFetch<null>("/cart/clear", {
     method: "DELETE",

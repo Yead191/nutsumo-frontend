@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.r2.dev" },
+      // Local API (uploads served from http://localhost:5005/files/...)
+      { protocol: "http", hostname: "localhost", port: "5005" },
       { protocol: "http", hostname: "68.178.164.48" },
       { protocol: "http", hostname: "10.10.26.159" },
       { protocol: "http", hostname: "10.10.26.173" },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { LegalSections, type LegalSection } from "@/components/web-pages/legal-sections";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions — Nutsumo Marketplace",
+  title: "Terms & Conditions  Nutsumo Marketplace",
   description:
     "Review our Terms of Service governing client quote requests, verified professional contracts, escrow payment policies, and statutory compliance in Ghana.",
 };

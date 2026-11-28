@@ -154,32 +154,32 @@ export function RequestDetail({
     switch (currentDisplayRating) {
       case 5:
         return {
-          title: "★★★★★ 5.0 — Outstanding!",
+          title: "★★★★★ 5.0  Outstanding!",
           desc: "Exceeded all expectations, highly recommend!",
           badgeClass: "bg-amber-50 text-amber-900 border-amber-300",
         };
       case 4:
         return {
-          title: "★★★★☆ 4.0 — Very Good!",
+          title: "★★★★☆ 4.0  Very Good!",
           desc: "Quality craftsmanship & satisfied.",
           badgeClass: "bg-emerald-50 text-emerald-800 border-emerald-300",
         };
       case 3:
         return {
-          title: "★★★☆☆ 3.0 — Satisfactory",
+          title: "★★★☆☆ 3.0  Satisfactory",
           desc: "Met basic job expectations.",
           badgeClass: "bg-blue-50 text-blue-800 border-blue-300",
         };
       case 2:
         return {
-          title: "★★☆☆☆ 2.0 — Below Expectations",
+          title: "★★☆☆☆ 2.0  Below Expectations",
           desc: "Issues with communication or work quality.",
           badgeClass: "bg-orange-50 text-orange-800 border-orange-300",
         };
       case 1:
       default:
         return {
-          title: "★☆☆☆☆ 1.0 — Poor Experience",
+          title: "★☆☆☆☆ 1.0  Poor Experience",
           desc: "Unsatisfactory experience or unresolved issue.",
           badgeClass: "bg-rose-50 text-rose-800 border-rose-300",
         };
@@ -905,7 +905,7 @@ export function RequestDetail({
                   className="flex flex-wrap items-center justify-between gap-2 rounded-[10px] border border-line px-3 py-2 text-sm"
                 >
                   <span>
-                    <span className="font-semibold text-title">+${cr.amount}</span> — {cr.reason}
+                    <span className="font-semibold text-title">+${cr.amount}</span>  {cr.reason}
                     <span className="ml-2 text-muted">({cr.status})</span>
                     {cr.status === "pending" ? (
                       <span className="ml-2 text-xs text-muted">
@@ -924,7 +924,7 @@ export function RequestDetail({
                           dispatch(acknowledgeChangeRequest({ id: cr.id, party: "homeowner" }));
                           setSavedMsg(
                             cr.proAcknowledged
-                              ? "Both parties acknowledged — agreed price updated."
+                              ? "Both parties acknowledged  agreed price updated."
                               : "Your acknowledgment recorded. Waiting on the professional.",
                           );
                         }}
@@ -948,7 +948,7 @@ export function RequestDetail({
                         dispatch(acknowledgeChangeRequest({ id: cr.id, party: "pro" }));
                         setSavedMsg(
                           cr.homeownerAcknowledged
-                            ? "Both parties acknowledged — agreed price updated."
+                            ? "Both parties acknowledged  agreed price updated."
                             : "Your acknowledgment recorded. Waiting on the homeowner.",
                         );
                       }}

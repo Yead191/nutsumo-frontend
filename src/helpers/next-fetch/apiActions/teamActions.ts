@@ -10,7 +10,7 @@ export interface TeamStats {
   totalVolunteersPending?: number;
 }
 
-/** GET /team/stats — fetches total active directors, core members and volunteers */
+/** GET /team/stats  fetches total active directors, core members and volunteers */
 export async function getTeamStats() {
   const result = await nextFetch<TeamStats>("/team/stats", {
     method: "GET",
@@ -21,7 +21,7 @@ export async function getTeamStats() {
   return result;
 }
 
-/** GET /team — fetches paginated active team members with optional search and category filters */
+/** GET /team  fetches paginated active team members with optional search and category filters */
 export async function getTeamMembers(params: {
   category?: string;
   searchTerm?: string;
@@ -57,7 +57,7 @@ export async function getTeamMembers(params: {
   return result;
 }
 
-/** GET /team/:id — fetches a single active team member profile */
+/** GET /team/:id  fetches a single active team member profile */
 export async function getTeamMemberById(id: string) {
   const result = await nextFetch(`/team/${id}`, {
     method: "GET",
@@ -86,7 +86,7 @@ export async function getTeamMemberById(id: string) {
   return result;
 }
 
-/** POST /team/volunteer-apply — submits volunteer application */
+/** POST /team/volunteer-apply  submits volunteer application */
 export async function applyAsVolunteer(formData: FormData) {
   const result = await nextFetch("/team/volunteer-apply", {
     method: "POST",

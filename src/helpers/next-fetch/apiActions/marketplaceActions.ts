@@ -179,7 +179,7 @@ export interface IFaqItem {
 }
 
 /**
- * GET /category?isActive=true&limit=50
+ * GET /category?isActive=true&limit=300 (backend has ~150 categories; fetch them all)
  * Cached with ISR (revalidated every 1 hour) with instant on-demand tag revalidation
  */
 export async function getMarketplaceCategories(): Promise<
@@ -187,7 +187,7 @@ export async function getMarketplaceCategories(): Promise<
 > {
   try {
     return await nextFetch<ICategoryItem[]>(
-      "/category?isActive=true&limit=50",
+      "/category?isActive=true&limit=300",
       {
         method: "GET",
         cache: "force-cache",
@@ -342,7 +342,7 @@ export async function getFeaturedArtisans(
 export async function searchArtisansAction(params?: {
   searchTerm?: string;
   category?: string;
-  /** Catalog service id — only artisans who listed this exact service. */
+  /** Catalog service id  only artisans who listed this exact service. */
   service?: string;
   trade?: string;
   location?: string;

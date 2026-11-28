@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { NotFoundContent } from "@/components/shared/NotFoundContent";
 
 export const metadata: Metadata = {
-  title: "404 — Page Not Found · Nutsumo",
+  title: "404  Page Not Found · Nutsumo",
   description: "The page you are looking for could not be found on Nutsumo.",
 };
 

@@ -189,7 +189,7 @@ export function SignupForm() {
       <p className="text-sm text-slate-500 mb-6">
         {role === "USER"
           ? "Sign up to find trusted Job Seekers, compare quotes and manage your services with ease."
-          : "Sign up as a Professional to showcase your skills — formal or informal — connect with clients, get verified, and grow your work."}
+          : "Sign up as a Professional to showcase your skills  formal or informal  connect with clients, get verified, and grow your work."}
       </p>
 
       {error && (

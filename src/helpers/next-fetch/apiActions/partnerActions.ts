@@ -4,7 +4,7 @@ import { nextFetch } from "../core/NextFetch";
 import type { Partner, PartnerLogo, PartnerListParams } from "@/types";
 
 /**
- * GET /partner — fetches public approved partners list with optional search and pagination.
+ * GET /partner  fetches public approved partners list with optional search and pagination.
  */
 export async function getPartners(params: PartnerListParams = {}) {
   const queryParams = new URLSearchParams();
@@ -39,7 +39,7 @@ export async function getPartners(params: PartnerListParams = {}) {
 }
 
 /**
- * GET /partner/logos — fetches lightweight list of approved partner logos for landing page carousels.
+ * GET /partner/logos  fetches lightweight list of approved partner logos for landing page carousels.
  */
 export async function getPartnerLogos() {
   const result = await nextFetch<PartnerLogo[]>("/partner/logos", {
@@ -53,7 +53,7 @@ export async function getPartnerLogos() {
 }
 
 /**
- * GET /partner/:id — fetches a single partner's full profile.
+ * GET /partner/:id  fetches a single partner's full profile.
  */
 export async function getPartnerById(id: string) {
   const result = await nextFetch<Partner>(`/partner/${id}`, {
@@ -67,7 +67,7 @@ export async function getPartnerById(id: string) {
 }
 
 /**
- * POST /partner/apply — submits a new partner application (requires authentication).
+ * POST /partner/apply  submits a new partner application (requires authentication).
  */
 export async function applyPartner(formData: FormData) {
   const result = await nextFetch<Partner>("/partner/apply", {

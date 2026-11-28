@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { SendProposalModal } from "./SendProposalModal";
 import type { IJobItem } from "../types";
 import { getImageUrl } from "@/lib/getImageUrl";
+import { categoryPhoto } from "@/lib/stock-photos";
 
 interface JobDetailsViewProps {
   job: IJobItem;
@@ -69,6 +70,12 @@ export function JobDetailsView({
       })
     : "";
 
+  // Illustrative cover when the client attached no photos.
+  const cover = categoryPhoto(serviceName, categoryName, job.title);
+  const customerImage = typeof job.customer === "object" && job.customer?.image ? getImageUrl(job.customer.image) : "";
+  const customerName =
+    typeof job.customer === "object" && job.customer?.name ? job.customer.name : "Verified Client";
+
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
@@ -79,10 +86,10 @@ export function JobDetailsView({
   return (
     <div className="space-y-6">
       {/* BREADCRUMBS & TOP NAV */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line/70 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <Link
           href="/jobs"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-[#FE375D] transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-copy hover:text-primary transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Back to All Jobs</span>
@@ -91,18 +98,25 @@ export function JobDetailsView({
         <button
           type="button"
           onClick={handleCopyLink}
-          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-1.5 text-xs font-semibold text-muted hover:text-title hover:border-title transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-title ring-1 ring-slate-200 hover:ring-title transition cursor-pointer"
         >
           <Share2 className="h-3.5 w-3.5" />
           <span>Share Job</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
         {/* LEFT TWO COLUMNS: JOB DETAILS & SCOPE */}
         <div className="lg:col-span-2 space-y-6">
           {/* HEADER CARD */}
-          <div className="rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-xs space-y-4">
+          <div className="overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200">
+            {cover && !(job.images && job.images.length > 0) ? (
+              <div className="relative aspect-[21/8] bg-slate-100">
+                <Image src={cover} alt="" fill priority sizes="(min-width: 1024px) 800px, 100vw" className="object-cover" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
+              </div>
+            ) : null}
+            <div className="space-y-4 p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -117,19 +131,19 @@ export function JobDetailsView({
               ) : null}
 
               {serviceName ? (
-                <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-[#FE375D]">
+                <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-primary">
                   {serviceName}
                 </span>
               ) : null}
             </div>
 
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-title tracking-tight">
+            <h1 className="font-display text-3xl sm:text-4xl font-semibold leading-tight tracking-[-0.02em] text-title">
               {job.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-muted border-t border-line/70 pt-3">
+            <div className="flex flex-wrap items-center gap-y-2 gap-x-5 text-sm text-copy border-t border-slate-100 pt-4">
               <div className="flex items-center gap-1.5 text-slate-700 font-medium">
-                <MapPin className="h-4 w-4 text-[#FE375D] shrink-0" />
+                <MapPin className="h-4 w-4 text-primary shrink-0" />
                 <span>
                   {job.location} {job.postCode ? `(${job.postCode})` : ""}
                 </span>
@@ -147,12 +161,13 @@ export function JobDetailsView({
                 </div>
               ) : null}
             </div>
+            </div>
           </div>
 
           {/* PHOTOS GALLERY (IF AVAILABLE) */}
           {job.images && job.images.length > 0 ? (
-            <div className="rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-xs space-y-4">
-              <h2 className="font-display text-base font-bold text-title">
+            <div className="rounded-3xl bg-white p-6 sm:p-8 ring-1 ring-slate-200 space-y-4">
+              <h2 className="font-display text-lg font-semibold text-title">
                 Job Photos & Attachments ({job.images.length})
               </h2>
 
@@ -176,7 +191,7 @@ export function JobDetailsView({
                       onClick={() => setSelectedImageIndex(idx)}
                       className={`relative h-16 w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                         selectedImageIndex === idx
-                          ? "border-[#FE375D] ring-2 ring-[#FE375D]/30"
+                          ? "border-primary ring-2 ring-primary/30"
                           : "border-transparent opacity-70 hover:opacity-100"
                       }`}
                     >
@@ -194,22 +209,22 @@ export function JobDetailsView({
           ) : null}
 
           {/* DESCRIPTION & SPECIFICATIONS */}
-          <div className="rounded-3xl border border-line bg-white p-6 sm:p-8 shadow-xs space-y-4">
-            <h2 className="font-display text-lg font-bold text-title">
+          <div className="rounded-3xl bg-white p-6 sm:p-8 ring-1 ring-slate-200 space-y-4">
+            <h2 className="font-display text-xl font-semibold text-title">
               Detailed Description & Requirements
             </h2>
-            <div className="prose prose-sm max-w-none text-copy whitespace-pre-line leading-relaxed">
+            <div className="max-w-none whitespace-pre-line text-[15px] leading-relaxed text-copy">
               {job.description}
             </div>
           </div>
 
           {/* SERVICE EXPECTATIONS & GUARANTEE */}
-          <div className="rounded-3xl border border-line bg-smoke/60 p-6 sm:p-8 space-y-3">
+          <div className="rounded-3xl bg-emerald-50/60 p-6 sm:p-8 ring-1 ring-emerald-100 space-y-3">
             <div className="flex items-center gap-2 text-title font-bold text-sm">
               <ShieldCheck className="h-5 w-5 text-emerald-600" />
               <span>Nutsumo Client Protection & Quality Standards</span>
             </div>
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="text-sm text-copy leading-relaxed">
               Every job on Nutsumo is backed by our customer satisfaction
               protocol. As a verified Job Seeker, your quotes are delivered
               straight to the client without third-party markups. Upon
@@ -219,15 +234,16 @@ export function JobDetailsView({
         </div>
 
         {/* RIGHT COLUMN: PROPOSAL CARD & CLIENT SUMMARY */}
-        <div className="space-y-6">
+        {/* The whole column sticks together, so the client card can't scroll under the budget card. */}
+        <div className="space-y-6 self-start lg:sticky lg:top-24">
           {/* BUDGET & PROPOSAL CARD (STICKY) */}
-          <div className="rounded-3xl border border-line bg-white p-6 sm:p-7 shadow-lg space-y-5 lg:sticky lg:top-24">
+          <div className="rounded-3xl bg-white p-6 sm:p-7 ring-1 ring-slate-200 shadow-[0_18px_40px_-22px_rgba(15,23,42,0.35)] space-y-5">
             <div>
               <span className="block text-[11px] font-bold uppercase tracking-wider text-muted">
                 Client Target Budget
               </span>
-              <div className="font-display text-3xl sm:text-4xl font-black text-[#FE375D] tracking-tight mt-1">
-                GH₵{job.budget?.toLocaleString() || "Open / Quote"}
+              <div className="font-display text-3xl sm:text-4xl font-semibold text-title mt-1">
+                {job.budget ? `GH₵ ${job.budget.toLocaleString()}` : "Open / Quote"}
               </div>
               <p className="text-[11px] text-muted mt-1">
                 Ghana Cedis (GHS) · Propose your best rate
@@ -244,7 +260,7 @@ export function JobDetailsView({
                 </p>
                 <Link
                   href={`/account/jobs/${job._id}`}
-                  className="inline-flex items-center gap-1.5 font-bold text-[#FE375D] hover:underline"
+                  className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline"
                 >
                   Manage My Job &rarr;
                 </Link>
@@ -253,7 +269,7 @@ export function JobDetailsView({
               <button
                 type="button"
                 onClick={() => setIsModalOpen(true)}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-3.5 px-5 text-sm font-bold shadow-md transition-all hover:scale-[1.02] cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary-hover text-white py-3.5 px-5 text-base font-semibold transition-colors cursor-pointer"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>Submit Quotation</span>
@@ -270,7 +286,7 @@ export function JobDetailsView({
               <div className="space-y-3">
                 <Link
                   href={`/login?next=/jobs/${job._id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FE375D] hover:bg-[#e0284e] text-white py-3.5 px-5 text-sm font-bold shadow-md transition-all hover:scale-[1.02]"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary-hover text-white py-3.5 px-5 text-base font-semibold transition-colors"
                 >
                   <Send className="h-4 w-4" />
                   <span>Log in to Submit Quote</span>
@@ -279,7 +295,7 @@ export function JobDetailsView({
                   Don't have an account?{" "}
                   <Link
                     href="/register"
-                    className="font-bold text-[#FE375D] hover:underline"
+                    className="font-bold text-primary hover:underline"
                   >
                     Sign up as Job Seeker
                   </Link>
@@ -305,26 +321,22 @@ export function JobDetailsView({
           </div>
 
           {/* CLIENT SUMMARY CARD */}
-          <div className="rounded-3xl border border-line bg-white p-6 shadow-xs space-y-3">
+          <div className="rounded-3xl bg-white p-6 ring-1 ring-slate-200 space-y-3">
             <span className="block text-[11px] font-bold uppercase tracking-wider text-muted">
               Client Information
             </span>
 
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-600 font-bold">
-                <Image
-                  src={getImageUrl(job?.customer?.image ?? "") || ""}
-                  alt="Customer"
-                  height={40}
-                  width={40}
-                  className="object-cover"
-                />
+              <div className="relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full bg-primary/10 font-semibold text-primary">
+                {customerImage ? (
+                  <Image src={customerImage} alt="Customer" fill sizes="44px" className="object-cover" />
+                ) : (
+                  customerName.charAt(0).toUpperCase()
+                )}
               </div>
               <div>
-                <h4 className="font-display text-sm font-bold text-title">
-                  {typeof job.customer === "object" && job.customer?.name
-                    ? job.customer.name
-                    : "Verified Client"}
+                <h4 className="font-display text-base font-semibold text-title">
+                  {customerName}
                 </h4>
                 <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
                   <ShieldCheck className="h-3 w-3" />

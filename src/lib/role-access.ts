@@ -125,7 +125,7 @@ export function resolveRoleAccess(
   if (!cleared) {
     blockedReason =
       status === "rejected"
-        ? "Application rejected — fix docs and resubmit."
+        ? "Application rejected  fix docs and resubmit."
         : status === "needs_info"
           ? "Admin needs more info before clearance."
           : status === "draft"
@@ -136,11 +136,11 @@ export function resolveRoleAccess(
     blockedReason = "Start the free trial to quote and unlock contact.";
     notice = blockedReason;
   } else if (pro.membershipPaused) {
-    blockedReason = "Membership paused — resume to quote and unlock contact.";
+    blockedReason = "Membership paused  resume to quote and unlock contact.";
     notice = blockedReason;
   } else if (pro.membershipCancelled) {
     blockedReason =
-      "Membership cancelled — restart to quote and unlock contact.";
+      "Membership cancelled  restart to quote and unlock contact.";
     notice = blockedReason;
   } else if (!contactOk) {
     notice =

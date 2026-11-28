@@ -28,7 +28,7 @@ export function HomeFaqSection({ faqs = [] }: HomeFaqSectionProps) {
       _id: "faq-3",
       question: "How do I request a custom quotation from a professional?",
       answer:
-        "Browse categories or search for the kind of worker you need — a chef, driver, nanny, technician, designer, office assistant and more. Once you find someone with the skills and reviews you need, click 'Request Custom Quote' on their profile, describe the job, add any helpful photos or details, and they will send you a tailored proposal with proposed pricing and estimated duration.",
+        "Browse categories or search for the kind of worker you need  a chef, driver, nanny, technician, designer, office assistant and more. Once you find someone with the skills and reviews you need, click 'Request Custom Quote' on their profile, describe the job, add any helpful photos or details, and they will send you a tailored proposal with proposed pricing and estimated duration.",
     },
     {
       _id: "faq-4",
@@ -40,7 +40,7 @@ export function HomeFaqSection({ faqs = [] }: HomeFaqSectionProps) {
       _id: "faq-5",
       question: "Are all workers and professionals identity-verified?",
       answer:
-        "Yes. Everyone offering services on Nutsumo — formal or informal — completes identity verification (National ID / Ghana Card and verified phone number) and shares their experience, skills and any certificates or portfolio before they can take client bookings.",
+        "Yes. Everyone offering services on Nutsumo  formal or informal  completes identity verification (National ID / Ghana Card and verified phone number) and shares their experience, skills and any certificates or portfolio before they can take client bookings.",
     },
   ];
 
@@ -51,7 +51,7 @@ export function HomeFaqSection({ faqs = [] }: HomeFaqSectionProps) {
   };
 
   return (
-    <section className="py-16 sm:py-24 bg-white border-b border-slate-200/70">
+    <section className="py-20 sm:py-28 lg:py-32 bg-white border-b border-slate-200/70">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-primary block font-display">

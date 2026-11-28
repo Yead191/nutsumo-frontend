@@ -162,7 +162,7 @@ export function QuoteComparePanel({
                 <td className="px-5 py-3 text-xs text-muted">Not included</td>
                 {quotes.map((q) => (
                   <td key={q.id} className="px-4 py-3 text-sm text-copy leading-5 max-w-[180px]">
-                    {q.exclusions || "—"}
+                    {q.exclusions || ""}
                   </td>
                 ))}
               </tr>

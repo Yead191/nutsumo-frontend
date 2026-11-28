@@ -16,7 +16,7 @@ export function HomeTestimonialsSection({
       name: "Kwame Mensah",
       role: "Client in Accra",
       comment:
-        "The escrow system gave me total peace of mind. I hired a private chef for my daughter's birthday party — the food was excellent, everything was on time, and I only released the payment after the event went perfectly.",
+        "The escrow system gave me total peace of mind. I hired a private chef for my daughter's birthday party  the food was excellent, everything was on time, and I only released the payment after the event went perfectly.",
       rating: 5,
     },
     {
@@ -32,7 +32,7 @@ export function HomeTestimonialsSection({
       name: "Samuel Osei",
       role: "Small Business Owner",
       comment:
-        "What I love most is the fee breakdown. Everything was upfront — VAT, NHIL, GETFund, and the platform fee were itemized on the proposal. The driver I hired for our deliveries was punctual, professional and reliable.",
+        "What I love most is the fee breakdown. Everything was upfront  VAT, NHIL, GETFund, and the platform fee were itemized on the proposal. The driver I hired for our deliveries was punctual, professional and reliable.",
       rating: 5,
     },
   ];
@@ -40,7 +40,7 @@ export function HomeTestimonialsSection({
   const items = testimonials.length > 0 ? testimonials : fallbackStories;
 
   return (
-    <section className="py-16 sm:py-24 bg-slate-50/60 border-b border-slate-200/70">
+    <section className="py-20 sm:py-28 lg:py-32 bg-slate-50/60 border-b border-slate-200/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-primary block font-display">

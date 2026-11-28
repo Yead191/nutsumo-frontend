@@ -292,7 +292,10 @@ export function Navbar({ user }: NavbarProps) {
 
                 <Link
                   href="/login"
-                  className="text-sm font-bold text-[#FE375D] hover:opacity-85 transition-opacity px-2"
+                  className={cn(
+                    "text-sm font-bold hover:opacity-85 transition-opacity px-2",
+                    isOverHero ? "text-white!" : "text-[#FE375D]",
+                  )}
                 >
                   Log in
                 </Link>

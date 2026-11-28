@@ -11,7 +11,7 @@ export const antdTheme: ThemeConfig = {
     colorTextHeading: "#00151D",
     colorBgLayout: "#ECF1F5",
     colorBorder: "#d7e2ea",
-    fontFamily: "var(--font-inter), Inter, sans-serif",
+    fontFamily: "var(--font-figtree), Figtree, sans-serif",
     borderRadius: 10,
     controlHeight: 50,
     controlHeightLG: 56,

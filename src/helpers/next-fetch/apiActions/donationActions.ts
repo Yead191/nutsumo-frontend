@@ -12,7 +12,7 @@ export interface DonationCheckoutResponse {
   paymentUrl: string;
 }
 
-/** POST /donation — creates Stripe checkout session and returns paymentUrl */
+/** POST /donation  creates Stripe checkout session and returns paymentUrl */
 export async function createDonation(body: CreateDonationPayload) {
   const result = await nextFetch<DonationCheckoutResponse>("/donation", {
     method: "POST",
@@ -39,7 +39,7 @@ export interface MyStats {
   myTotalDonation: number;
 }
 
-/** GET /dashboard/my-stats — returns logged in user's orders count and total donation */
+/** GET /dashboard/my-stats  returns logged in user's orders count and total donation */
 export async function getMyStats() {
   return nextFetch<MyStats>("/dashboard/my-stats", {
     method: "GET",
@@ -47,7 +47,7 @@ export async function getMyStats() {
   });
 }
 
-/** GET /donation — returns logged in user's donations (or all donations if admin) */
+/** GET /donation  returns logged in user's donations (or all donations if admin) */
 export async function getDonations(params?: {
   page?: number;
   limit?: number;

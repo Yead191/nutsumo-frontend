@@ -39,7 +39,7 @@ export function EscrowSecurityShowcase() {
   ];
 
   return (
-    <section className="py-16 sm:py-24 bg-white border-b border-slate-200/70">
+    <section className="py-20 sm:py-28 lg:py-32 bg-white border-b border-slate-200/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-primary block font-display">

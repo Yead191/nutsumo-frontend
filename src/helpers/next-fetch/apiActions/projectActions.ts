@@ -48,7 +48,7 @@ export interface ProjectsResponse {
   };
 }
 
-/** GET /project — fetches published projects with optional filters */
+/** GET /project  fetches published projects with optional filters */
 export async function getProjects(params?: {
   page?: number;
   limit?: number;
@@ -149,7 +149,7 @@ export async function getProjects(params?: {
   };
 }
 
-/** GET /project/:id — fetches a single project by id or fallback slug */
+/** GET /project/:id  fetches a single project by id or fallback slug */
 export async function getProjectById(
   idOrSlug: string,
 ): Promise<{ success: boolean; data: Project | null }> {

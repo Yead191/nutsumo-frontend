@@ -40,7 +40,7 @@ export async function generateMetadata({
   const location = profile.location || profile.city || "Ghana";
 
   return {
-    title: `${name} — Verified ${trade} in ${location} · Nutsumo`,
+    title: `${name}  Verified ${trade} in ${location} · Nutsumo`,
     description:
       profile.bio?.slice(0, 160) ||
       `Hire ${name} for verified ${trade.toLowerCase()} services in ${location}. 100% Escrow protected quotes.`,

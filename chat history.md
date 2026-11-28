@@ -1,4 +1,4 @@
-# Nutsumo Marketplace — Conversation & Development History
+# Nutsumo Marketplace  Conversation & Development History
 
 **Project:** Nutsumo (nutsumo) Service Marketplace  
 **Workspace:** `nutsumo-frontend`  
@@ -175,7 +175,7 @@
 > 3. **আপগ্রেডেড `ConfirmCompletionModal.tsx`:**
 >    - Upwork/Fiverr-এর মতো **মাল্টি-ক্রাইটেরিয়া রেটিং**: Overall Rating (1–5 Star)-এর পাশাপাশি *Quality of Work*, *Communication*, এবং *Timeliness/Punctuality* রেটিং ও রিভিউ দেওয়ার সুবিধা।
 > 4. **আপগ্রেডেড `CustomerEscrowActionCard.tsx`:**
->    - **`DELIVERED` স্টেট:** ৩টি সুস্পষ্ট অপশন—*Inspect & Release Escrow*, *Request Changes*, এবং *Raise Dispute*।
+>    - **`DELIVERED` স্টেট:** ৩টি সুস্পষ্ট অপশন*Inspect & Release Escrow*, *Request Changes*, এবং *Raise Dispute*।
 >    - **`REVISION_REQUESTED` স্টেট:** রিভিশন রিকোয়েস্টের বিশদ বিবরণ এবং স্টেটাস অ্যালার্ট।
 >    - **`DISPUTED` স্টেট:** ফান্ডস ফ্রিজ নোটিশ ও অ্যাডমিন মেডিয়েশন স্ট্যাটাস।
 > 5. **আপগ্রেডেড `BookingEscrowTracker.tsx`:**

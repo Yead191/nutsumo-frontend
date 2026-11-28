@@ -44,7 +44,7 @@ export function FaqSection({
             <span>{eyebrow}</span>
           </div>
 
-          <h2 className="mt-4 font-display text-[32px] sm:text-[40px] md:text-[46px] font-medium uppercase leading-[1.08] tracking-[-0.04em] text-title">
+          <h2 className="mt-4 font-display text-[32px] sm:text-[40px] md:text-[46px] font-medium uppercase leading-[1.08] tracking-[-0.02em] text-title">
             {title}
           </h2>
 

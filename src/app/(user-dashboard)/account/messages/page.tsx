@@ -1,10 +1,12 @@
-import { Suspense } from "react";
-import { MessagesInbox } from "@/components/web-pages/messages-inbox";
+import type { Metadata } from "next";
+import { MessagesPage, type MessagesSearchParams } from "@/components/web-pages/chat/MessagesPage";
 
-export default function MessagesPage() {
-  return (
-    <Suspense fallback={<p className="text-sm text-muted">Loading inbox…</p>}>
-      <MessagesInbox />
-    </Suspense>
-  );
+export const metadata: Metadata = { title: "Messages · Nutsumo" };
+
+export default async function MessagesRoute({
+  searchParams,
+}: {
+  searchParams: Promise<MessagesSearchParams>;
+}) {
+  return <MessagesPage searchParams={await searchParams} basePath="/account/messages" />;
 }

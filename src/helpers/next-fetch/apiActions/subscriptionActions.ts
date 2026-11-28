@@ -4,7 +4,7 @@ import type { TrialEligibility } from "@/types";
 import { nextFetch } from "../core/NextFetch";
 import { revalidateTags } from "../core/revalidateTags";
 
-/** POST /subscription/subscribe/:planId — returns a Stripe payment link in `data`. */
+/** POST /subscription/subscribe/:planId  returns a Stripe payment link in `data`. */
 export async function subscribeToPlan(
   planId: string,
   body?: { auto_renew?: boolean },
@@ -15,7 +15,7 @@ export async function subscribeToPlan(
   });
 }
 
-/** GET /subscription/trial-eligibility — whether the signed-in user can start a trial. */
+/** GET /subscription/trial-eligibility  whether the signed-in user can start a trial. */
 export async function getTrialEligibility() {
   return nextFetch<TrialEligibility>("/subscription/trial-eligibility", {
     method: "GET",

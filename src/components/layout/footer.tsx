@@ -3,28 +3,34 @@ import { Logo } from "@/components/ui/logo";
 
 const groups = [
   {
-    title: "Popular Categories",
+    title: "Categories",
     links: [
+      { href: "/browse-pros?q=Plumbing", label: "Plumbing" },
+      { href: "/browse-pros?q=Electrical", label: "Electrical" },
+      { href: "/browse-pros?q=Cleaning", label: "House Cleaning" },
       { href: "/browse-pros?q=Chef", label: "Chefs & Cooks" },
       { href: "/browse-pros?q=Driver", label: "Drivers" },
       { href: "/browse-pros?q=Nanny", label: "Nannies & Caregivers" },
       { href: "/browse-pros?q=Security", label: "Security Personnel" },
-      { href: "/browse-pros?q=Technician", label: "Tradespeople & Technicians" },
+      { href: "/browse-pros?q=Web", label: "Web Development" },
+      { href: "/browse-pros?q=Design", label: "Graphic Design" },
     ],
   },
   {
     title: "For Clients",
     links: [
       { href: "/browse-pros", label: "Find a Pro" },
+      { href: "/account/post-job", label: "Post a Job" },
       { href: "/services", label: "All Services" },
       { href: "/how-it-works", label: "How it works" },
-      { href: "/faq", label: "FAQ" },
+      { href: "/pricing", label: "Pricing & Fees" },
+      { href: "/faq", label: "Help & FAQ" },
     ],
   },
   {
     title: "For Professionals",
     links: [
-      { href: "/pro-register", label: "Join Pro Network" },
+      { href: "/pro-register", label: "Become a Pro" },
       { href: "/pro/jobs", label: "Available Jobs Board" },
       { href: "/pro/pricing", label: "Pro Membership" },
       { href: "/pro", label: "Professional Portal" },
@@ -33,9 +39,9 @@ const groups = [
   {
     title: "Company",
     links: [
-      { href: "/about", label: "About" },
-      { href: "/contact", label: "Contact" },
-      { href: "/terms", label: "Terms & Conditions" },
+      { href: "/about", label: "About Nutsumo" },
+      { href: "/contact", label: "Contact Us" },
+      { href: "/terms", label: "Terms of Service" },
       { href: "/privacy", label: "Privacy Policy" },
     ],
   },
@@ -84,35 +90,21 @@ const socials = [
 
 export function Footer() {
   return (
-    <footer className="bg-title text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid gap-10 border-b border-white/10 py-16 md:grid-cols-2 lg:grid-cols-[1.2fr_repeat(4,0.7fr)]">
+    <footer className="border-t border-slate-200 bg-white text-title">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 sm:py-16 md:grid-cols-2 lg:grid-cols-[1.25fr_repeat(4,1fr)] lg:px-8">
         <div>
-          <Logo variant="dark" size="lg" />
-          <p className="mt-4 max-w-sm text-sm leading-6 text-white/75">
-            The trusted marketplace connecting clients with all types of skilled workers and professionals — formal or informal. Compare quotes, message privately, and pay safely through escrow.
+          <Logo size="lg" />
+          <p className="mt-4 max-w-xs text-sm leading-6 text-copy">
+            The trusted marketplace for skilled workers and professionals in Ghana. Compare quotes, chat privately and pay safely through escrow.
           </p>
-          <div className="mt-6 flex gap-2">
-            {socials.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                aria-label={item.label}
-                target={item.href.startsWith("http") ? "_blank" : undefined}
-                rel={item.href.startsWith("http") ? "noreferrer" : undefined}
-                className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-primary hover:bg-primary"
-              >
-                {item.icon}
-              </a>
-            ))}
-          </div>
         </div>
         {groups.map((group) => (
           <div key={group.title}>
-            <p className="font-display text-base font-semibold tracking-tight text-white">{group.title}</p>
-            <ul className="mt-5 space-y-3 text-sm text-white/70">
+            <p className="font-display text-base font-semibold text-title">{group.title}</p>
+            <ul className="mt-5 space-y-3 text-[15px] text-copy">
               {group.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="hover:text-white transition-colors">
+                  <Link href={link.href} className="transition-colors hover:text-title hover:underline underline-offset-4">
                     {link.label}
                   </Link>
                 </li>
@@ -121,8 +113,29 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 text-center text-xs text-white/50">
-        <p>© {new Date().getFullYear()} Nutsumo Inc.</p>
+      <div className="border-t border-slate-200">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-copy">
+            <span>© {new Date().getFullYear()} Nutsumo Inc.</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-5">
+            <span className="text-sm font-medium text-copy">Ghana · GH₵ GHS</span>
+            <div className="flex gap-1.5">
+              {socials.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  aria-label={item.label}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="grid h-10 w-10 place-items-center rounded-full text-copy transition-colors hover:bg-slate-100 hover:text-primary"
+                >
+                  {item.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

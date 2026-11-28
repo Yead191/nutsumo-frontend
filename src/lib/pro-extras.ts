@@ -763,7 +763,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "punctual",
       project: "Main Panel Inspection & Breaker Replacement",
       text: `${proName} arrived right on time and diagnosed a buzzing breaker in our main panel within 20 minutes. Replaced the faulty 20A tandem breaker, re-torqued the terminal lugs, and labeled the circuits clearly. Extremely professional.`,
-      reply: `Thanks David! Loose connections can become dangerous over time. Glad we got your panel safe and sorted out. — ${proName}`,
+      reply: `Thanks David! Loose connections can become dangerous over time. Glad we got your panel safe and sorted out.  ${proName}`,
     },
     {
       id: "rev-el-2",
@@ -803,7 +803,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "punctual",
       project: "Emergency Under-Sink Supply Line Leak",
       text: `${proName} answered our urgent call and arrived within 45 minutes. Replaced a corroded shutoff valve, rebuilt the P-trap seal, and helped clean up the standing moisture under the cabinet. A true professional.`,
-      reply: `Glad we could catch that leak before it caused subfloor damage Marcus. Thanks for trusting us! — ${proName}`,
+      reply: `Glad we could catch that leak before it caused subfloor damage Marcus. Thanks for trusting us!  ${proName}`,
     },
     {
       id: "rev-pl-2",
@@ -843,7 +843,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "punctual",
       project: "AC Capacitor Replacement & Coil Wash",
       text: `Our outdoor AC unit stopped blowing cold on a 98-degree afternoon. ${proName} was on site within 2 hours, diagnosed a failed dual-run capacitor, swapped it from truck inventory, and washed the condenser coils. Cool air within the hour!`,
-      reply: `Texas summer heat is unforgiving on capacitors Brad. Glad we got your home cool again quickly! — ${proName}`,
+      reply: `Texas summer heat is unforgiving on capacitors Brad. Glad we got your home cool again quickly!  ${proName}`,
     },
     {
       id: "rev-hv-2",
@@ -882,7 +882,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "clean-work",
       project: "Living Room & Hallway Interior Painting",
       text: `${proName} did exceptional work on our living room and high-traffic hallway. The cut-in lines along the white ceiling and baseboards are laser sharp. Covered all hardwood flooring meticulously.`,
-      reply: `Thank you Linda! We take great pride in clean lines and zero paint splatter. Enjoy the fresh color! — ${proName}`,
+      reply: `Thank you Linda! We take great pride in clean lines and zero paint splatter. Enjoy the fresh color!  ${proName}`,
     },
     {
       id: "rev-pt-2",
@@ -921,7 +921,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "clean-work",
       project: "75-Inch TV Wall Mount & In-Wall Cable Hide",
       text: `${proName} mounted our heavy 75" TV into wall studs and installed an in-wall power concealment kit. Completely flush, perfectly level, and not a wire in sight. Cleaned up every bit of drywall dust.`,
-      reply: `Thank you James! That in-wall power kit gives the cleanest finish possible. Glad you love the setup! — ${proName}`,
+      reply: `Thank you James! That in-wall power kit gives the cleanest finish possible. Glad you love the setup!  ${proName}`,
     },
     {
       id: "rev-hm-2",
@@ -939,7 +939,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       rating: 5,
       tag: "fair-price",
       project: "Drywall Hole Repair & Texture Match",
-      text: `Patched a fist-sized hole in our hallway from moving furniture. The orange peel texture match is seamless—painted over it and nobody can tell where the patch was.`,
+      text: `Patched a fist-sized hole in our hallway from moving furniture. The orange peel texture match is seamlesspainted over it and nobody can tell where the patch was.`,
     },
     {
       id: "rev-hm-4",
@@ -960,7 +960,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "punctual",
       project: "French Door Refrigerator Temperature Fix",
       text: `${proName} diagnosed our Samsung refrigerator that stopped cooling in the fresh food compartment. Had the replacement defrost sensor and fan motor in the truck and repaired it in under an hour. Saved our groceries!`,
-      reply: `Happy we could get there in time to save the food Robert! Stocking OEM components on the truck makes all the difference. — ${proName}`,
+      reply: `Happy we could get there in time to save the food Robert! Stocking OEM components on the truck makes all the difference.  ${proName}`,
     },
     {
       id: "rev-ap-2",
@@ -999,7 +999,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "punctual",
       project: "Roof Leak Trace & Pipe Boot Reseal",
       text: `Had a ceiling drip in the guest bedroom during heavy rain. ${proName} inspected the attic and roof, found a cracked rubber pipe boot collar, and replaced it with a silicone flashing boot. Dry as a bone during the last storm.`,
-      reply: `Thanks Eric! Neoprene collars usually dry rot after 5-7 years in Texas sun. That silicone boot is built to last 20+ years! — ${proName}`,
+      reply: `Thanks Eric! Neoprene collars usually dry rot after 5-7 years in Texas sun. That silicone boot is built to last 20+ years!  ${proName}`,
     },
     {
       id: "rev-rf-2",
@@ -1038,7 +1038,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "clean-work",
       project: "Seasonal Bed Cleanup & Hardwood Mulch",
       text: `${proName} and crew weeded flowerbeds, edged along walkways with crisp definition, and laid down dark brown mulch. Transformed the curb appeal in one afternoon. Left the driveway blown spotless.`,
-      reply: `Thank you Samuel! Fresh edging and clean mulch make a huge difference. Appreciate your recommendation! — ${proName}`,
+      reply: `Thank you Samuel! Fresh edging and clean mulch make a huge difference. Appreciate your recommendation!  ${proName}`,
     },
     {
       id: "rev-ls-2",
@@ -1077,7 +1077,7 @@ export const tradeDefaultReviews: Record<string, (proName: string, city: string)
       tag: "punctual",
       project: "Exterior Perimeter Pest Barrier Treatment",
       text: `${proName} applied a thorough barrier around our foundation, treated weep holes, and swept spider webs from eaves. Zero bugs inside since the visit. Safe for our dogs too.`,
-      reply: `Glad to hear that Gary! We only use pet-safe, family-friendly exterior formulations. Thanks for the review! — ${proName}`,
+      reply: `Glad to hear that Gary! We only use pet-safe, family-friendly exterior formulations. Thanks for the review!  ${proName}`,
     },
     {
       id: "rev-pc-2",

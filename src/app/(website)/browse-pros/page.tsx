@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { PageBanner } from "@/components/layout/page-banner";
-import { photos } from "@/lib/media";
 import { BrowseProsClient } from "./browse-pros-client";
 import {
   getMarketplaceCategories,
@@ -17,7 +15,7 @@ export const revalidate = 60; // 1 minute ISR for live search/availability
 export const metadata: Metadata = {
   title: "Browse Verified Workers & Professionals · Nutsumo",
   description:
-    "Discover and hire verified skilled workers and professionals across Ghana — from tradespeople, chefs and drivers to nannies, security, office and creative talent. Compare transparent rates and request custom quotes with 100% escrow protection.",
+    "Discover and hire verified skilled workers and professionals across Ghana  from tradespeople, chefs and drivers to nannies, security, office and creative talent. Compare transparent rates and request custom quotes with 100% escrow protection.",
 };
 
 interface BrowseProsPageProps {
@@ -77,13 +75,7 @@ export default async function BrowseProsPage({
   const serviceName = serviceRes?.data?.name || "";
 
   return (
-    <div className="bg-slate-50/60 min-h-screen pt-18">
-      <PageBanner
-        eyebrow="Marketplace Directory"
-        title="Find &amp; Hire Verified Professionals"
-        description="Search verified workers in every profession across Ghana. Compare custom proposals and hire with 100% Escrow Milestone Protection."
-        image={photos.banners.pros}
-      />
+    <div className="bg-white min-h-screen pt-18">
       <Suspense
         fallback={
           <div className="max-w-7xl mx-auto px-4 py-16 text-sm text-muted text-center">

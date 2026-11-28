@@ -4,7 +4,7 @@ import { nextFetch } from "../core/NextFetch";
 import type { IFAQ, FAQListParams } from "@/types";
 
 /**
- * GET /faq — fetches public FAQ categories with their nested Q&A items.
+ * GET /faq  fetches public FAQ categories with their nested Q&A items.
  * Public visitors receive only `isActive: true` records sorted by `order asc, createdAt asc`.
  */
 export async function getFaqs(params: FAQListParams = {}) {
@@ -64,7 +64,7 @@ export async function getFaqs(params: FAQListParams = {}) {
 }
 
 /**
- * GET /faq/:id — fetches a single FAQ category with its items.
+ * GET /faq/:id  fetches a single FAQ category with its items.
  */
 export async function getFaqById(id: string) {
   try {

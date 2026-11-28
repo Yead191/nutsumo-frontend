@@ -1,6 +1,6 @@
 export type UserRole = "USER" | "ARTISAN" | "SUPER_ADMIN" | "ADMIN" | "homeowner" | "pro" | "admin";
 
-/** Job lifecycle — separate from per-offer status */
+/** Job lifecycle  separate from per-offer status */
 export type JobStatus =
   | "draft"
   | "active"
@@ -15,7 +15,7 @@ export type JobStatus =
   | "cancelled"
   | "disputed";
 
-/** Per-offer status — a job can have many offers */
+/** Per-offer status  a job can have many offers */
 export type OfferStatus =
   | "pending"
   | "countered"
@@ -49,7 +49,7 @@ export type BookingStatus =
   | "confirmed"
   | "reschedule_requested";
 
-/** How the homeowner will pay the pro — never collected by HomeFix */
+/** How the homeowner will pay the pro  never collected by HomeFix */
 export type DirectPaymentMethod =
   | "cash"
   | "bank_transfer"
@@ -113,7 +113,7 @@ export interface Professional {
   licensed: boolean;
   insured: boolean;
   emergency: boolean;
-  /** Profile starting price — final job price comes from the offer */
+  /** Profile starting price  final job price comes from the offer */
   startingPrice: number;
   /** Short availability note shown on profile */
   availabilityNote: string;
@@ -188,7 +188,7 @@ export interface Booking {
   status: BookingStatus;
   notes?: string;
   acceptedAt?: string;
-  /** Agreed off-platform method — not proof of payment */
+  /** Agreed off-platform method  not proof of payment */
   paymentArrangement?: DirectPaymentMethod;
   paymentTerms?: string;
   paymentMethod?: DirectPaymentMethod;

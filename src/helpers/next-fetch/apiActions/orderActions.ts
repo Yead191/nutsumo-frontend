@@ -12,7 +12,7 @@ export interface CreateOrderPayload {
   contact_number: string;
 }
 
-/** POST /order — creates order and returns Stripe checkout URL on `data`. */
+/** POST /order  creates order and returns Stripe checkout URL on `data`. */
 export async function createOrder(body: CreateOrderPayload) {
   const result = await nextFetch<string>("/order", {
     method: "POST",
@@ -35,7 +35,7 @@ export interface GetOrdersParams {
   sort?: string;
 }
 
-/** GET /order — returns customer's orders (or all orders if admin) */
+/** GET /order  returns customer's orders (or all orders if admin) */
 export async function getOrders(params?: GetOrdersParams) {
   const query = new URLSearchParams();
   if (params?.page) query.set("page", String(params.page));
@@ -58,7 +58,7 @@ export async function getOrders(params?: GetOrdersParams) {
   });
 }
 
-/** GET /order/:id — returns full order details */
+/** GET /order/:id  returns full order details */
 export async function getOrderById(id: string) {
   return nextFetch<IOrder>(`/order/${id}`, {
     method: "GET",

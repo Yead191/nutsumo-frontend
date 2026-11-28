@@ -216,7 +216,7 @@ export function ArtisanOverview({
       </section>
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatTile label="Rating" value={dashboard.reputation.rating ? dashboard.reputation.rating.toFixed(1) : "—"} note={`${dashboard.reputation.reviewsCount} reviews`} href="/pro/reviews" />
+        <StatTile label="Rating" value={dashboard.reputation.rating ? dashboard.reputation.rating.toFixed(1) : ""} note={`${dashboard.reputation.reviewsCount} reviews`} href="/pro/reviews" />
         <StatTile
           label="Reply time"
           value={replyLabel(dashboard.reputation.responseTimeMinutes, dashboard.reputation.responseSamples)}

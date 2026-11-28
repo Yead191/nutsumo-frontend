@@ -44,7 +44,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
   const currentUserId = profileRes?.data?._id || profileRes?._id || null;
 
   return (
-    <div className="container-site py-8 sm:py-12">
+    <div className="mx-auto max-w-7xl px-4 pt-24 pb-20 sm:px-6 sm:pb-28 lg:px-8">
       <JobDetailsView
         job={job}
         currentUserRole={currentUserRole}

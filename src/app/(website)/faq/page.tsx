@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { PageBanner } from "@/components/layout/page-banner";
+import { stock } from "@/lib/stock-photos";
 import {
   HelpCircle,
   Plus,
   Minus,
-  Sparkles,
+  Search,
   ShieldCheck,
   Lock,
   ArrowRight,
@@ -34,7 +37,7 @@ const faqs: FaqItem[] = [
   {
     category: "homeowner",
     q: "How are workers and professionals on Nutsumo verified?",
-    a: "Everyone offering services on Nutsumo — tradespeople, chefs, drivers, nannies, security personnel, office, creative and domestic workers — verifies their identity against their national Ghana Card and shares their skills and experience before they receive the 'Verified Pro' badge.",
+    a: "Everyone offering services on Nutsumo  tradespeople, chefs, drivers, nannies, security personnel, office, creative and domestic workers  verifies their identity against their national Ghana Card and shares their skills and experience before they receive the 'Verified Pro' badge.",
   },
   {
     category: "homeowner",
@@ -66,7 +69,7 @@ const faqs: FaqItem[] = [
   {
     category: "artisan",
     q: "How do I become a Verified Pro on Nutsumo?",
-    a: "Complete your professional registration with any skill — formal or informal — upload your valid Ghana Card, and add your experience, certificates or examples of past work. Our compliance team verifies your identity within 24 business hours.",
+    a: "Complete your professional registration with any skill  formal or informal  upload your valid Ghana Card, and add your experience, certificates or examples of past work. Our compliance team verifies your identity within 24 business hours.",
   },
   {
     category: "artisan",
@@ -75,121 +78,150 @@ const faqs: FaqItem[] = [
   },
 ];
 
+const TABS = [
+  { key: "homeowner", label: "For clients & businesses" },
+  { key: "artisan", label: "For workers & professionals" },
+] as const;
+
 export default function FaqPage() {
   const [activeTab, setActiveTab] = useState<"homeowner" | "artisan">("homeowner");
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [query, setQuery] = useState("");
 
-  const filteredFaqs = faqs.filter((f) => f.category === activeTab);
+  const q = query.trim().toLowerCase();
+  const filteredFaqs = faqs.filter(
+    (f) => f.category === activeTab && (!q || `${f.q} ${f.a}`.toLowerCase().includes(q)),
+  );
 
   return (
-    <div className="bg-white min-h-screen pb-24">
-      {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/50 py-16 sm:py-24 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1 text-xs font-semibold text-primary">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Help & Frequently Asked Questions</span>
-          </div>
+    <div className="bg-white min-h-screen pb-20 sm:pb-28">
+      {/* 1. HERO BANNER with search */}
+      <PageBanner
+        eyebrow="Help centre"
+        title="How can we help?"
+        description="Clear answers about escrow protection, verified worker screening, statutory taxes and fast payouts."
+        image={stock.consultation}
+        breadcrumbs={[{ label: "Home", href: "/" }, { label: "FAQ" }]}
+      >
+        <label className="relative block max-w-xl">
+          <span className="sr-only">Search the FAQ</span>
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setOpenIndex(0);
+            }}
+            placeholder="Search questions, e.g. escrow, fee, payout"
+            className="w-full rounded-xl bg-white py-4 pl-12 pr-4 text-[15px] text-title placeholder:text-slate-400 shadow-lg focus:outline-none focus:ring-4 focus:ring-primary/30"
+          />
+        </label>
+      </PageBanner>
 
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-title tracking-tight max-w-3xl mx-auto">
-            Everything You Need to Know About Nutsumo
-          </h1>
-
-          <p className="text-base sm:text-lg text-copy leading-relaxed max-w-2xl mx-auto font-sans">
-            Transparent answers about 100% escrow protection, verified worker screening, statutory tax compliance, and fast payouts.
-          </p>
-
-          {/* Interactive Switcher */}
-          <div className="pt-6 flex justify-center">
-            <div className="inline-flex rounded-2xl bg-slate-100 p-1.5 border border-slate-200 shadow-2xs">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab("homeowner");
-                  setOpenIndex(0);
-                }}
-                className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === "homeowner"
-                    ? "bg-white text-title shadow-sm"
-                    : "text-muted hover:text-title"
-                }`}
-              >
-                For Clients & Businesses
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab("artisan");
-                  setOpenIndex(0);
-                }}
-                className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-                  activeTab === "artisan"
-                    ? "bg-white text-title shadow-sm"
-                    : "text-muted hover:text-title"
-                }`}
-              >
-                For Workers & Professionals
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. ACCORDION LIST */}
-      <section className="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-        {filteredFaqs.map((faq, idx) => {
-          const isOpen = openIndex === idx;
-          return (
-            <div
-              key={idx}
-              className={`rounded-2xl border transition-all ${
-                isOpen
-                  ? "border-primary/40 bg-slate-50/50 shadow-xs"
-                  : "border-slate-200 bg-white hover:border-slate-300"
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() => setOpenIndex(isOpen ? null : idx)}
-                className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 cursor-pointer"
-              >
-                <span className="font-display text-sm sm:text-base font-bold text-title">
-                  {faq.q}
-                </span>
-                <span
-                  className={`grid h-8 w-8 place-items-center rounded-full shrink-0 transition-colors ${
-                    isOpen ? "bg-primary text-white" : "bg-slate-100 text-slate-600"
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16">
+        <div className="grid gap-10 lg:grid-cols-[1fr_340px] lg:gap-14">
+          {/* 2. TABS + ACCORDION */}
+          <div>
+            <div role="tablist" aria-label="FAQ audience" className="flex flex-wrap gap-2">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === tab.key}
+                  onClick={() => {
+                    setActiveTab(tab.key);
+                    setOpenIndex(0);
+                  }}
+                  className={`rounded-full px-5 py-2.5 text-sm font-semibold transition cursor-pointer ${
+                    activeTab === tab.key ? "bg-title text-white!" : "bg-slate-100 text-title hover:bg-slate-200"
                   }`}
                 >
-                  {isOpen ? (
-                    <Minus className="h-4 w-4" />
-                  ) : (
-                    <Plus className="h-4 w-4" />
-                  )}
-                </span>
-              </button>
-
-              {isOpen && (
-                <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-copy leading-relaxed font-sans border-t border-slate-100">
-                  {faq.a}
-                </div>
-              )}
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          );
-        })}
 
-        {/* Still have questions card */}
-        <div className="pt-10 text-center space-y-3">
-          <p className="text-xs sm:text-sm text-muted">
-            Still have questions or need help with a custom job?
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 rounded-full bg-slate-900 hover:bg-primary text-white px-6 py-3 text-xs sm:text-sm font-bold shadow-xs transition-colors"
-          >
-            <MessageCircle className="h-4 w-4" />
-            <span>Contact Nutsumo Support Team</span>
-          </Link>
+            <div className="mt-8 divide-y divide-slate-200 border-y border-slate-200">
+              {filteredFaqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                return (
+                  <div key={faq.q}>
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      onClick={() => setOpenIndex(isOpen ? null : idx)}
+                      className="group flex w-full items-center justify-between gap-6 py-6 text-left cursor-pointer"
+                    >
+                      <span className={`font-display text-base font-semibold transition-colors sm:text-lg ${isOpen ? "text-primary" : "text-title group-hover:text-primary"}`}>
+                        {faq.q}
+                      </span>
+                      <span
+                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-full transition-colors ${
+                          isOpen ? "bg-primary text-white" : "bg-slate-100 text-title group-hover:bg-slate-200"
+                        }`}
+                      >
+                        {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <p className="-mt-2 pb-6 pr-12 text-[15px] leading-relaxed text-copy animate-[fadeUp_.3s_ease_both]">
+                        {faq.a}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredFaqs.length === 0 ? (
+              <div className="mt-8 rounded-2xl bg-slate-50 px-6 py-10 text-center">
+                <HelpCircle className="mx-auto h-8 w-8 text-slate-400" />
+                <p className="mt-3 font-semibold text-title">No questions match “{query}”</p>
+                <p className="mt-1 text-sm text-copy">Try another word, or contact our support team below.</p>
+              </div>
+            ) : null}
+          </div>
+
+          {/* 3. SIDEBAR */}
+          <aside className="space-y-5 lg:sticky lg:top-28 lg:self-start">
+            <div className="overflow-hidden rounded-3xl bg-[#2A0A12]">
+              <div className="relative aspect-[16/10]">
+                <Image src={stock.womenMeeting} alt="" fill sizes="340px" className="object-cover" />
+                <div className="absolute inset-0 bg-linear-to-t from-[#2A0A12] to-transparent" />
+              </div>
+              <div className="px-6 pb-7 -mt-6 relative">
+                <p className="font-display text-xl font-semibold text-white!">Still have questions?</p>
+                <p className="mt-2 text-sm text-white/75">
+                  Our Accra support and dispute desk can help with any job, payment or account.
+                </p>
+                <Link
+                  href="/contact"
+                  className="mt-5 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary-hover transition-colors"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Contact support
+                </Link>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 p-6">
+              <ul className="space-y-4 text-sm">
+                <li className="flex gap-3">
+                  <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-600" />
+                  <span className="text-copy"><span className="font-semibold text-title">100% escrow protection</span> on every funded job.</span>
+                </li>
+                <li className="flex gap-3">
+                  <Lock className="h-5 w-5 shrink-0 text-primary" />
+                  <span className="text-copy"><span className="font-semibold text-title">Ghana Card verified</span> workers and professionals.</span>
+                </li>
+              </ul>
+              <Link href="/how-it-works" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-title underline-offset-4 hover:underline">
+                How Nutsumo works <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </aside>
         </div>
       </section>
     </div>

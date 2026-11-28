@@ -232,7 +232,7 @@ export default function ProRegisterPage() {
               {checkStatus === "clear" ? (
                 <p className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700">
                   <CheckCircle2 className="h-4 w-4" />
-                  Clear — you can submit
+                  Clear  you can submit
                 </p>
               ) : null}
             </div>

@@ -1,56 +1,54 @@
 "use client";
 
 import Link from "next/link";
-import { Briefcase, ShieldCheck, Sparkles, PlusCircle } from "lucide-react";
+import Image from "next/image";
+import { Briefcase, ShieldCheck, PlusCircle } from "lucide-react";
+import { stock } from "@/lib/stock-photos";
 
 export function JobsSearchHero() {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-linear-to-b from-slate-900 via-slate-900 to-slate-950 text-white p-8 sm:p-12 shadow-xl border border-slate-800">
-      {/* BACKGROUND ACCENT GLOW */}
-      <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[#FE375D]/20 blur-3xl" />
-      <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
+    <section className="relative isolate overflow-hidden rounded-3xl bg-[#2A0A12] text-white">
+      {/* Photo + brand wash */}
+      <Image
+        src={stock.constructionTeam}
+        alt=""
+        fill
+        priority
+        sizes="(min-width: 1280px) 1216px, 100vw"
+        className="-z-10 object-cover"
+      />
+      <div className="absolute inset-0 -z-10 bg-linear-to-r from-[#2A0A12] via-[#2A0A12]/85 to-[#2A0A12]/30" />
+      <div className="pointer-events-none absolute -left-24 -bottom-24 -z-10 h-80 w-80 rounded-full bg-primary/30 blur-3xl" />
 
-      <div className="relative z-10 max-w-3xl">
-    
-
-        {/* HEADLINE */}
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-          Find Jobs & <span className="text-[#FE375D]">Submit Proposals</span>
+      <div className="max-w-2xl px-6 py-12 sm:px-12 sm:py-16 lg:py-20">
+        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-primary">Jobs board</p>
+        <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.08] tracking-[-0.02em] text-white! sm:text-5xl">
+          Find jobs &amp; <span className="text-primary">submit proposals</span>
         </h1>
-
-        {/* SUBTITLE */}
-        <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-          Browse active job requests from verified clients across Ghana — domestic, driving, catering, trades, office, creative and more.
-          Review job specifications, submit competitive quotations in Ghana Cedis (GH₵), and get hired directly.
+        <p className="mt-4 text-base leading-relaxed text-white/75 sm:text-lg">
+          Browse active job requests from verified clients across Ghana: domestic, driving,
+          catering, trades, office, creative and more. Quote in Ghana Cedis (GH₵) and get hired directly.
         </p>
 
-        {/* QUICK STATS & POST JOB CTA */}
-        <div className="mt-6 flex flex-wrap items-center gap-4 pt-4 border-t border-white/10 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-[#FE375D]/20 text-[#FE375D]">
-              <ShieldCheck className="h-3.5 w-3.5" />
-            </span>
-            <span className="text-slate-300">100% Verified Clients</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-emerald-500/20 text-emerald-400">
-              <Briefcase className="h-3.5 w-3.5" />
-            </span>
-            <span className="text-slate-300">0% Commission on Quotes</span>
-          </div>
-
-          <div className="sm:ml-auto">
-            <Link
-              href="/account/post-job"
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 hover:bg-white hover:text-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white transition-all backdrop-blur-md"
-            >
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span>I Need Work Done &rarr;</span>
-            </Link>
-          </div>
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
+          <span className="inline-flex items-center gap-2 text-white/85">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            100% verified clients
+          </span>
+          <span className="inline-flex items-center gap-2 text-white/85">
+            <Briefcase className="h-4 w-4 text-emerald-400" />
+            0% commission on quotes
+          </span>
         </div>
+
+        <Link
+          href="/account/post-job"
+          className="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-title transition-colors hover:bg-primary hover:text-white"
+        >
+          <PlusCircle className="h-4 w-4" />
+          I need work done
+        </Link>
       </div>
-    </div>
+    </section>
   );
 }

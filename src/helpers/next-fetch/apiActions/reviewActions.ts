@@ -92,7 +92,7 @@ export interface IGetReviewsParams {
 }
 
 /**
- * POST /review — Customer submits detailed review & ratings for a completed booking
+ * POST /review  Customer submits detailed review & ratings for a completed booking
  */
 export async function createReviewAction(
   payload: ICreateReviewPayload,
@@ -118,7 +118,7 @@ export async function createReviewAction(
 }
 
 /**
- * GET /review/my-reviews — Retrieve reviews for authenticated user (Artisan or Customer)
+ * GET /review/my-reviews  Retrieve reviews for authenticated user (Artisan or Customer)
  */
 export async function getMyReviewsAction(
   params?: IGetReviewsParams,
@@ -140,7 +140,7 @@ export async function getMyReviewsAction(
 }
 
 /**
- * GET /review/artisan/:artisanId — Public reviews and star summary distribution for an artisan
+ * GET /review/artisan/:artisanId  Public reviews and star summary distribution for an artisan
  */
 export async function getArtisanReviewsAction(
   artisanId: string,
@@ -164,7 +164,7 @@ export async function getArtisanReviewsAction(
 }
 
 /**
- * GET /review/booking/:bookingId — Fetch single booking review
+ * GET /review/booking/:bookingId  Fetch single booking review
  */
 export async function getBookingReviewAction(
   bookingId: string,
@@ -177,7 +177,7 @@ export async function getBookingReviewAction(
 }
 
 /**
- * PATCH /review/:id/reply — Artisan replies to customer review
+ * PATCH /review/:id/reply  Artisan replies to customer review
  */
 export async function replyToReviewAction(
   reviewId: string,
@@ -197,7 +197,7 @@ export async function replyToReviewAction(
 }
 
 /**
- * PATCH /review/:id — Customer edits/updates their existing review
+ * PATCH /review/:id  Customer edits/updates their existing review
  */
 export async function updateReviewAction(
   reviewId: string,

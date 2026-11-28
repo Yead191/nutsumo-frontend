@@ -94,7 +94,7 @@ export interface IAcceptQuotationResult {
 }
 
 /**
- * GET /quotations/job/:jobId — Customer or Admin retrieves all quotations for a specific job
+ * GET /quotations/job/:jobId  Customer or Admin retrieves all quotations for a specific job
  */
 export async function getJobQuotationsAction(
   jobId: string,
@@ -107,7 +107,7 @@ export async function getJobQuotationsAction(
 }
 
 /**
- * PATCH /quotations/:id/accept — Customer accepts a proposal (atomic booking creation)
+ * PATCH /quotations/:id/accept  Customer accepts a proposal (atomic booking creation)
  */
 export async function acceptQuotationAction(
   quotationId: string,
@@ -140,7 +140,7 @@ export async function acceptQuotationAction(
 }
 
 /**
- * PATCH /quotations/:id/reject — Customer rejects a proposal with optional reason
+ * PATCH /quotations/:id/reject  Customer rejects a proposal with optional reason
  */
 export async function rejectQuotationAction(
   quotationId: string,
@@ -165,7 +165,7 @@ export async function rejectQuotationAction(
 }
 
 /**
- * POST /quotations — Artisan submits a quotation for an open job
+ * POST /quotations  Artisan submits a quotation for an open job
  */
 export async function submitQuotationAction(payload: {
   job: string;
@@ -189,7 +189,7 @@ export async function submitQuotationAction(payload: {
 }
 
 /**
- * GET /quotations/my-quotations — Artisan retrieves their submitted quotations
+ * GET /quotations/my-quotations  Artisan retrieves their submitted quotations
  */
 export async function getMyQuotationsAction(params?: {
   page?: number;
@@ -212,7 +212,7 @@ export async function getMyQuotationsAction(params?: {
 }
 
 /**
- * PATCH /quotations/:id/withdraw — Artisan withdraws their pending quotation
+ * PATCH /quotations/:id/withdraw  Artisan withdraws their pending quotation
  */
 export async function withdrawQuotationAction(
   quotationId: string,
@@ -233,7 +233,7 @@ export async function withdrawQuotationAction(
 }
 
 /**
- * PATCH /quotations/:id — Artisan updates their pending proposal
+ * PATCH /quotations/:id  Artisan updates their pending proposal
  */
 export async function updateQuotationAction(
   quotationId: string,
